@@ -48,6 +48,18 @@ Default cloud settings:
 The workflow commits promoted patches and state files back to `main`, so the
 next manual run resumes from the latest accepted commit.
 
+The workflow `RSI Research Experiments` runs the review-oriented experiment
+matrix in disposable repository copies. It produces:
+
+- baseline and ablation metrics
+- accepted/rejected candidate rates
+- rollback correctness checks
+- broad-gate regression counts
+- wall-clock cost proxies
+- improvement depth
+- failure analysis
+- bounded-execution safety report
+
 ## Local Safety
 
 This repository is set up so expensive validation can run in GitHub Actions

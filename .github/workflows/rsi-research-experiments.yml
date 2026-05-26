@@ -1,0 +1,110 @@
+name: RSI Research Experiments
+
+on:
+  workflow_dispatch:
+    inputs:
+      max_generations:
+        description: Maximum loop generations per experiment run.
+        required: true
+        default: "4"
+      max_candidates:
+        description: Maximum candidates per generation.
+        required: true
+        default: "4"
+      wall_seconds:
+        description: Wall-clock budget per loop run in seconds.
+        required: true
+        default: "1800"
+      timeout_seconds:
+        description: Per-command timeout in seconds.
+        required: true
+        default: "420"
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: rsi-research-experiments-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  experiments:
+    name: Baselines, ablations, metrics, failure analysis, and safety report
+    runs-on: ubuntu-latest
+    timeout-minutes: 130
+
+    env:
+      OMEGA_THDSE_ENABLE_RUST: "0"
+      PYTHONUNBUFFERED: "1"
+      PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/thdse:${{ github.workspace }}/thdse/src:${{ github.workspace }}/Cognitive-Core-Engine-Test
+
+    steps:
+      - name: Checkout latest accepted base
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: |
+            requirements-ci.txt
+            thdse/requirements.txt
+
+      - name: Install verification dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-ci.txt
+
+      - name: Configure Git author
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Preflight experiment scripts
+        run: |
+          python -m py_compile scripts/closed_recursive_self_improvement_loop.py scripts/rsi_experiment_suite.py
+          python -m pytest -q --import-mode=importlib --disable-warnings tests/test_closed_recursive_self_improvement_loop.py tests/test_rsi_experiment_suite.py
+
+      - name: Run research experiment matrix
+        run: |
+          python scripts/rsi_experiment_suite.py \
+            --repo-root "$GITHUB_WORKSPACE" \
+            --output-dir "$GITHUB_WORKSPACE/reports/rsi_experiments/latest" \
+            --max-generations "${{ inputs.max_generations }}" \
+            --max-candidates "${{ inputs.max_candidates }}" \
+            --wall-seconds "${{ inputs.wall_seconds }}" \
+            --timeout-seconds "${{ inputs.timeout_seconds }}"
+
+      - name: Show experiment summary
+        if: always()
+        run: |
+          if [ -f reports/rsi_experiments/latest/summary.json ]; then
+            cat reports/rsi_experiments/latest/summary.json
+          else
+            echo "No RSI experiment summary was produced."
+          fi
+
+      - name: Commit experiment reports
+        run: |
+          git status --short
+          git add reports/rsi_experiments/latest
+          if git diff --cached --quiet; then
+            echo "No experiment report changes to commit."
+          else
+            git commit -m "Record RSI research experiment results"
+            git push
+          fi
+
+      - name: Upload experiment artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rsi-research-experiments
+          path: reports/rsi_experiments/latest
+          if-no-files-found: ignore
+          retention-days: 30

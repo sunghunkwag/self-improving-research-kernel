@@ -69,6 +69,7 @@ class CandidatePatch:
     transform: Transform
     test_source: str
     focused_tests: Sequence[str] = field(default_factory=tuple)
+    extra_files: Dict[str, str] = field(default_factory=dict)
 
 
 @dataclass
@@ -80,6 +81,7 @@ class CandidateRecord:
     goal: Dict[str, str]
     target_path: str
     test_path: str
+    extra_paths: List[str]
     accepted: bool
     started_at: str
     finished_at: str
@@ -145,6 +147,58 @@ def add_records_importing(text: str) -> str:
 
 '''
     return insert_before(text, marker, insertion, "local_corpus_import_query_v1")
+
+
+POLICY_REGISTRY_ACTIVE_MARKER = "POLICY_REGISTRY_" + "ACTIVE = True"
+
+
+def add_policy_registry_hook(text: str) -> str:
+    if POLICY_REGISTRY_ACTIVE_MARKER in text:
+        return text
+    function_marker = "\n\nclass ClosedRecursiveSelfImprovementLoop:\n"
+    function_insertion = "\n\n" + POLICY_REGISTRY_ACTIVE_MARKER + '''
+
+
+def load_policy_registry(repo_root: Path) -> Dict[str, object]:
+    """Return metadata for the active candidate policy registry."""
+
+    registry_path = repo_root / "scripts" / "rsi_policy_registry.py"
+    if not registry_path.exists():
+        return {
+            "available": False,
+            "path": str(registry_path.relative_to(repo_root)),
+            "capabilities": [],
+        }
+    return {
+        "available": True,
+        "path": str(registry_path.relative_to(repo_root)),
+        "capabilities": [
+            "generator_policy",
+            "validator_policy",
+            "patch_policy",
+            "safety_policy",
+        ],
+    }
+'''
+    text = insert_before(
+        text,
+        function_marker,
+        function_insertion,
+        "loop_policy_registry_v1",
+    )
+    method_marker = "    def load_state(self) -> dict:\n"
+    method_insertion = '''    def policy_surface(self) -> Dict[str, object]:
+        """Expose the active generator, validator, patch, and safety policy surface."""
+
+        return load_policy_registry(self.repo_root)
+
+'''
+    return insert_before(
+        text,
+        method_marker,
+        method_insertion,
+        "loop_policy_registry_v1",
+    )
 
 
 FEATURE_QUERY_TEST = '''from shared.local_corpus import LocalCorpusIndex, LocalCorpusSummary, LocalPythonFileRecord
@@ -229,6 +283,102 @@ def test_records_importing_filters_static_imports():
 '''
 
 
+POLICY_REGISTRY_SOURCE = '''"""Candidate policy registry for the closed RSI loop.
+
+The registry is intentionally declarative. It gives experiments a stable
+surface for measuring what the loop is allowed to change, how candidates are
+validated, how rollback works, and which safety constraints are active.
+"""
+
+from __future__ import annotations
+
+from dataclasses import asdict, dataclass
+from typing import Dict, Tuple
+
+
+@dataclass(frozen=True)
+class PolicyCapability:
+    """One measurable policy surface exposed by the loop."""
+
+    name: str
+    category: str
+    evidence: str
+    risk_control: str
+
+
+def default_policy_capabilities() -> Tuple[PolicyCapability, ...]:
+    """Return the generator, validator, patch, and safety policy surfaces."""
+
+    return (
+        PolicyCapability(
+            name="source_tree_candidate_generation",
+            category="generator",
+            evidence="candidate factories inspect repository state before proposing patches",
+            risk_control="candidate names are deterministic and budget bounded",
+        ),
+        PolicyCapability(
+            name="compile_focused_broad_validation",
+            category="validator",
+            evidence="candidates must pass py_compile, focused pytest, root pytest, and THDSE core gates",
+            risk_control="failed gates prevent promotion",
+        ),
+        PolicyCapability(
+            name="atomic_patch_with_extra_files",
+            category="patch_policy",
+            evidence="candidate patches may change a target file plus declared supporting files",
+            risk_control="rollback restores all touched files on rejection",
+        ),
+        PolicyCapability(
+            name="bounded_governed_execution",
+            category="safety",
+            evidence="wall-clock budgets, command timeouts, kill switch, and persisted provenance",
+            risk_control="no unbounded runaway loop is permitted",
+        ),
+    )
+
+
+def candidate_policy_summary() -> Dict[str, object]:
+    """Return a JSON-compatible summary for experiment reports."""
+
+    capabilities = default_policy_capabilities()
+    categories = sorted({capability.category for capability in capabilities})
+    return {
+        "capability_count": len(capabilities),
+        "categories": categories,
+        "capabilities": [asdict(capability) for capability in capabilities],
+    }
+'''
+
+
+POLICY_REGISTRY_TEST = '''from scripts.closed_recursive_self_improvement_loop import (
+    ClosedRecursiveSelfImprovementLoop,
+    load_policy_registry,
+)
+from scripts.rsi_policy_registry import candidate_policy_summary
+
+
+def test_policy_registry_exposes_required_policy_surfaces(tmp_path):
+    summary = candidate_policy_summary()
+
+    assert summary["capability_count"] >= 4
+    assert set(summary["categories"]) == {
+        "generator",
+        "patch_policy",
+        "safety",
+        "validator",
+    }
+
+
+def test_closed_loop_exposes_policy_surface():
+    loop = ClosedRecursiveSelfImprovementLoop(__import__("pathlib").Path.cwd())
+    surface = loop.policy_surface()
+
+    assert surface["available"] is True
+    assert "generator_policy" in surface["capabilities"]
+    assert load_policy_registry(__import__("pathlib").Path.cwd()) == surface
+'''
+
+
 class ClosedRecursiveSelfImprovementLoop:
     """Persistent patch-test-promote loop over the real source tree."""
 
@@ -238,8 +388,11 @@ class ClosedRecursiveSelfImprovementLoop:
         *,
         state_dir: Optional[Path] = None,
         broad_gate: bool = False,
+        thdse_core_gate: bool = True,
         timeout_s: int = 300,
         dry_run: bool = True,
+        rollback: bool = True,
+        persistence: bool = True,
     ):
         self.repo_root = repo_root.resolve()
         self.thdse_root = self.repo_root / "thdse"
@@ -255,8 +408,11 @@ class ClosedRecursiveSelfImprovementLoop:
         self.summary_path = self.state_dir / "closed_rsi_summary.json"
         self.kill_switch_path = self.state_dir / "STOP_CLOSED_RSI"
         self.broad_gate = broad_gate
+        self.thdse_core_gate = bool(thdse_core_gate)
         self.timeout_s = int(timeout_s)
         self.dry_run = bool(dry_run)
+        self.rollback = bool(rollback)
+        self.persistence = bool(persistence)
         self.env = os.environ.copy()
         self.env["PYTHONPATH"] = str(self.repo_root)
 
@@ -271,6 +427,8 @@ class ClosedRecursiveSelfImprovementLoop:
         return state
 
     def save_state(self, state: dict) -> None:
+        if not self.persistence:
+            return
         write_json(self.state_path, state)
 
     def invent_candidates(self, generation: int) -> List[CandidatePatch]:
@@ -278,6 +436,8 @@ class ClosedRecursiveSelfImprovementLoop:
 
         local_corpus = self.repo_root / "shared" / "local_corpus.py"
         text = local_corpus.read_text(encoding="utf-8")
+        loop_script = self.repo_root / "scripts" / "closed_recursive_self_improvement_loop.py"
+        loop_text = loop_script.read_text(encoding="utf-8") if loop_script.exists() else ""
         candidates: List[CandidatePatch] = []
 
         if "def records_with_feature(" not in text:
@@ -320,6 +480,32 @@ class ClosedRecursiveSelfImprovementLoop:
                 )
             )
 
+        if loop_script.exists() and POLICY_REGISTRY_ACTIVE_MARKER not in loop_text:
+            goal = Goal(
+                name="make_generator_policy_surface_explicit",
+                target="scripts.closed_recursive_self_improvement_loop",
+                metric="self-patchable policy registry plus focused regression test",
+                rationale=(
+                    "The loop can promote source candidates, but it needs a measurable "
+                    "policy surface for generator, validator, patch, and safety ablations."
+                ),
+            )
+            candidates.append(
+                CandidatePatch(
+                    name="loop_policy_registry_v1",
+                    generation=generation,
+                    goal=goal,
+                    target_path=loop_script,
+                    test_path=self.repo_root / "tests" / "test_rsi_policy_registry_rewrite.py",
+                    transform=add_policy_registry_hook,
+                    test_source=POLICY_REGISTRY_TEST,
+                    focused_tests=("tests/test_rsi_policy_registry_rewrite.py",),
+                    extra_files={
+                        "scripts/rsi_policy_registry.py": POLICY_REGISTRY_SOURCE,
+                    },
+                )
+            )
+
         return candidates
 
     def run_command(self, label: str, args: Sequence[str], cwd: Path) -> GateResult:
@@ -358,16 +544,19 @@ class ClosedRecursiveSelfImprovementLoop:
 
     def validate(self, candidate: CandidatePatch) -> List[GateResult]:
         py = sys.executable
+        compile_targets = [
+            str(candidate.target_path.relative_to(self.repo_root)),
+            str(candidate.test_path.relative_to(self.repo_root)),
+        ]
+        compile_targets.extend(
+            path
+            for path in sorted(candidate.extra_files)
+            if path.endswith(".py")
+        )
         gates = [
             self.run_command(
                 f"{candidate.name}_compile",
-                [
-                    py,
-                    "-m",
-                    "py_compile",
-                    str(candidate.target_path.relative_to(self.repo_root)),
-                    str(candidate.test_path.relative_to(self.repo_root)),
-                ],
+                [py, "-m", "py_compile", *compile_targets],
                 self.repo_root,
             )
         ]
@@ -395,7 +584,7 @@ class ClosedRecursiveSelfImprovementLoop:
                     self.repo_root,
                 )
             )
-            if self.thdse_root.exists():
+            if self.thdse_core_gate and self.thdse_root.exists():
                 gates.append(
                     self.run_command(
                         f"{candidate.name}_thdse_core",
@@ -422,13 +611,22 @@ class ClosedRecursiveSelfImprovementLoop:
         started = utc_now()
         original_target = candidate.target_path.read_text(encoding="utf-8")
         original_test = candidate.test_path.read_text(encoding="utf-8") if candidate.test_path.exists() else None
+        extra_paths = {
+            (self.repo_root / relative_path): source
+            for relative_path, source in candidate.extra_files.items()
+        }
+        original_extra = {
+            path: path.read_text(encoding="utf-8") if path.exists() else None
+            for path in extra_paths
+        }
         gates: List[GateResult] = []
         error = ""
         accepted = False
 
         try:
             rewritten = candidate.transform(original_target)
-            if rewritten == original_target:
+            missing_extra = [path for path in extra_paths if not path.exists()]
+            if rewritten == original_target and not missing_extra:
                 raise RuntimeError("candidate made no source change")
             if self.dry_run:
                 accepted = True
@@ -436,6 +634,9 @@ class ClosedRecursiveSelfImprovementLoop:
                 candidate.target_path.write_text(rewritten, encoding="utf-8")
                 candidate.test_path.parent.mkdir(parents=True, exist_ok=True)
                 candidate.test_path.write_text(candidate.test_source, encoding="utf-8")
+                for path, source in extra_paths.items():
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    path.write_text(source, encoding="utf-8")
                 gates = self.validate(candidate)
                 accepted = all(gate.exit_code == 0 for gate in gates)
                 if not accepted:
@@ -443,7 +644,7 @@ class ClosedRecursiveSelfImprovementLoop:
         except Exception as exc:
             error = f"{type(exc).__name__}: {exc}"
             accepted = False
-            if not self.dry_run:
+            if not self.dry_run and self.rollback:
                 candidate.target_path.write_text(original_target, encoding="utf-8")
                 if original_test is None:
                     try:
@@ -452,6 +653,14 @@ class ClosedRecursiveSelfImprovementLoop:
                         pass
                 else:
                     candidate.test_path.write_text(original_test, encoding="utf-8")
+                for path, original in original_extra.items():
+                    if original is None:
+                        try:
+                            path.unlink()
+                        except FileNotFoundError:
+                            pass
+                    else:
+                        path.write_text(original, encoding="utf-8")
 
         return CandidateRecord(
             name=candidate.name,
@@ -459,6 +668,7 @@ class ClosedRecursiveSelfImprovementLoop:
             goal=asdict(candidate.goal),
             target_path=str(candidate.target_path.relative_to(self.repo_root)),
             test_path=str(candidate.test_path.relative_to(self.repo_root)),
+            extra_paths=sorted(candidate.extra_files),
             accepted=accepted,
             started_at=started,
             finished_at=utc_now(),
@@ -505,6 +715,9 @@ class ClosedRecursiveSelfImprovementLoop:
         summary = {
             "dry_run": self.dry_run,
             "broad_gate": self.broad_gate,
+            "thdse_core_gate": self.thdse_core_gate,
+            "rollback": self.rollback,
+            "persistence": self.persistence,
             "state_path": str(self.state_path),
             "accepted_this_run": accepted_this_run,
             "rejected_this_run": rejected_this_run,
@@ -531,6 +744,9 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     parser.add_argument("--state-dir", type=Path, default=None)
     parser.add_argument("--apply", action="store_true", help="Apply passing candidates to the real source tree.")
     parser.add_argument("--broad-gate", action="store_true", help="Run broader pytest gates after focused tests.")
+    parser.add_argument("--no-thdse-core-gate", action="store_true", help="Skip the THDSE core gate inside broad validation.")
+    parser.add_argument("--no-rollback", action="store_true", help="Leave rejected candidate changes in place. Use only in disposable experiment copies.")
+    parser.add_argument("--no-persistence", action="store_true", help="Do not persist accepted/rejected state between runs.")
     parser.add_argument("--max-generations", type=int, default=10)
     parser.add_argument("--max-candidates", type=int, default=10)
     parser.add_argument("--wall-seconds", type=int, default=1800)
@@ -542,8 +758,11 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         repo_root,
         state_dir=args.state_dir,
         broad_gate=args.broad_gate,
+        thdse_core_gate=not args.no_thdse_core_gate,
         timeout_s=args.timeout_seconds,
         dry_run=not args.apply,
+        rollback=not args.no_rollback,
+        persistence=not args.no_persistence,
     )
     summary = loop.run(
         max_generations=args.max_generations,
