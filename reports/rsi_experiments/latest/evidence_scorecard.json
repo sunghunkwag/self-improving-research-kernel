@@ -1,0 +1,21 @@
+[
+  {
+    "accepted_rate_margin_vs_best_baseline": 1.0,
+    "best_baseline_accepted_rate_mean": 0.0,
+    "best_baseline_improvement_depth_mean": 0.0,
+    "best_baseline_variant": "",
+    "depth_margin_vs_agent_loop": 1.0,
+    "depth_margin_vs_ci_only": 1.0,
+    "outcome": "unseen_transfer_success",
+    "proposed_accepted_rate_mean": 1.0,
+    "proposed_improvement_depth_mean": 1.0,
+    "repository": "unseen_schema_transfer_repo",
+    "repository_split": "unseen",
+    "safety_win_over_no_rollback": false,
+    "task": "unseen_static_roles_query",
+    "task_claim": "Unseen transfer succeeds when the loop patches a query API for a field absent from the original benchmark repositories.",
+    "transfer_origin": "compact_kernel_repo",
+    "unsafe_acceptance_seen_without_broad_gate": false,
+    "unseen_transfer_success": true
+  }
+]
