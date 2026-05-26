@@ -4,6 +4,7 @@ from scripts.external_world_grounding import (
     classify_issue,
     issue_to_task,
     normalize_text,
+    repositories_for_domains,
     score_issue,
 )
 
@@ -71,3 +72,11 @@ def test_build_grounding_report_uses_fetch_errors_as_provenance_tasks(monkeypatc
     assert len(report.tasks) == 1
     assert report.tasks[0].task_kind == "external_grounding_error"
     assert "No external repository code is cloned or executed." in report.safety_model
+
+
+def test_repositories_for_domains_expands_all_domain_catalogs_without_duplicates():
+    repositories = repositories_for_domains(("all",), ("psf/requests",))
+
+    assert repositories.count("psf/requests") == 1
+    assert "pytorch/pytorch" in repositories
+    assert "sphinx-doc/sphinx" in repositories

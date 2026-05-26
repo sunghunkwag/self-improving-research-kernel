@@ -20,10 +20,23 @@ from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Sequence, Tuple
 
 
-DEFAULT_REPOSITORIES: Tuple[str, ...] = (
-    "psf/requests",
-    "pallets/flask",
-    "pytest-dev/pytest",
+DEFAULT_DOMAIN_REPOSITORIES: Dict[str, Tuple[str, ...]] = {
+    "http_clients": ("psf/requests", "urllib3/urllib3"),
+    "web_frameworks": ("pallets/flask", "django/django", "fastapi/fastapi"),
+    "testing": ("pytest-dev/pytest", "hypothesisworks/hypothesis"),
+    "data_science": ("numpy/numpy", "pandas-dev/pandas", "scipy/scipy"),
+    "machine_learning": ("scikit-learn/scikit-learn", "pytorch/pytorch"),
+    "databases": ("sqlalchemy/sqlalchemy", "redis/redis-py"),
+    "distributed_systems": ("dask/dask", "ray-project/ray"),
+    "developer_tools": ("pre-commit/pre-commit", "astral-sh/ruff"),
+    "security": ("pyca/cryptography", "certbot/certbot"),
+    "documentation": ("sphinx-doc/sphinx", "mkdocs/mkdocs"),
+}
+
+DEFAULT_REPOSITORIES: Tuple[str, ...] = tuple(
+    repository
+    for domain in ("http_clients", "web_frameworks", "testing")
+    for repository in DEFAULT_DOMAIN_REPOSITORIES[domain]
 )
 
 DEFAULT_LABEL_QUERY = "bug"
@@ -118,6 +131,31 @@ def build_issue_query_url(repository: str, *, label_query: str, limit: int) -> s
         f"https://api.github.com/repos/{owner_repo}/issues?"
         + urllib.parse.urlencode(params)
     )
+
+
+def repositories_for_domains(
+    domains: Sequence[str],
+    explicit_repositories: Sequence[str],
+) -> Tuple[str, ...]:
+    """Resolve explicit repositories plus broad domain names into a stable list."""
+
+    selected: List[str] = []
+    for repository in explicit_repositories:
+        if repository not in selected:
+            selected.append(repository)
+    requested_domains = tuple(domain.strip() for domain in domains if domain.strip())
+    if "all" in requested_domains:
+        requested_domains = tuple(DEFAULT_DOMAIN_REPOSITORIES)
+    for domain in requested_domains:
+        if domain not in DEFAULT_DOMAIN_REPOSITORIES:
+            known = ", ".join(sorted([*DEFAULT_DOMAIN_REPOSITORIES, "all"]))
+            raise ValueError(f"unknown domain {domain!r}; expected one of: {known}")
+        for repository in DEFAULT_DOMAIN_REPOSITORIES[domain]:
+            if repository not in selected:
+                selected.append(repository)
+    if not selected:
+        selected.extend(DEFAULT_REPOSITORIES)
+    return tuple(selected)
 
 
 def classify_issue(labels: Sequence[str], title: str, body: str) -> str:
@@ -314,6 +352,12 @@ def write_report(output_dir: Path, report: GroundingReport) -> None:
 def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--repository", action="append", default=[])
+    parser.add_argument(
+        "--domain",
+        action="append",
+        default=[],
+        help="Ground a named domain catalog, or use 'all' for every cataloged domain.",
+    )
     parser.add_argument("--label-query", default=DEFAULT_LABEL_QUERY)
     parser.add_argument("--limit-per-repo", type=int, default=3)
     parser.add_argument("--output-dir", type=Path, default=Path("reports/external_grounding/latest"))
@@ -326,7 +370,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
     args = parse_args(argv)
-    repositories = tuple(args.repository or DEFAULT_REPOSITORIES)
+    repositories = repositories_for_domains(args.domain, args.repository)
     token = os.environ.get(args.github_token_env)
     report = build_grounding_report(
         repositories,

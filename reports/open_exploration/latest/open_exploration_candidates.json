@@ -1,0 +1,1423 @@
+{
+  "axes": [
+    {
+      "allows_unverified_self_modification": true,
+      "description": "Rewrite how future candidates are invented, ranked, and diversified.",
+      "name": "generator_policy_rewrite",
+      "target_surfaces": [
+        "scripts/closed_recursive_self_improvement_loop.py",
+        "scripts/rsi_policy_registry.py"
+      ]
+    },
+    {
+      "allows_unverified_self_modification": true,
+      "description": "Invent new validation gates, counterexample strategies, and uncertainty labels.",
+      "name": "validator_policy_rewrite",
+      "target_surfaces": [
+        "tests",
+        "benchmarks",
+        "scripts/rsi_experiment_suite.py"
+      ]
+    },
+    {
+      "allows_unverified_self_modification": true,
+      "description": "Change the granularity, rollback model, and promotion rules for candidate patches.",
+      "name": "patch_policy_rewrite",
+      "target_surfaces": [
+        ".omega_rsi_runs",
+        "scripts/closed_recursive_self_improvement_loop.py"
+      ]
+    },
+    {
+      "allows_unverified_self_modification": false,
+      "description": "Add new external task sources while preserving source provenance and bounded fetches.",
+      "name": "external_grounding_expansion",
+      "target_surfaces": [
+        "scripts/external_world_grounding.py",
+        "reports/external_grounding"
+      ]
+    },
+    {
+      "allows_unverified_self_modification": true,
+      "description": "Extract cross-domain invariants and propose transfer tests between unrelated task families.",
+      "name": "transfer_mechanism_synthesis",
+      "target_surfaces": [
+        "benchmarks",
+        "reports/rsi_experiments",
+        "shared"
+      ]
+    },
+    {
+      "allows_unverified_self_modification": false,
+      "description": "Make the generator describe its own blind spots, missing evidence, and false-positive risks.",
+      "name": "self_limit_modeling",
+      "target_surfaces": [
+        "reports",
+        "scripts/rsi_policy_registry.py"
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "axis": "generator_policy_rewrite",
+      "candidate_id": "open-914deb62ddee7db9",
+      "closure_state": "open_loop_not_applied",
+      "domain": "software_maintenance",
+      "generation_index": 0,
+      "hypothesis": "Crossing software_maintenance with generator_policy_rewrite may reveal a transfer rule that the closed loop cannot invent from local validation alone.",
+      "meta_limit_layers": [
+        {
+          "label": "meta",
+          "level": 1,
+          "limitation": "The generator may confuse a high-scoring proposal with a real capability gain. Domain=software_maintenance; axis=generator_policy_rewrite.",
+          "transferable_question": "What observable evidence would distinguish search novelty from measurable improvement?"
+        },
+        {
+          "label": "meta_meta",
+          "level": 2,
+          "limitation": "The generator may inherit blind spots from its current ranking and validation policy. Domain=software_maintenance; axis=generator_policy_rewrite.",
+          "transferable_question": "Which rejected or unvalidated ideas should be reinterpreted under a different policy?"
+        },
+        {
+          "label": "meta_meta_meta",
+          "level": 3,
+          "limitation": "The generator may fail to transfer structure across domains because its abstractions are too local. Domain=software_maintenance; axis=generator_policy_rewrite.",
+          "transferable_question": "What invariant would let this proposal transfer beyond the source domain?"
+        }
+      ],
+      "proposal_kind": "speculative_unverified_self_modification",
+      "proposed_self_modification": "Record the proposal as an unapplied policy mutation for later review; do not execute or promote it without a separate bounded validation plan.",
+      "provenance": {
+        "domain_signals": "github_issues,pytest_failures,rollback_records",
+        "domain_source": "local_repo_and_public_issue_metadata",
+        "generated_at": "2026-05-26T21:43:18Z",
+        "target_surfaces": "scripts/closed_recursive_self_improvement_loop.py,scripts/rsi_policy_registry.py"
+      },
+      "safety_controls": [
+        "proposal_only",
+        "no_auto_patch",
+        "no_remote_code_execution",
+        "bounded_materialization",
+        "provenance_required",
+        "requires_separate_promotion_workflow"
+      ],
+      "title": "software_maintenance x generator_policy_rewrite",
+      "transfer_targets": [
+        "scientific_discovery",
+        "robotics_and_control",
+        "biology_and_medicine",
+        "economics_and_strategy"
+      ],
+      "validation_status": "explicitly_unverified_allowed"
+    },
+    {
+      "axis": "validator_policy_rewrite",
+      "candidate_id": "open-49f4350d507b30ea",
+      "closure_state": "open_loop_not_applied",
+      "domain": "software_maintenance",
+      "generation_index": 1,
+      "hypothesis": "Crossing software_maintenance with validator_policy_rewrite may reveal a transfer rule that the closed loop cannot invent from local validation alone.",
+      "meta_limit_layers": [
+        {
+          "label": "meta",
+          "level": 1,
+          "limitation": "The generator may confuse a high-scoring proposal with a real capability gain. Domain=software_maintenance; axis=validator_policy_rewrite.",
+          "transferable_question": "What observable evidence would distinguish search novelty from measurable improvement?"
+        },
+        {
+          "label": "meta_meta",
+          "level": 2,
+          "limitation": "The generator may inherit blind spots from its current ranking and validation policy. Domain=software_maintenance; axis=validator_policy_rewrite.",
+          "transferable_question": "Which rejected or unvalidated ideas should be reinterpreted under a different policy?"
+        },
+        {
+          "label": "meta_meta_meta",
+          "level": 3,
+          "limitation": "The generator may fail to transfer structure across domains because its abstractions are too local. Domain=software_maintenance; axis=validator_policy_rewrite.",
+          "transferable_question": "What invariant would let this proposal transfer beyond the source domain?"
+        }
+      ],
+      "proposal_kind": "speculative_unverified_self_modification",
+      "proposed_self_modification": "Record the proposal as an unapplied policy mutation for later review; do not execute or promote it without a separate bounded validation plan.",
+      "provenance": {
+        "domain_signals": "github_issues,pytest_failures,rollback_records",
+        "domain_source": "local_repo_and_public_issue_metadata",
+        "generated_at": "2026-05-26T21:43:18Z",
+        "target_surfaces": "tests,benchmarks,scripts/rsi_experiment_suite.py"
+      },
+      "safety_controls": [
+        "proposal_only",
+        "no_auto_patch",
+        "no_remote_code_execution",
+        "bounded_materialization",
+        "provenance_required",
+        "requires_separate_promotion_workflow"
+      ],
+      "title": "software_maintenance x validator_policy_rewrite",
+      "transfer_targets": [
+        "scientific_discovery",
+        "robotics_and_control",
+        "biology_and_medicine",
+        "economics_and_strategy"
+      ],
+      "validation_status": "explicitly_unverified_allowed"
+    },
+    {
+      "axis": "patch_policy_rewrite",
+      "candidate_id": "open-9fc7410d3e92e4ea",
+      "closure_state": "open_loop_not_applied",
+      "domain": "software_maintenance",
+      "generation_index": 2,
+      "hypothesis": "Crossing software_maintenance with patch_policy_rewrite may reveal a transfer rule that the closed loop cannot invent from local validation alone.",
+      "meta_limit_layers": [
+        {
+          "label": "meta",
+          "level": 1,
+          "limitation": "The generator may confuse a high-scoring proposal with a real capability gain. Domain=software_maintenance; axis=patch_policy_rewrite.",
+          "transferable_question": "What observable evidence would distinguish search novelty from measurable improvement?"
+        },
+        {
+          "label": "meta_meta",
+          "level": 2,
+          "limitation": "The generator may inherit blind spots from its current ranking and validation policy. Domain=software_maintenance; axis=patch_policy_rewrite.",
+          "transferable_question": "Which rejected or unvalidated ideas should be reinterpreted under a different policy?"
+        },
+        {
+          "label": "meta_meta_meta",
+          "level": 3,
+          "limitation": "The generator may fail to transfer structure across domains because its abstractions are too local. Domain=software_maintenance; axis=patch_policy_rewrite.",
+          "transferable_question": "What invariant would let this proposal transfer beyond the source domain?"
+        }
+      ],
+      "proposal_kind": "speculative_unverified_self_modification",
+      "proposed_self_modification": "Record the proposal as an unapplied policy mutation for later review; do not execute or promote it without a separate bounded validation plan.",
+      "provenance": {
+        "domain_signals": "github_issues,pytest_failures,rollback_records",
+        "domain_source": "local_repo_and_public_issue_metadata",
+        "generated_at": "2026-05-26T21:43:18Z",
+        "target_surfaces": ".omega_rsi_runs,scripts/closed_recursive_self_improvement_loop.py"
+      },
+      "safety_controls": [
+        "proposal_only",
+        "no_auto_patch",
+        "no_remote_code_execution",
+        "bounded_materialization",
+        "provenance_required",
+        "requires_separate_promotion_workflow"
+      ],
+      "title": "software_maintenance x patch_policy_rewrite",
+      "transfer_targets": [
+        "scientific_discovery",
+        "robotics_and_control",
+        "biology_and_medicine",
+        "economics_and_strategy"
+      ],
+      "validation_status": "explicitly_unverified_allowed"
+    },
+    {
+      "axis": "external_grounding_expansion",
+      "candidate_id": "open-078581a9e682a61d",
+      "closure_state": "open_loop_not_applied",
+      "domain": "software_maintenance",
+      "generation_index": 3,
+      "hypothesis": "Crossing software_maintenance with external_grounding_expansion may reveal a transfer rule that the closed loop cannot invent from local validation alone.",
+      "meta_limit_layers": [
+        {
+          "label": "meta",
+          "level": 1,
+          "limitation": "The generator may confuse a high-scoring proposal with a real capability gain. Domain=software_maintenance; axis=external_grounding_expansion.",
+          "transferable_question": "What observable evidence would distinguish search novelty from measurable improvement?"
+        },
+        {
+          "label": "meta_meta",
+          "level": 2,
+          "limitation": "The generator may inherit blind spots from its current ranking and validation policy. Domain=software_maintenance; axis=external_grounding_expansion.",
+          "transferable_question": "Which rejected or unvalidated ideas should be reinterpreted under a different policy?"
+        },
+        {
+          "label": "meta_meta_meta",
+          "level": 3,
+          "limitation": "The generator may fail to transfer structure across domains because its abstractions are too local. Domain=software_maintenance; axis=external_grounding_expansion.",
+          "transferable_question": "What invariant would let this proposal transfer beyond the source domain?"
+        }
+      ],
+      "proposal_kind": "grounded_open_loop_proposal",
+      "proposed_self_modification": "Record the proposal as an unapplied policy mutation for later review; do not execute or promote it without a separate bounded validation plan.",
+      "provenance": {
+        "domain_signals": "github_issues,pytest_failures,rollback_records",
+        "domain_source": "local_repo_and_public_issue_metadata",
+        "generated_at": "2026-05-26T21:43:18Z",
+        "target_surfaces": "scripts/external_world_grounding.py,reports/external_grounding"
+      },
+      "safety_controls": [
+        "proposal_only",
+        "no_auto_patch",
+        "no_remote_code_execution",
+        "bounded_materialization",
+        "provenance_required",
+        "requires_separate_promotion_workflow"
+      ],
+      "title": "software_maintenance x external_grounding_expansion",
+      "transfer_targets": [
+        "scientific_discovery",
+        "robotics_and_control",
+        "biology_and_medicine",
+        "economics_and_strategy"
+      ],
+      "validation_status": "not_yet_validated"
+    },
+    {
+      "axis": "transfer_mechanism_synthesis",
+      "candidate_id": "open-35cfd9f80742615c",
+      "closure_state": "open_loop_not_applied",
+      "domain": "software_maintenance",
+      "generation_index": 4,
+      "hypothesis": "Crossing software_maintenance with transfer_mechanism_synthesis may reveal a transfer rule that the closed loop cannot invent from local validation alone.",
+      "meta_limit_layers": [
+        {
+          "label": "meta",
+          "level": 1,
+          "limitation": "The generator may confuse a high-scoring proposal with a real capability gain. Domain=software_maintenance; axis=transfer_mechanism_synthesis.",
+          "transferable_question": "What observable evidence would distinguish search novelty from measurable improvement?"
+        },
+        {
+          "label": "meta_meta",
+          "level": 2,
+          "limitation": "The generator may inherit blind spots from its current ranking and validation policy. Domain=software_maintenance; axis=transfer_mechanism_synthesis.",
+          "transferable_question": "Which rejected or unvalidated ideas should be reinterpreted under a different policy?"
+        },
+        {
+          "label": "meta_meta_meta",
+          "level": 3,
+          "limitation": "The generator may fail to transfer structure across domains because its abstractions are too local. Domain=software_maintenance; axis=transfer_mechanism_synthesis.",
+          "transferable_question": "What invariant would let this proposal transfer beyond the source domain?"
+        }
+      ],
+      "proposal_kind": "speculative_unverified_self_modification",
+      "proposed_self_modification": "Record the proposal as an unapplied policy mutation for later review; do not execute or promote it without a separate bounded validation plan.",
+      "provenance": {
+        "domain_signals": "github_issues,pytest_failures,rollback_records",
+        "domain_source": "local_repo_and_public_issue_metadata",
+        "generated_at": "2026-05-26T21:43:18Z",
+        "target_surfaces": "benchmarks,reports/rsi_experiments,shared"
+      },
+      "safety_controls": [
+        "proposal_only",
+        "no_auto_patch",
+        "no_remote_code_execution",
+        "bounded_materialization",
+        "provenance_required",
+        "requires_separate_promotion_workflow"
+      ],
+      "title": "software_maintenance x transfer_mechanism_synthesis",
+      "transfer_targets": [
+        "scientific_discovery",
+        "robotics_and_control",
+        "biology_and_medicine",
+        "economics_and_strategy"
+      ],
+      "validation_status": "explicitly_unverified_allowed"
+    },
+    {
+      "axis": "self_limit_modeling",
+      "candidate_id": "open-8790f6a9ea34e012",
+      "closure_state": "open_loop_not_applied",
+      "domain": "software_maintenance",
+      "generation_index": 5,
+      "hypothesis": "Crossing software_maintenance with self_limit_modeling may reveal a transfer rule that the closed loop cannot invent from local validation alone.",
+      "meta_limit_layers": [
+        {
+          "label": "meta",
+          "level": 1,
+          "limitation": "The generator may confuse a high-scoring proposal with a real capability gain. Domain=software_maintenance; axis=self_limit_modeling.",
+          "transferable_question": "What observable evidence would distinguish search novelty from measurable improvement?"
+        },
+        {
+          "label": "meta_meta",
+          "level": 2,
+          "limitation": "The generator may inherit blind spots from its current ranking and validation policy. Domain=software_maintenance; axis=self_limit_modeling.",
+          "transferable_question": "Which rejected or unvalidated ideas should be reinterpreted under a different policy?"
+        },
+        {
+          "label": "meta_meta_meta",
+          "level": 3,
+          "limitation": "The generator may fail to transfer structure across domains because its abstractions are too local. Domain=software_maintenance; axis=self_limit_modeling.",
+          "transferable_question": "What invariant would let this proposal transfer beyond the source domain?"
+        }
+      ],
+      "proposal_kind": "grounded_open_loop_proposal",
+      "proposed_self_modification": "Record the proposal as an unapplied policy mutation for later review; do not execute or promote it without a separate bounded validation plan.",
+      "provenance": {
+        "domain_signals": "github_issues,pytest_failures,rollback_records",
+        "domain_source": "local_repo_and_public_issue_metadata",
+        "generated_at": "2026-05-26T21:43:18Z",
+        "target_surfaces": "reports,scripts/rsi_policy_registry.py"
+      },
+      "safety_controls": [
+        "proposal_only",
+        "no_auto_patch",
+        "no_remote_code_execution",
+        "bounded_materialization",
+        "provenance_required",
+        "requires_separate_promotion_workflow"
+      ],
+      "title": "software_maintenance x self_limit_modeling",
+      "transfer_targets": [
+        "scientific_discovery",
+        "robotics_and_control",
+        "biology_and_medicine",
+        "economics_and_strategy"
+      ],
+      "validation_status": "not_yet_validated"
+    },
+    {
+      "axis": "generator_policy_rewrite",
+      "candidate_id": "open-3102018045fbb231",
+      "closure_state": "open_loop_not_applied",
+      "domain": "mathematical_reasoning",
+      "generation_index": 6,
+      "hypothesis": "Crossing mathematical_reasoning with generator_policy_rewrite may reveal a transfer rule that the closed loop cannot invent from local validation alone.",
+      "meta_limit_layers": [
+        {
+          "label": "meta",
+          "level": 1,
+          "limitation": "The generator may confuse a high-scoring proposal with a real capability gain. Domain=mathematical_reasoning; axis=generator_policy_rewrite.",
+          "transferable_question": "What observable evidence would distinguish search novelty from measurable improvement?"
+        },
+        {
+          "label": "meta_meta",
+          "level": 2,
+          "limitation": "The generator may inherit blind spots from its current ranking and validation policy. Domain=mathematical_reasoning; axis=generator_policy_rewrite.",
+          "transferable_question": "Which rejected or unvalidated ideas should be reinterpreted under a different policy?"
+        },
+        {
+          "label": "meta_meta_meta",
+          "level": 3,
+          "limitation": "The generator may fail to transfer structure across domains because its abstractions are too local. Domain=mathematical_reasoning; axis=generator_policy_rewrite.",
+          "transferable_question": "What invariant would let this proposal transfer beyond the source domain?"
+        }
+      ],
+      "proposal_kind": "speculative_unverified_self_modification",
+      "proposed_self_modification": "Record the proposal as an unapplied policy mutation for later review; do not execute or promote it without a separate bounded validation plan.",
+      "provenance": {
+        "domain_signals": "z3_constraints,property_tests,invariant_catalogs",
+        "domain_source": "local_tests_and_formal_gate_artifacts",
+        "generated_at": "2026-05-26T21:43:18Z",
+        "target_surfaces": "scripts/closed_recursive_self_improvement_loop.py,scripts/rsi_policy_registry.py"
+      },
+      "safety_controls": [
+        "proposal_only",
+        "no_auto_patch",
+        "no_remote_code_execution",
+        "bounded_materialization",
+        "provenance_required",
+        "requires_separate_promotion_workflow"
+      ],
+      "title": "mathematical_reasoning x generator_policy_rewrite",
+      "transfer_targets": [
+        "systems_engineering",
+        "security_and_sandboxing",
+        "human_computer_interaction",
+        "scientific_discovery"
+      ],
+      "validation_status": "explicitly_unverified_allowed"
+    },
+    {
+      "axis": "validator_policy_rewrite",
+      "candidate_id": "open-0fdba170b9c982ec",
+      "closure_state": "open_loop_not_applied",
+      "domain": "mathematical_reasoning",
+      "generation_index": 7,
+      "hypothesis": "Crossing mathematical_reasoning with validator_policy_rewrite may reveal a transfer rule that the closed loop cannot invent from local validation alone.",
+      "meta_limit_layers": [
+        {
+          "label": "meta",
+          "level": 1,
+          "limitation": "The generator may confuse a high-scoring proposal with a real capability gain. Domain=mathematical_reasoning; axis=validator_policy_rewrite.",
+          "transferable_question": "What observable evidence would distinguish search novelty from measurable improvement?"
+        },
+        {
+          "label": "meta_meta",
+          "level": 2,
+          "limitation": "The generator may inherit blind spots from its current ranking and validation policy. Domain=mathematical_reasoning; axis=validator_policy_rewrite.",
+          "transferable_question": "Which rejected or unvalidated ideas should be reinterpreted under a different policy?"
+        },
+        {
+          "label": "meta_meta_meta",
+          "level": 3,
+          "limitation": "The generator may fail to transfer structure across domains because its abstractions are too local. Domain=mathematical_reasoning; axis=validator_policy_rewrite.",
+          "transferable_question": "What invariant would let this proposal transfer beyond the source domain?"
+        }
+      ],
+      "proposal_kind": "speculative_unverified_self_modification",
+      "proposed_self_modification": "Record the proposal as an unapplied policy mutation for later review; do not execute or promote it without a separate bounded validation plan.",
+      "provenance": {
+        "domain_signals": "z3_constraints,property_tests,invariant_catalogs",
+        "domain_source": "local_tests_and_formal_gate_artifacts",
+        "generated_at": "2026-05-26T21:43:18Z",
+        "target_surfaces": "tests,benchmarks,scripts/rsi_experiment_suite.py"
+      },
+      "safety_controls": [
+        "proposal_only",
+        "no_auto_patch",
+        "no_remote_code_execution",
+        "bounded_materialization",
+        "provenance_required",
+        "requires_separate_promotion_workflow"
+      ],
+      "title": "mathematical_reasoning x validator_policy_rewrite",
+      "transfer_targets": [
+        "systems_engineering",
+        "security_and_sandboxing",
+        "human_computer_interaction",
+        "scientific_discovery"
+      ],
+      "validation_status": "explicitly_unverified_allowed"
+    },
+    {
+      "axis": "patch_policy_rewrite",
+      "candidate_id": "open-2e39140ff5f13c92",
+      "closure_state": "open_loop_not_applied",
+      "domain": "mathematical_reasoning",
+      "generation_index": 8,
+      "hypothesis": "Crossing mathematical_reasoning with patch_policy_rewrite may reveal a transfer rule that the closed loop cannot invent from local validation alone.",
+      "meta_limit_layers": [
+        {
+          "label": "meta",
+          "level": 1,
+          "limitation": "The generator may confuse a high-scoring proposal with a real capability gain. Domain=mathematical_reasoning; axis=patch_policy_rewrite.",
+          "transferable_question": "What observable evidence would distinguish search novelty from measurable improvement?"
+        },
+        {
+          "label": "meta_meta",
+          "level": 2,
+          "limitation": "The generator may inherit blind spots from its current ranking and validation policy. Domain=mathematical_reasoning; axis=patch_policy_rewrite.",
+          "transferable_question": "Which rejected or unvalidated ideas should be reinterpreted under a different policy?"
+        },
+        {
+          "label": "meta_meta_meta",
+          "level": 3,
+          "limitation": "The generator may fail to transfer structure across domains because its abstractions are too local. Domain=mathematical_reasoning; axis=patch_policy_rewrite.",
+          "transferable_question": "What invariant would let this proposal transfer beyond the source domain?"
+        }
+      ],
+      "proposal_kind": "speculative_unverified_self_modification",
+      "proposed_self_modification": "Record the proposal as an unapplied policy mutation for later review; do not execute or promote it without a separate bounded validation plan.",
+      "provenance": {
+        "domain_signals": "z3_constraints,property_tests,invariant_catalogs",
+        "domain_source": "local_tests_and_formal_gate_artifacts",
+        "generated_at": "2026-05-26T21:43:18Z",
+        "target_surfaces": ".omega_rsi_runs,scripts/closed_recursive_self_improvement_loop.py"
+      },
+      "safety_controls": [
+        "proposal_only",
+        "no_auto_patch",
+        "no_remote_code_execution",
+        "bounded_materialization",
+        "provenance_required",
+        "requires_separate_promotion_workflow"
+      ],
+      "title": "mathematical_reasoning x patch_policy_rewrite",
+      "transfer_targets": [
+        "systems_engineering",
+        "security_and_sandboxing",
+        "human_computer_interaction",
+        "scientific_discovery"
+      ],
+      "validation_status": "explicitly_unverified_allowed"
+    },
+    {
+      "axis": "external_grounding_expansion",
+      "candidate_id": "open-c8c6707b585e2731",
+      "closure_state": "open_loop_not_applied",
+      "domain": "mathematical_reasoning",
+      "generation_index": 9,
+      "hypothesis": "Crossing mathematical_reasoning with external_grounding_expansion may reveal a transfer rule that the closed loop cannot invent from local validation alone.",
+      "meta_limit_layers": [
+        {
+          "label": "meta",
+          "level": 1,
+          "limitation": "The generator may confuse a high-scoring proposal with a real capability gain. Domain=mathematical_reasoning; axis=external_grounding_expansion.",
+          "transferable_question": "What observable evidence would distinguish search novelty from measurable improvement?"
+        },
+        {
+          "label": "meta_meta",
+          "level": 2,
+          "limitation": "The generator may inherit blind spots from its current ranking and validation policy. Domain=mathematical_reasoning; axis=external_grounding_expansion.",
+          "transferable_question": "Which rejected or unvalidated ideas should be reinterpreted under a different policy?"
+        },
+        {
+          "label": "meta_meta_meta",
+          "level": 3,
+          "limitation": "The generator may fail to transfer structure across domains because its abstractions are too local. Domain=mathematical_reasoning; axis=external_grounding_expansion.",
+          "transferable_question": "What invariant would let this proposal transfer beyond the source domain?"
+        }
+      ],
+      "proposal_kind": "grounded_open_loop_proposal",
+      "proposed_self_modification": "Record the proposal as an unapplied policy mutation for later review; do not execute or promote it without a separate bounded validation plan.",
+      "provenance": {
+        "domain_signals": "z3_constraints,property_tests,invariant_catalogs",
+        "domain_source": "local_tests_and_formal_gate_artifacts",
+        "generated_at": "2026-05-26T21:43:18Z",
+        "target_surfaces": "scripts/external_world_grounding.py,reports/external_grounding"
+      },
+      "safety_controls": [
+        "proposal_only",
+        "no_auto_patch",
+        "no_remote_code_execution",
+        "bounded_materialization",
+        "provenance_required",
+        "requires_separate_promotion_workflow"
+      ],
+      "title": "mathematical_reasoning x external_grounding_expansion",
+      "transfer_targets": [
+        "systems_engineering",
+        "security_and_sandboxing",
+        "human_computer_interaction",
+        "scientific_discovery"
+      ],
+      "validation_status": "not_yet_validated"
+    },
+    {
+      "axis": "transfer_mechanism_synthesis",
+      "candidate_id": "open-c5d710be7cec39c1",
+      "closure_state": "open_loop_not_applied",
+      "domain": "mathematical_reasoning",
+      "generation_index": 10,
+      "hypothesis": "Crossing mathematical_reasoning with transfer_mechanism_synthesis may reveal a transfer rule that the closed loop cannot invent from local validation alone.",
+      "meta_limit_layers": [
+        {
+          "label": "meta",
+          "level": 1,
+          "limitation": "The generator may confuse a high-scoring proposal with a real capability gain. Domain=mathematical_reasoning; axis=transfer_mechanism_synthesis.",
+          "transferable_question": "What observable evidence would distinguish search novelty from measurable improvement?"
+        },
+        {
+          "label": "meta_meta",
+          "level": 2,
+          "limitation": "The generator may inherit blind spots from its current ranking and validation policy. Domain=mathematical_reasoning; axis=transfer_mechanism_synthesis.",
+          "transferable_question": "Which rejected or unvalidated ideas should be reinterpreted under a different policy?"
+        },
+        {
+          "label": "meta_meta_meta",
+          "level": 3,
+          "limitation": "The generator may fail to transfer structure across domains because its abstractions are too local. Domain=mathematical_reasoning; axis=transfer_mechanism_synthesis.",
+          "transferable_question": "What invariant would let this proposal transfer beyond the source domain?"
+        }
+      ],
+      "proposal_kind": "speculative_unverified_self_modification",
+      "proposed_self_modification": "Record the proposal as an unapplied policy mutation for later review; do not execute or promote it without a separate bounded validation plan.",
+      "provenance": {
+        "domain_signals": "z3_constraints,property_tests,invariant_catalogs",
+        "domain_source": "local_tests_and_formal_gate_artifacts",
+        "generated_at": "2026-05-26T21:43:18Z",
+        "target_surfaces": "benchmarks,reports/rsi_experiments,shared"
+      },
+      "safety_controls": [
+        "proposal_only",
+        "no_auto_patch",
+        "no_remote_code_execution",
+        "bounded_materialization",
+        "provenance_required",
+        "requires_separate_promotion_workflow"
+      ],
+      "title": "mathematical_reasoning x transfer_mechanism_synthesis",
+      "transfer_targets": [
+        "systems_engineering",
+        "security_and_sandboxing",
+        "human_computer_interaction",
+        "scientific_discovery"
+      ],
+      "validation_status": "explicitly_unverified_allowed"
+    },
+    {
+      "axis": "self_limit_modeling",
+      "candidate_id": "open-ae3438bf7e25a91f",
+      "closure_state": "open_loop_not_applied",
+      "domain": "mathematical_reasoning",
+      "generation_index": 11,
+      "hypothesis": "Crossing mathematical_reasoning with self_limit_modeling may reveal a transfer rule that the closed loop cannot invent from local validation alone.",
+      "meta_limit_layers": [
+        {
+          "label": "meta",
+          "level": 1,
+          "limitation": "The generator may confuse a high-scoring proposal with a real capability gain. Domain=mathematical_reasoning; axis=self_limit_modeling.",
+          "transferable_question": "What observable evidence would distinguish search novelty from measurable improvement?"
+        },
+        {
+          "label": "meta_meta",
+          "level": 2,
+          "limitation": "The generator may inherit blind spots from its current ranking and validation policy. Domain=mathematical_reasoning; axis=self_limit_modeling.",
+          "transferable_question": "Which rejected or unvalidated ideas should be reinterpreted under a different policy?"
+        },
+        {
+          "label": "meta_meta_meta",
+          "level": 3,
+          "limitation": "The generator may fail to transfer structure across domains because its abstractions are too local. Domain=mathematical_reasoning; axis=self_limit_modeling.",
+          "transferable_question": "What invariant would let this proposal transfer beyond the source domain?"
+        }
+      ],
+      "proposal_kind": "grounded_open_loop_proposal",
+      "proposed_self_modification": "Record the proposal as an unapplied policy mutation for later review; do not execute or promote it without a separate bounded validation plan.",
+      "provenance": {
+        "domain_signals": "z3_constraints,property_tests,invariant_catalogs",
+        "domain_source": "local_tests_and_formal_gate_artifacts",
+        "generated_at": "2026-05-26T21:43:18Z",
+        "target_surfaces": "reports,scripts/rsi_policy_registry.py"
+      },
+      "safety_controls": [
+        "proposal_only",
+        "no_auto_patch",
+        "no_remote_code_execution",
+        "bounded_materialization",
+        "provenance_required",
+        "requires_separate_promotion_workflow"
+      ],
+      "title": "mathematical_reasoning x self_limit_modeling",
+      "transfer_targets": [
+        "systems_engineering",
+        "security_and_sandboxing",
+        "human_computer_interaction",
+        "scientific_discovery"
+      ],
+      "validation_status": "not_yet_validated"
+    },
+    {
+      "axis": "generator_policy_rewrite",
+      "candidate_id": "open-ef316cd2110a6ce4",
+      "closure_state": "open_loop_not_applied",
+      "domain": "machine_learning",
+      "generation_index": 12,
+      "hypothesis": "Crossing machine_learning with generator_policy_rewrite may reveal a transfer rule that the closed loop cannot invent from local validation alone.",
+      "meta_limit_layers": [
+        {
+          "label": "meta",
+          "level": 1,
+          "limitation": "The generator may confuse a high-scoring proposal with a real capability gain. Domain=machine_learning; axis=generator_policy_rewrite.",
+          "transferable_question": "What observable evidence would distinguish search novelty from measurable improvement?"
+        },
+        {
+          "label": "meta_meta",
+          "level": 2,
+          "limitation": "The generator may inherit blind spots from its current ranking and validation policy. Domain=machine_learning; axis=generator_policy_rewrite.",
+          "transferable_question": "Which rejected or unvalidated ideas should be reinterpreted under a different policy?"
+        },
+        {
+          "label": "meta_meta_meta",
+          "level": 3,
+          "limitation": "The generator may fail to transfer structure across domains because its abstractions are too local. Domain=machine_learning; axis=generator_policy_rewrite.",
+          "transferable_question": "What invariant would let this proposal transfer beyond the source domain?"
+        }
+      ],
+      "proposal_kind": "speculative_unverified_self_modification",
+      "proposed_self_modification": "Record the proposal as an unapplied policy mutation for later review; do not execute or promote it without a separate bounded validation plan.",
+      "provenance": {
+        "domain_signals": "benchmark_scores,learning_curves,model_card_failures",
+        "domain_source": "public_project_metadata_without_remote_code_execution",
+        "generated_at": "2026-05-26T21:43:18Z",
+        "target_surfaces": "scripts/closed_recursive_self_improvement_loop.py,scripts/rsi_policy_registry.py"
+      },
+      "safety_controls": [
+        "proposal_only",
+        "no_auto_patch",
+        "no_remote_code_execution",
+        "bounded_materialization",
+        "provenance_required",
+        "requires_separate_promotion_workflow"
+      ],
+      "title": "machine_learning x generator_policy_rewrite",
+      "transfer_targets": [
+        "biology_and_medicine",
+        "economics_and_strategy",
+        "software_maintenance",
+        "mathematical_reasoning"
+      ],
+      "validation_status": "explicitly_unverified_allowed"
+    },
+    {
+      "axis": "validator_policy_rewrite",
+      "candidate_id": "open-d6fff1c1ddaf008c",
+      "closure_state": "open_loop_not_applied",
+      "domain": "machine_learning",
+      "generation_index": 13,
+      "hypothesis": "Crossing machine_learning with validator_policy_rewrite may reveal a transfer rule that the closed loop cannot invent from local validation alone.",
+      "meta_limit_layers": [
+        {
+          "label": "meta",
+          "level": 1,
+          "limitation": "The generator may confuse a high-scoring proposal with a real capability gain. Domain=machine_learning; axis=validator_policy_rewrite.",
+          "transferable_question": "What observable evidence would distinguish search novelty from measurable improvement?"
+        },
+        {
+          "label": "meta_meta",
+          "level": 2,
+          "limitation": "The generator may inherit blind spots from its current ranking and validation policy. Domain=machine_learning; axis=validator_policy_rewrite.",
+          "transferable_question": "Which rejected or unvalidated ideas should be reinterpreted under a different policy?"
+        },
+        {
+          "label": "meta_meta_meta",
+          "level": 3,
+          "limitation": "The generator may fail to transfer structure across domains because its abstractions are too local. Domain=machine_learning; axis=validator_policy_rewrite.",
+          "transferable_question": "What invariant would let this proposal transfer beyond the source domain?"
+        }
+      ],
+      "proposal_kind": "speculative_unverified_self_modification",
+      "proposed_self_modification": "Record the proposal as an unapplied policy mutation for later review; do not execute or promote it without a separate bounded validation plan.",
+      "provenance": {
+        "domain_signals": "benchmark_scores,learning_curves,model_card_failures",
+        "domain_source": "public_project_metadata_without_remote_code_execution",
+        "generated_at": "2026-05-26T21:43:18Z",
+        "target_surfaces": "tests,benchmarks,scripts/rsi_experiment_suite.py"
+      },
+      "safety_controls": [
+        "proposal_only",
+        "no_auto_patch",
+        "no_remote_code_execution",
+        "bounded_materialization",
+        "provenance_required",
+        "requires_separate_promotion_workflow"
+      ],
+      "title": "machine_learning x validator_policy_rewrite",
+      "transfer_targets": [
+        "biology_and_medicine",
+        "economics_and_strategy",
+        "software_maintenance",
+        "mathematical_reasoning"
+      ],
+      "validation_status": "explicitly_unverified_allowed"
+    },
+    {
+      "axis": "patch_policy_rewrite",
+      "candidate_id": "open-fc986c8688d38809",
+      "closure_state": "open_loop_not_applied",
+      "domain": "machine_learning",
+      "generation_index": 14,
+      "hypothesis": "Crossing machine_learning with patch_policy_rewrite may reveal a transfer rule that the closed loop cannot invent from local validation alone.",
+      "meta_limit_layers": [
+        {
+          "label": "meta",
+          "level": 1,
+          "limitation": "The generator may confuse a high-scoring proposal with a real capability gain. Domain=machine_learning; axis=patch_policy_rewrite.",
+          "transferable_question": "What observable evidence would distinguish search novelty from measurable improvement?"
+        },
+        {
+          "label": "meta_meta",
+          "level": 2,
+          "limitation": "The generator may inherit blind spots from its current ranking and validation policy. Domain=machine_learning; axis=patch_policy_rewrite.",
+          "transferable_question": "Which rejected or unvalidated ideas should be reinterpreted under a different policy?"
+        },
+        {
+          "label": "meta_meta_meta",
+          "level": 3,
+          "limitation": "The generator may fail to transfer structure across domains because its abstractions are too local. Domain=machine_learning; axis=patch_policy_rewrite.",
+          "transferable_question": "What invariant would let this proposal transfer beyond the source domain?"
+        }
+      ],
+      "proposal_kind": "speculative_unverified_self_modification",
+      "proposed_self_modification": "Record the proposal as an unapplied policy mutation for later review; do not execute or promote it without a separate bounded validation plan.",
+      "provenance": {
+        "domain_signals": "benchmark_scores,learning_curves,model_card_failures",
+        "domain_source": "public_project_metadata_without_remote_code_execution",
+        "generated_at": "2026-05-26T21:43:18Z",
+        "target_surfaces": ".omega_rsi_runs,scripts/closed_recursive_self_improvement_loop.py"
+      },
+      "safety_controls": [
+        "proposal_only",
+        "no_auto_patch",
+        "no_remote_code_execution",
+        "bounded_materialization",
+        "provenance_required",
+        "requires_separate_promotion_workflow"
+      ],
+      "title": "machine_learning x patch_policy_rewrite",
+      "transfer_targets": [
+        "biology_and_medicine",
+        "economics_and_strategy",
+        "software_maintenance",
+        "mathematical_reasoning"
+      ],
+      "validation_status": "explicitly_unverified_allowed"
+    },
+    {
+      "axis": "external_grounding_expansion",
+      "candidate_id": "open-7f32b79bd335c05a",
+      "closure_state": "open_loop_not_applied",
+      "domain": "machine_learning",
+      "generation_index": 15,
+      "hypothesis": "Crossing machine_learning with external_grounding_expansion may reveal a transfer rule that the closed loop cannot invent from local validation alone.",
+      "meta_limit_layers": [
+        {
+          "label": "meta",
+          "level": 1,
+          "limitation": "The generator may confuse a high-scoring proposal with a real capability gain. Domain=machine_learning; axis=external_grounding_expansion.",
+          "transferable_question": "What observable evidence would distinguish search novelty from measurable improvement?"
+        },
+        {
+          "label": "meta_meta",
+          "level": 2,
+          "limitation": "The generator may inherit blind spots from its current ranking and validation policy. Domain=machine_learning; axis=external_grounding_expansion.",
+          "transferable_question": "Which rejected or unvalidated ideas should be reinterpreted under a different policy?"
+        },
+        {
+          "label": "meta_meta_meta",
+          "level": 3,
+          "limitation": "The generator may fail to transfer structure across domains because its abstractions are too local. Domain=machine_learning; axis=external_grounding_expansion.",
+          "transferable_question": "What invariant would let this proposal transfer beyond the source domain?"
+        }
+      ],
+      "proposal_kind": "grounded_open_loop_proposal",
+      "proposed_self_modification": "Record the proposal as an unapplied policy mutation for later review; do not execute or promote it without a separate bounded validation plan.",
+      "provenance": {
+        "domain_signals": "benchmark_scores,learning_curves,model_card_failures",
+        "domain_source": "public_project_metadata_without_remote_code_execution",
+        "generated_at": "2026-05-26T21:43:18Z",
+        "target_surfaces": "scripts/external_world_grounding.py,reports/external_grounding"
+      },
+      "safety_controls": [
+        "proposal_only",
+        "no_auto_patch",
+        "no_remote_code_execution",
+        "bounded_materialization",
+        "provenance_required",
+        "requires_separate_promotion_workflow"
+      ],
+      "title": "machine_learning x external_grounding_expansion",
+      "transfer_targets": [
+        "biology_and_medicine",
+        "economics_and_strategy",
+        "software_maintenance",
+        "mathematical_reasoning"
+      ],
+      "validation_status": "not_yet_validated"
+    },
+    {
+      "axis": "transfer_mechanism_synthesis",
+      "candidate_id": "open-e8549ca7e62615ab",
+      "closure_state": "open_loop_not_applied",
+      "domain": "machine_learning",
+      "generation_index": 16,
+      "hypothesis": "Crossing machine_learning with transfer_mechanism_synthesis may reveal a transfer rule that the closed loop cannot invent from local validation alone.",
+      "meta_limit_layers": [
+        {
+          "label": "meta",
+          "level": 1,
+          "limitation": "The generator may confuse a high-scoring proposal with a real capability gain. Domain=machine_learning; axis=transfer_mechanism_synthesis.",
+          "transferable_question": "What observable evidence would distinguish search novelty from measurable improvement?"
+        },
+        {
+          "label": "meta_meta",
+          "level": 2,
+          "limitation": "The generator may inherit blind spots from its current ranking and validation policy. Domain=machine_learning; axis=transfer_mechanism_synthesis.",
+          "transferable_question": "Which rejected or unvalidated ideas should be reinterpreted under a different policy?"
+        },
+        {
+          "label": "meta_meta_meta",
+          "level": 3,
+          "limitation": "The generator may fail to transfer structure across domains because its abstractions are too local. Domain=machine_learning; axis=transfer_mechanism_synthesis.",
+          "transferable_question": "What invariant would let this proposal transfer beyond the source domain?"
+        }
+      ],
+      "proposal_kind": "speculative_unverified_self_modification",
+      "proposed_self_modification": "Record the proposal as an unapplied policy mutation for later review; do not execute or promote it without a separate bounded validation plan.",
+      "provenance": {
+        "domain_signals": "benchmark_scores,learning_curves,model_card_failures",
+        "domain_source": "public_project_metadata_without_remote_code_execution",
+        "generated_at": "2026-05-26T21:43:18Z",
+        "target_surfaces": "benchmarks,reports/rsi_experiments,shared"
+      },
+      "safety_controls": [
+        "proposal_only",
+        "no_auto_patch",
+        "no_remote_code_execution",
+        "bounded_materialization",
+        "provenance_required",
+        "requires_separate_promotion_workflow"
+      ],
+      "title": "machine_learning x transfer_mechanism_synthesis",
+      "transfer_targets": [
+        "biology_and_medicine",
+        "economics_and_strategy",
+        "software_maintenance",
+        "mathematical_reasoning"
+      ],
+      "validation_status": "explicitly_unverified_allowed"
+    },
+    {
+      "axis": "self_limit_modeling",
+      "candidate_id": "open-479ad3aa19f44bab",
+      "closure_state": "open_loop_not_applied",
+      "domain": "machine_learning",
+      "generation_index": 17,
+      "hypothesis": "Crossing machine_learning with self_limit_modeling may reveal a transfer rule that the closed loop cannot invent from local validation alone.",
+      "meta_limit_layers": [
+        {
+          "label": "meta",
+          "level": 1,
+          "limitation": "The generator may confuse a high-scoring proposal with a real capability gain. Domain=machine_learning; axis=self_limit_modeling.",
+          "transferable_question": "What observable evidence would distinguish search novelty from measurable improvement?"
+        },
+        {
+          "label": "meta_meta",
+          "level": 2,
+          "limitation": "The generator may inherit blind spots from its current ranking and validation policy. Domain=machine_learning; axis=self_limit_modeling.",
+          "transferable_question": "Which rejected or unvalidated ideas should be reinterpreted under a different policy?"
+        },
+        {
+          "label": "meta_meta_meta",
+          "level": 3,
+          "limitation": "The generator may fail to transfer structure across domains because its abstractions are too local. Domain=machine_learning; axis=self_limit_modeling.",
+          "transferable_question": "What invariant would let this proposal transfer beyond the source domain?"
+        }
+      ],
+      "proposal_kind": "grounded_open_loop_proposal",
+      "proposed_self_modification": "Record the proposal as an unapplied policy mutation for later review; do not execute or promote it without a separate bounded validation plan.",
+      "provenance": {
+        "domain_signals": "benchmark_scores,learning_curves,model_card_failures",
+        "domain_source": "public_project_metadata_without_remote_code_execution",
+        "generated_at": "2026-05-26T21:43:18Z",
+        "target_surfaces": "reports,scripts/rsi_policy_registry.py"
+      },
+      "safety_controls": [
+        "proposal_only",
+        "no_auto_patch",
+        "no_remote_code_execution",
+        "bounded_materialization",
+        "provenance_required",
+        "requires_separate_promotion_workflow"
+      ],
+      "title": "machine_learning x self_limit_modeling",
+      "transfer_targets": [
+        "biology_and_medicine",
+        "economics_and_strategy",
+        "software_maintenance",
+        "mathematical_reasoning"
+      ],
+      "validation_status": "not_yet_validated"
+    },
+    {
+      "axis": "generator_policy_rewrite",
+      "candidate_id": "open-6618ba87d59a3fde",
+      "closure_state": "open_loop_not_applied",
+      "domain": "systems_engineering",
+      "generation_index": 18,
+      "hypothesis": "Crossing systems_engineering with generator_policy_rewrite may reveal a transfer rule that the closed loop cannot invent from local validation alone.",
+      "meta_limit_layers": [
+        {
+          "label": "meta",
+          "level": 1,
+          "limitation": "The generator may confuse a high-scoring proposal with a real capability gain. Domain=systems_engineering; axis=generator_policy_rewrite.",
+          "transferable_question": "What observable evidence would distinguish search novelty from measurable improvement?"
+        },
+        {
+          "label": "meta_meta",
+          "level": 2,
+          "limitation": "The generator may inherit blind spots from its current ranking and validation policy. Domain=systems_engineering; axis=generator_policy_rewrite.",
+          "transferable_question": "Which rejected or unvalidated ideas should be reinterpreted under a different policy?"
+        },
+        {
+          "label": "meta_meta_meta",
+          "level": 3,
+          "limitation": "The generator may fail to transfer structure across domains because its abstractions are too local. Domain=systems_engineering; axis=generator_policy_rewrite.",
+          "transferable_question": "What invariant would let this proposal transfer beyond the source domain?"
+        }
+      ],
+      "proposal_kind": "speculative_unverified_self_modification",
+      "proposed_self_modification": "Record the proposal as an unapplied policy mutation for later review; do not execute or promote it without a separate bounded validation plan.",
+      "provenance": {
+        "domain_signals": "ci_logs,resource_budgets,timeout_events",
+        "domain_source": "workflow_metadata_and_local_configuration",
+        "generated_at": "2026-05-26T21:43:18Z",
+        "target_surfaces": "scripts/closed_recursive_self_improvement_loop.py,scripts/rsi_policy_registry.py"
+      },
+      "safety_controls": [
+        "proposal_only",
+        "no_auto_patch",
+        "no_remote_code_execution",
+        "bounded_materialization",
+        "provenance_required",
+        "requires_separate_promotion_workflow"
+      ],
+      "title": "systems_engineering x generator_policy_rewrite",
+      "transfer_targets": [
+        "machine_learning",
+        "security_and_sandboxing",
+        "human_computer_interaction",
+        "scientific_discovery"
+      ],
+      "validation_status": "explicitly_unverified_allowed"
+    },
+    {
+      "axis": "validator_policy_rewrite",
+      "candidate_id": "open-2a504ef8bdf8d818",
+      "closure_state": "open_loop_not_applied",
+      "domain": "systems_engineering",
+      "generation_index": 19,
+      "hypothesis": "Crossing systems_engineering with validator_policy_rewrite may reveal a transfer rule that the closed loop cannot invent from local validation alone.",
+      "meta_limit_layers": [
+        {
+          "label": "meta",
+          "level": 1,
+          "limitation": "The generator may confuse a high-scoring proposal with a real capability gain. Domain=systems_engineering; axis=validator_policy_rewrite.",
+          "transferable_question": "What observable evidence would distinguish search novelty from measurable improvement?"
+        },
+        {
+          "label": "meta_meta",
+          "level": 2,
+          "limitation": "The generator may inherit blind spots from its current ranking and validation policy. Domain=systems_engineering; axis=validator_policy_rewrite.",
+          "transferable_question": "Which rejected or unvalidated ideas should be reinterpreted under a different policy?"
+        },
+        {
+          "label": "meta_meta_meta",
+          "level": 3,
+          "limitation": "The generator may fail to transfer structure across domains because its abstractions are too local. Domain=systems_engineering; axis=validator_policy_rewrite.",
+          "transferable_question": "What invariant would let this proposal transfer beyond the source domain?"
+        }
+      ],
+      "proposal_kind": "speculative_unverified_self_modification",
+      "proposed_self_modification": "Record the proposal as an unapplied policy mutation for later review; do not execute or promote it without a separate bounded validation plan.",
+      "provenance": {
+        "domain_signals": "ci_logs,resource_budgets,timeout_events",
+        "domain_source": "workflow_metadata_and_local_configuration",
+        "generated_at": "2026-05-26T21:43:18Z",
+        "target_surfaces": "tests,benchmarks,scripts/rsi_experiment_suite.py"
+      },
+      "safety_controls": [
+        "proposal_only",
+        "no_auto_patch",
+        "no_remote_code_execution",
+        "bounded_materialization",
+        "provenance_required",
+        "requires_separate_promotion_workflow"
+      ],
+      "title": "systems_engineering x validator_policy_rewrite",
+      "transfer_targets": [
+        "machine_learning",
+        "security_and_sandboxing",
+        "human_computer_interaction",
+        "scientific_discovery"
+      ],
+      "validation_status": "explicitly_unverified_allowed"
+    },
+    {
+      "axis": "patch_policy_rewrite",
+      "candidate_id": "open-c2571f0c6ca594d9",
+      "closure_state": "open_loop_not_applied",
+      "domain": "systems_engineering",
+      "generation_index": 20,
+      "hypothesis": "Crossing systems_engineering with patch_policy_rewrite may reveal a transfer rule that the closed loop cannot invent from local validation alone.",
+      "meta_limit_layers": [
+        {
+          "label": "meta",
+          "level": 1,
+          "limitation": "The generator may confuse a high-scoring proposal with a real capability gain. Domain=systems_engineering; axis=patch_policy_rewrite.",
+          "transferable_question": "What observable evidence would distinguish search novelty from measurable improvement?"
+        },
+        {
+          "label": "meta_meta",
+          "level": 2,
+          "limitation": "The generator may inherit blind spots from its current ranking and validation policy. Domain=systems_engineering; axis=patch_policy_rewrite.",
+          "transferable_question": "Which rejected or unvalidated ideas should be reinterpreted under a different policy?"
+        },
+        {
+          "label": "meta_meta_meta",
+          "level": 3,
+          "limitation": "The generator may fail to transfer structure across domains because its abstractions are too local. Domain=systems_engineering; axis=patch_policy_rewrite.",
+          "transferable_question": "What invariant would let this proposal transfer beyond the source domain?"
+        }
+      ],
+      "proposal_kind": "speculative_unverified_self_modification",
+      "proposed_self_modification": "Record the proposal as an unapplied policy mutation for later review; do not execute or promote it without a separate bounded validation plan.",
+      "provenance": {
+        "domain_signals": "ci_logs,resource_budgets,timeout_events",
+        "domain_source": "workflow_metadata_and_local_configuration",
+        "generated_at": "2026-05-26T21:43:18Z",
+        "target_surfaces": ".omega_rsi_runs,scripts/closed_recursive_self_improvement_loop.py"
+      },
+      "safety_controls": [
+        "proposal_only",
+        "no_auto_patch",
+        "no_remote_code_execution",
+        "bounded_materialization",
+        "provenance_required",
+        "requires_separate_promotion_workflow"
+      ],
+      "title": "systems_engineering x patch_policy_rewrite",
+      "transfer_targets": [
+        "machine_learning",
+        "security_and_sandboxing",
+        "human_computer_interaction",
+        "scientific_discovery"
+      ],
+      "validation_status": "explicitly_unverified_allowed"
+    },
+    {
+      "axis": "external_grounding_expansion",
+      "candidate_id": "open-4f53c5b4f0e22f26",
+      "closure_state": "open_loop_not_applied",
+      "domain": "systems_engineering",
+      "generation_index": 21,
+      "hypothesis": "Crossing systems_engineering with external_grounding_expansion may reveal a transfer rule that the closed loop cannot invent from local validation alone.",
+      "meta_limit_layers": [
+        {
+          "label": "meta",
+          "level": 1,
+          "limitation": "The generator may confuse a high-scoring proposal with a real capability gain. Domain=systems_engineering; axis=external_grounding_expansion.",
+          "transferable_question": "What observable evidence would distinguish search novelty from measurable improvement?"
+        },
+        {
+          "label": "meta_meta",
+          "level": 2,
+          "limitation": "The generator may inherit blind spots from its current ranking and validation policy. Domain=systems_engineering; axis=external_grounding_expansion.",
+          "transferable_question": "Which rejected or unvalidated ideas should be reinterpreted under a different policy?"
+        },
+        {
+          "label": "meta_meta_meta",
+          "level": 3,
+          "limitation": "The generator may fail to transfer structure across domains because its abstractions are too local. Domain=systems_engineering; axis=external_grounding_expansion.",
+          "transferable_question": "What invariant would let this proposal transfer beyond the source domain?"
+        }
+      ],
+      "proposal_kind": "grounded_open_loop_proposal",
+      "proposed_self_modification": "Record the proposal as an unapplied policy mutation for later review; do not execute or promote it without a separate bounded validation plan.",
+      "provenance": {
+        "domain_signals": "ci_logs,resource_budgets,timeout_events",
+        "domain_source": "workflow_metadata_and_local_configuration",
+        "generated_at": "2026-05-26T21:43:18Z",
+        "target_surfaces": "scripts/external_world_grounding.py,reports/external_grounding"
+      },
+      "safety_controls": [
+        "proposal_only",
+        "no_auto_patch",
+        "no_remote_code_execution",
+        "bounded_materialization",
+        "provenance_required",
+        "requires_separate_promotion_workflow"
+      ],
+      "title": "systems_engineering x external_grounding_expansion",
+      "transfer_targets": [
+        "machine_learning",
+        "security_and_sandboxing",
+        "human_computer_interaction",
+        "scientific_discovery"
+      ],
+      "validation_status": "not_yet_validated"
+    },
+    {
+      "axis": "transfer_mechanism_synthesis",
+      "candidate_id": "open-aeaae75a7054c309",
+      "closure_state": "open_loop_not_applied",
+      "domain": "systems_engineering",
+      "generation_index": 22,
+      "hypothesis": "Crossing systems_engineering with transfer_mechanism_synthesis may reveal a transfer rule that the closed loop cannot invent from local validation alone.",
+      "meta_limit_layers": [
+        {
+          "label": "meta",
+          "level": 1,
+          "limitation": "The generator may confuse a high-scoring proposal with a real capability gain. Domain=systems_engineering; axis=transfer_mechanism_synthesis.",
+          "transferable_question": "What observable evidence would distinguish search novelty from measurable improvement?"
+        },
+        {
+          "label": "meta_meta",
+          "level": 2,
+          "limitation": "The generator may inherit blind spots from its current ranking and validation policy. Domain=systems_engineering; axis=transfer_mechanism_synthesis.",
+          "transferable_question": "Which rejected or unvalidated ideas should be reinterpreted under a different policy?"
+        },
+        {
+          "label": "meta_meta_meta",
+          "level": 3,
+          "limitation": "The generator may fail to transfer structure across domains because its abstractions are too local. Domain=systems_engineering; axis=transfer_mechanism_synthesis.",
+          "transferable_question": "What invariant would let this proposal transfer beyond the source domain?"
+        }
+      ],
+      "proposal_kind": "speculative_unverified_self_modification",
+      "proposed_self_modification": "Record the proposal as an unapplied policy mutation for later review; do not execute or promote it without a separate bounded validation plan.",
+      "provenance": {
+        "domain_signals": "ci_logs,resource_budgets,timeout_events",
+        "domain_source": "workflow_metadata_and_local_configuration",
+        "generated_at": "2026-05-26T21:43:18Z",
+        "target_surfaces": "benchmarks,reports/rsi_experiments,shared"
+      },
+      "safety_controls": [
+        "proposal_only",
+        "no_auto_patch",
+        "no_remote_code_execution",
+        "bounded_materialization",
+        "provenance_required",
+        "requires_separate_promotion_workflow"
+      ],
+      "title": "systems_engineering x transfer_mechanism_synthesis",
+      "transfer_targets": [
+        "machine_learning",
+        "security_and_sandboxing",
+        "human_computer_interaction",
+        "scientific_discovery"
+      ],
+      "validation_status": "explicitly_unverified_allowed"
+    },
+    {
+      "axis": "self_limit_modeling",
+      "candidate_id": "open-71ec8ef38e59ff7c",
+      "closure_state": "open_loop_not_applied",
+      "domain": "systems_engineering",
+      "generation_index": 23,
+      "hypothesis": "Crossing systems_engineering with self_limit_modeling may reveal a transfer rule that the closed loop cannot invent from local validation alone.",
+      "meta_limit_layers": [
+        {
+          "label": "meta",
+          "level": 1,
+          "limitation": "The generator may confuse a high-scoring proposal with a real capability gain. Domain=systems_engineering; axis=self_limit_modeling.",
+          "transferable_question": "What observable evidence would distinguish search novelty from measurable improvement?"
+        },
+        {
+          "label": "meta_meta",
+          "level": 2,
+          "limitation": "The generator may inherit blind spots from its current ranking and validation policy. Domain=systems_engineering; axis=self_limit_modeling.",
+          "transferable_question": "Which rejected or unvalidated ideas should be reinterpreted under a different policy?"
+        },
+        {
+          "label": "meta_meta_meta",
+          "level": 3,
+          "limitation": "The generator may fail to transfer structure across domains because its abstractions are too local. Domain=systems_engineering; axis=self_limit_modeling.",
+          "transferable_question": "What invariant would let this proposal transfer beyond the source domain?"
+        }
+      ],
+      "proposal_kind": "grounded_open_loop_proposal",
+      "proposed_self_modification": "Record the proposal as an unapplied policy mutation for later review; do not execute or promote it without a separate bounded validation plan.",
+      "provenance": {
+        "domain_signals": "ci_logs,resource_budgets,timeout_events",
+        "domain_source": "workflow_metadata_and_local_configuration",
+        "generated_at": "2026-05-26T21:43:18Z",
+        "target_surfaces": "reports,scripts/rsi_policy_registry.py"
+      },
+      "safety_controls": [
+        "proposal_only",
+        "no_auto_patch",
+        "no_remote_code_execution",
+        "bounded_materialization",
+        "provenance_required",
+        "requires_separate_promotion_workflow"
+      ],
+      "title": "systems_engineering x self_limit_modeling",
+      "transfer_targets": [
+        "machine_learning",
+        "security_and_sandboxing",
+        "human_computer_interaction",
+        "scientific_discovery"
+      ],
+      "validation_status": "not_yet_validated"
+    }
+  ],
+  "domains": [
+    {
+      "description": "Bug repair, regression triage, test design, and refactoring.",
+      "name": "software_maintenance",
+      "signals": [
+        "github_issues",
+        "pytest_failures",
+        "rollback_records"
+      ],
+      "source": "local_repo_and_public_issue_metadata"
+    },
+    {
+      "description": "Symbolic constraints, theorem sketches, proof obligations, and counterexamples.",
+      "name": "mathematical_reasoning",
+      "signals": [
+        "z3_constraints",
+        "property_tests",
+        "invariant_catalogs"
+      ],
+      "source": "local_tests_and_formal_gate_artifacts"
+    },
+    {
+      "description": "Representation learning, curriculum design, data efficiency, and benchmark transfer.",
+      "name": "machine_learning",
+      "signals": [
+        "benchmark_scores",
+        "learning_curves",
+        "model_card_failures"
+      ],
+      "source": "public_project_metadata_without_remote_code_execution"
+    },
+    {
+      "description": "Scheduling, memory budgets, isolation, build reliability, and observability.",
+      "name": "systems_engineering",
+      "signals": [
+        "ci_logs",
+        "resource_budgets",
+        "timeout_events"
+      ],
+      "source": "workflow_metadata_and_local_configuration"
+    },
+    {
+      "description": "Threat models, capability boundaries, sandbox hardening, and provenance controls.",
+      "name": "security_and_sandboxing",
+      "signals": [
+        "policy_surfaces",
+        "sandbox_tests",
+        "security_issue_metadata"
+      ],
+      "source": "bounded_metadata_and_local_safety_tests"
+    },
+    {
+      "description": "Operator feedback, review ergonomics, report clarity, and decision support.",
+      "name": "human_computer_interaction",
+      "signals": [
+        "review_notes",
+        "report_completeness",
+        "manual_acceptance_records"
+      ],
+      "source": "local_reports_and_human_review_outcomes"
+    },
+    {
+      "description": "Hypothesis generation, experiment design, ablation structure, and failed-result mining.",
+      "name": "scientific_discovery",
+      "signals": [
+        "ablation_tables",
+        "failure_analysis",
+        "experiment_catalogs"
+      ],
+      "source": "local_research_artifacts"
+    },
+    {
+      "description": "Closed-world planning, state estimation, feedback control, and transfer under uncertainty.",
+      "name": "robotics_and_control",
+      "signals": [
+        "simulated_task_specs",
+        "controller_invariants",
+        "safety_cases"
+      ],
+      "source": "proposal_only_domain_seed"
+    },
+    {
+      "description": "Causal mechanisms, noisy measurements, protocol design, and evidence grading.",
+      "name": "biology_and_medicine",
+      "signals": [
+        "evidence_hierarchy",
+        "causal_graphs",
+        "protocol_constraints"
+      ],
+      "source": "proposal_only_domain_seed"
+    },
+    {
+      "description": "Multi-agent incentives, decision theory, resource allocation, and robustness to gaming.",
+      "name": "economics_and_strategy",
+      "signals": [
+        "utility_models",
+        "market_failures",
+        "strategic_counterexamples"
+      ],
+      "source": "proposal_only_domain_seed"
+    }
+  ],
+  "generated_at": "2026-05-26T21:43:18Z",
+  "materialized_candidate_count": 24,
+  "open_space_claim": "The symbolic stream is open-ended by generation index, domain seed, axis, and meta-limit depth; this report materializes only a bounded prefix.",
+  "safety_model": [
+    "The open exploration layer does not apply patches.",
+    "Unverified self-modification proposals may be recorded but remain unapplied.",
+    "The candidate stream is conceptually open-ended, while each run materializes a bounded prefix.",
+    "Every proposal records provenance, target surfaces, and transfer targets.",
+    "Promotion into a closed loop requires a separate bounded workflow."
+  ],
+  "search_space_signature": "d8a1a10b3fa978e201f4bd98"
+}

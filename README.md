@@ -55,6 +55,7 @@ without executing untrusted code:
 
 ```bash
 python scripts/external_world_grounding.py --repository psf/requests --limit-per-repo 3
+python scripts/external_world_grounding.py --domain all --limit-per-repo 1
 ```
 
 The grounding layer reads public GitHub issue metadata, converts it into
@@ -70,6 +71,43 @@ Safety controls:
 - no external code execution
 - bounded issue count and body length
 - source URL and retrieval provenance for every task
+
+## Open-Ended Exploration
+
+The repository also includes an open-loop exploration layer:
+
+```bash
+python scripts/open_ended_exploration.py --max-candidates 96 --meta-depth 3
+```
+
+This layer expands candidate search across broad domains and policy surfaces:
+
+- software maintenance
+- mathematical reasoning
+- machine learning
+- systems engineering
+- security and sandboxing
+- human-computer interaction
+- scientific discovery
+- robotics and control
+- biology and medicine
+- economics and strategy
+
+It may record speculative self-modification proposals whose validation status is
+explicitly unknown. Those proposals are archived as open-loop research objects;
+they are not applied to the source tree and do not close the RSI loop.
+
+Each materialized proposal records:
+
+- target domain and policy axis
+- transfer targets into other domains
+- provenance and target surfaces
+- recursive `meta`, `meta_meta`, and `meta_meta_meta` self-limit layers
+- proposal-only safety controls
+
+The workflow `Open-Ended Exploration` can materialize a bounded prefix of this
+open candidate stream in GitHub Actions and commit the resulting report under
+`reports/open_exploration/latest/`.
 
 ## GitHub Actions
 

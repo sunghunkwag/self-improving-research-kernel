@@ -11,6 +11,10 @@ on:
         description: GitHub issue label query.
         required: true
         default: "bug"
+      domain_catalog:
+        description: Domain catalog to ground, or all for every cataloged domain.
+        required: true
+        default: "all"
 
 permissions:
   contents: write
@@ -53,9 +57,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           python scripts/external_world_grounding.py \
-            --repository psf/requests \
-            --repository pallets/flask \
-            --repository pytest-dev/pytest \
+            --domain "${{ inputs.domain_catalog }}" \
             --label-query "${{ inputs.label_query }}" \
             --limit-per-repo "${{ inputs.limit_per_repo }}" \
             --output-dir reports/external_grounding/latest

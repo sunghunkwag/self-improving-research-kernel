@@ -1,0 +1,99 @@
+name: Open-Ended Exploration
+
+on:
+  workflow_dispatch:
+    inputs:
+      max_candidates:
+        description: Bounded number of open-loop candidates to materialize.
+        required: true
+        default: "96"
+      meta_depth:
+        description: Recursive self-limit depth for each proposal.
+        required: true
+        default: "3"
+      include_unverified:
+        description: Record speculative unverified self-modification proposals.
+        required: true
+        default: "true"
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: open-ended-exploration-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  open-ended-exploration:
+    name: Materialize open-loop candidate prefix
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout latest base
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Configure Git author
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Preflight open-ended exploration
+        run: |
+          python -m py_compile scripts/open_ended_exploration.py scripts/external_world_grounding.py scripts/rsi_policy_registry.py
+          python -m pytest -q --import-mode=importlib --disable-warnings \
+            tests/test_open_ended_exploration.py \
+            tests/test_external_world_grounding.py \
+            tests/test_rsi_policy_registry_rewrite.py
+
+      - name: Build open-ended proposal archive
+        run: |
+          ARGS=""
+          if [ "${{ inputs.include_unverified }}" != "true" ]; then
+            ARGS="--exclude-unverified"
+          fi
+          python scripts/open_ended_exploration.py \
+            --max-candidates "${{ inputs.max_candidates }}" \
+            --meta-depth "${{ inputs.meta_depth }}" \
+            --output-dir reports/open_exploration/latest \
+            $ARGS
+
+      - name: Show open-ended exploration report
+        if: always()
+        run: |
+          if [ -f reports/open_exploration/latest/open_exploration_report.md ]; then
+            cat reports/open_exploration/latest/open_exploration_report.md
+          else
+            echo "No open-ended exploration report was produced."
+          fi
+
+      - name: Commit open-ended exploration report
+        run: |
+          git status --short
+          git add reports/open_exploration/latest
+          if git diff --cached --quiet; then
+            echo "No open-ended exploration report changes to commit."
+          else
+            git commit -m "Record open-ended exploration candidates"
+            if ! git push; then
+              echo "::warning::Open-ended exploration report push failed; uploaded artifacts remain available."
+            fi
+          fi
+
+      - name: Upload open-ended exploration artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: open-ended-exploration
+          path: reports/open_exploration/latest
+          if-no-files-found: ignore
+          retention-days: 30

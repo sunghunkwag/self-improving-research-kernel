@@ -50,6 +50,18 @@ def default_policy_capabilities() -> Tuple[PolicyCapability, ...]:
             risk_control="hypothesis count is capped and every selected hypothesis still passes the same gates",
         ),
         PolicyCapability(
+            name="open_ended_cross_domain_proposal_space",
+            category="generator",
+            evidence="the open exploration layer crosses broad domain seeds with generator, validator, patch, grounding, transfer, and self-limit axes",
+            risk_control="the stream is open-ended but each run materializes only a bounded proposal prefix",
+        ),
+        PolicyCapability(
+            name="meta_meta_limit_modeling",
+            category="generator",
+            evidence="candidate proposals include recursive self-limit layers up to configurable meta depth",
+            risk_control="self-limit layers are descriptive evidence requests, not automatic patch approvals",
+        ),
+        PolicyCapability(
             name="compile_focused_broad_validation",
             category="validator",
             evidence="candidates must pass py_compile, focused pytest, root pytest, and THDSE core gates",
@@ -62,10 +74,22 @@ def default_policy_capabilities() -> Tuple[PolicyCapability, ...]:
             risk_control="rollback restores all touched files on rejection",
         ),
         PolicyCapability(
+            name="speculative_unverified_self_modification_archive",
+            category="patch_policy",
+            evidence="unverified self-modification candidates may be archived as open-loop proposals",
+            risk_control="archived proposals are never applied by the open exploration layer",
+        ),
+        PolicyCapability(
             name="bounded_governed_execution",
             category="safety",
             evidence="wall-clock budgets, command timeouts, kill switch, and persisted provenance",
             risk_control="no unbounded runaway loop is permitted",
+        ),
+        PolicyCapability(
+            name="open_loop_no_auto_apply",
+            category="safety",
+            evidence="open-ended exploration writes reports only and leaves the closed RSI executor untouched",
+            risk_control="promotion requires a separate bounded workflow with explicit gates",
         ),
     )
 
