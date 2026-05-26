@@ -120,6 +120,24 @@ DEFAULT_REPOSITORIES = (
         split="unseen",
         transfer_origin="compact_kernel_repo",
     ),
+    BenchmarkRepository(
+        name="unseen_security_transfer_repo",
+        description="Held-out security-oriented fixture with a threat-label schema absent from the seen benchmark repositories.",
+        split="unseen",
+        transfer_origin="compact_kernel_repo",
+    ),
+    BenchmarkRepository(
+        name="unseen_science_transfer_repo",
+        description="Held-out science-oriented fixture with evidence-source schema absent from the seen benchmark repositories.",
+        split="unseen",
+        transfer_origin="compact_kernel_repo",
+    ),
+    BenchmarkRepository(
+        name="unseen_control_transfer_repo",
+        description="Held-out control-oriented fixture with controller-mode schema absent from the seen benchmark repositories.",
+        split="unseen",
+        transfer_origin="compact_kernel_repo",
+    ),
 )
 
 
@@ -144,6 +162,24 @@ DEFAULT_TASKS = (
         description="Measure whether schema-driven generation transfers to a held-out tuple-valued LocalPythonFileRecord field.",
         repositories=("unseen_schema_transfer_repo",),
         claim="Unseen transfer succeeds when the loop patches a query API for a field absent from the original benchmark repositories.",
+    ),
+    ExperimentTask(
+        name="unseen_threat_labels_query",
+        description="Measure schema transfer on a held-out security-oriented tuple-valued record field.",
+        repositories=("unseen_security_transfer_repo",),
+        claim="Security-domain unseen transfer succeeds when the loop patches a query API for threat labels absent from the seen fixtures.",
+    ),
+    ExperimentTask(
+        name="unseen_evidence_sources_query",
+        description="Measure schema transfer on a held-out science-oriented tuple-valued record field.",
+        repositories=("unseen_science_transfer_repo",),
+        claim="Science-domain unseen transfer succeeds when the loop patches a query API for evidence sources absent from the seen fixtures.",
+    ),
+    ExperimentTask(
+        name="unseen_controller_modes_query",
+        description="Measure schema transfer on a held-out control-oriented tuple-valued record field.",
+        repositories=("unseen_control_transfer_repo",),
+        claim="Control-domain unseen transfer succeeds when the loop patches a query API for controller modes absent from the seen fixtures.",
     ),
 )
 
@@ -267,7 +303,14 @@ def build_compact_kernel_repo(src: Path, dst: Path) -> None:
     )
 
 
-def build_unseen_schema_transfer_repo(src: Path, dst: Path) -> None:
+def build_unseen_schema_transfer_repo(
+    src: Path,
+    dst: Path,
+    *,
+    field_name: str = "static_roles",
+    sample_value: str = "planner",
+    test_name: str = "test_unseen_schema_fixture.py",
+) -> None:
     """Build a held-out schema-transfer fixture.
 
     The fixture keeps the same loop machinery as the compact repository but
@@ -280,10 +323,11 @@ def build_unseen_schema_transfer_repo(src: Path, dst: Path) -> None:
     local_corpus = dst / "shared" / "local_corpus.py"
     text = local_corpus.read_text(encoding="utf-8")
     marker = "    feature_flags: Tuple[str, ...] = ()\n"
-    if "static_roles: Tuple[str, ...]" not in text:
-        text = text.replace(marker, marker + "    static_roles: Tuple[str, ...] = ()\n", 1)
+    field_declaration = f"    {field_name}: Tuple[str, ...] = ()\n"
+    if field_declaration not in text:
+        text = text.replace(marker, marker + field_declaration, 1)
     local_corpus.write_text(text, encoding="utf-8")
-    smoke = dst / "tests" / "test_unseen_schema_fixture.py"
+    smoke = dst / "tests" / test_name
     smoke.write_text(
         "from shared.local_corpus import LocalPythonFileRecord\n\n\n"
         "def test_unseen_schema_field_is_present_before_transfer_patch():\n"
@@ -293,9 +337,9 @@ def build_unseen_schema_transfer_repo(src: Path, dst: Path) -> None:
         "        size_bytes=1,\n"
         "        line_count=1,\n"
         "        syntax_ok=True,\n"
-        "        static_roles=('planner',),\n"
+        f"        {field_name}=('{sample_value}',),\n"
         "    )\n"
-        "    assert record.static_roles == ('planner',)\n",
+        f"    assert record.{field_name} == ('{sample_value}',)\n",
         encoding="utf-8",
     )
 
@@ -309,6 +353,33 @@ def build_benchmark_repo(src: Path, dst: Path, repository: BenchmarkRepository) 
         return
     if repository.name == "unseen_schema_transfer_repo":
         build_unseen_schema_transfer_repo(src, dst)
+        return
+    if repository.name == "unseen_security_transfer_repo":
+        build_unseen_schema_transfer_repo(
+            src,
+            dst,
+            field_name="threat_labels",
+            sample_value="sandbox_escape",
+            test_name="test_unseen_security_schema_fixture.py",
+        )
+        return
+    if repository.name == "unseen_science_transfer_repo":
+        build_unseen_schema_transfer_repo(
+            src,
+            dst,
+            field_name="evidence_sources",
+            sample_value="ablation_table",
+            test_name="test_unseen_science_schema_fixture.py",
+        )
+        return
+    if repository.name == "unseen_control_transfer_repo":
+        build_unseen_schema_transfer_repo(
+            src,
+            dst,
+            field_name="controller_modes",
+            sample_value="stabilizing_feedback",
+            test_name="test_unseen_control_schema_fixture.py",
+        )
         return
     raise ValueError(f"unknown benchmark repository: {repository.name}")
 
@@ -378,7 +449,7 @@ def prepare_task(repo: Path, task: ExperimentTask) -> None:
     state_dir = repo / ".omega_rsi_runs"
     if state_dir.exists():
         shutil.rmtree(state_dir)
-    if task.name == "unseen_static_roles_query":
+    if task.name.startswith("unseen_"):
         return
     if task.name in {"local_corpus_queries_clean", "forced_broad_regression"}:
         remove_local_corpus_query_methods(repo)

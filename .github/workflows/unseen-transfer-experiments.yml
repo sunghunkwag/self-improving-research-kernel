@@ -1,0 +1,116 @@
+name: Unseen Transfer Experiments
+
+on:
+  workflow_dispatch:
+    inputs:
+      repeats:
+        description: Repeated trials per unseen repository/task/variant cell.
+        required: true
+        default: "2"
+      max_generations:
+        description: Maximum loop generations per experiment run.
+        required: true
+        default: "3"
+      max_candidates:
+        description: Maximum candidates per generation.
+        required: true
+        default: "3"
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: unseen-transfer-experiments-${{ github.ref }}-${{ github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  unseen-transfer:
+    name: Held-out schema transfer matrix
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    env:
+      OMEGA_THDSE_ENABLE_RUST: "0"
+      PYTHONUNBUFFERED: "1"
+      PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/thdse:${{ github.workspace }}/thdse/src:${{ github.workspace }}/Cognitive-Core-Engine-Test
+
+    steps:
+      - name: Checkout latest base
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: |
+            requirements-ci.txt
+            thdse/requirements.txt
+
+      - name: Install verification dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-ci.txt
+
+      - name: Configure Git author
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Preflight unseen transfer suite
+        run: |
+          python -m py_compile scripts/rsi_experiment_suite.py
+          python -m pytest -q --import-mode=importlib --disable-warnings tests/test_rsi_experiment_suite.py
+
+      - name: Run unseen transfer matrix
+        run: |
+          python scripts/rsi_experiment_suite.py \
+            --repo-root "$GITHUB_WORKSPACE" \
+            --output-dir "$GITHUB_WORKSPACE/reports/rsi_experiments/unseen_multi_transfer/latest" \
+            --repository unseen_schema_transfer_repo \
+            --repository unseen_security_transfer_repo \
+            --repository unseen_science_transfer_repo \
+            --repository unseen_control_transfer_repo \
+            --variant verified_closed_loop \
+            --variant agent_coding_loop \
+            --variant ci_only_validation \
+            --repeats "${{ inputs.repeats }}" \
+            --max-generations "${{ inputs.max_generations }}" \
+            --max-candidates "${{ inputs.max_candidates }}" \
+            --wall-seconds 120 \
+            --timeout-seconds 60
+
+      - name: Show unseen transfer scorecard
+        if: always()
+        run: |
+          if [ -f reports/rsi_experiments/unseen_multi_transfer/latest/baseline_comparison.md ]; then
+            cat reports/rsi_experiments/unseen_multi_transfer/latest/baseline_comparison.md
+          else
+            echo "No unseen transfer scorecard was produced."
+          fi
+
+      - name: Commit unseen transfer reports
+        run: |
+          git status --short
+          git add reports/rsi_experiments/unseen_multi_transfer/latest
+          if git diff --cached --quiet; then
+            echo "No unseen transfer report changes to commit."
+          else
+            git commit -m "Record unseen transfer experiment results"
+            if ! git push; then
+              echo "::warning::Unseen transfer report push failed; uploaded artifacts remain available."
+            fi
+          fi
+
+      - name: Upload unseen transfer artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unseen-transfer-experiments
+          path: reports/rsi_experiments/unseen_multi_transfer/latest
+          if-no-files-found: ignore
+          retention-days: 30

@@ -158,6 +158,9 @@ Additional evidence artifacts:
   baseline, ablation, and failure-analysis evidence
 - `reports/rsi_experiments/unseen_transfer/latest/`: held-out schema-transfer
   smoke matrix with three repeated trials per variant
+- `reports/rsi_experiments/unseen_multi_transfer/latest/`: four held-out
+  schema-transfer fixtures across generic, security, science, and control
+  domains
 - `reports/rsi_experiments/recovery/latest/`: narrow Actions recovery runs
   used to verify workflow health without overwriting the full matrix
 
@@ -166,6 +169,9 @@ record field absent from the original benchmark repositories. The proposed loop
 must infer and patch the missing query surface from schema structure, then
 record the result as an unseen transfer cell rather than as another seen-repo
 repair.
+
+The workflow `Unseen Transfer Experiments` runs the multi-domain unseen matrix
+without running the heavier full repository matrix.
 
 ## Local Safety
 

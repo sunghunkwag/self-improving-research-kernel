@@ -163,13 +163,51 @@ def test_unseen_schema_transfer_repository_adds_held_out_tuple_field(tmp_path):
     assert (target / "tests" / "test_unseen_schema_fixture.py").exists()
 
 
+def test_unseen_domain_transfer_repositories_add_distinct_tuple_fields(tmp_path):
+    expected = {
+        "unseen_security_transfer_repo": "threat_labels",
+        "unseen_science_transfer_repo": "evidence_sources",
+        "unseen_control_transfer_repo": "controller_modes",
+    }
+    source = tmp_path / "source"
+    (source / "scripts").mkdir(parents=True)
+    (source / "shared").mkdir()
+    (source / "scripts" / "closed_recursive_self_improvement_loop.py").write_text("", encoding="utf-8")
+    (source / "scripts" / "rsi_policy_registry.py").write_text("", encoding="utf-8")
+    (source / "shared" / "__init__.py").write_text("", encoding="utf-8")
+    (source / "shared" / "local_corpus.py").write_text(
+        "from dataclasses import dataclass\n"
+        "from typing import Tuple\n\n"
+        "@dataclass(frozen=True)\n"
+        "class LocalPythonFileRecord:\n"
+        "    feature_flags: Tuple[str, ...] = ()\n",
+        encoding="utf-8",
+    )
+
+    for repository_name, field_name in expected.items():
+        target = tmp_path / repository_name
+        repository = next(item for item in DEFAULT_REPOSITORIES if item.name == repository_name)
+        build_benchmark_repo(source, target, repository)
+        text = (target / "shared" / "local_corpus.py").read_text(encoding="utf-8")
+
+        assert repository.split == "unseen"
+        assert f"{field_name}: Tuple[str, ...] = ()" in text
+
+
 def test_unseen_transfer_task_is_limited_to_unseen_repository():
     unseen_task = next(task for task in DEFAULT_TASKS if task.name == "unseen_static_roles_query")
     compact = next(repository for repository in DEFAULT_REPOSITORIES if repository.name == "compact_kernel_repo")
     unseen = next(repository for repository in DEFAULT_REPOSITORIES if repository.name == "unseen_schema_transfer_repo")
+    unseen_task_names = {
+        "unseen_static_roles_query",
+        "unseen_threat_labels_query",
+        "unseen_evidence_sources_query",
+        "unseen_controller_modes_query",
+    }
 
     assert task_applies_to_repository(unseen_task, unseen) is True
     assert task_applies_to_repository(unseen_task, compact) is False
+    assert unseen_task_names <= {task.name for task in DEFAULT_TASKS}
 
 
 def test_aggregate_results_groups_repeated_trials():

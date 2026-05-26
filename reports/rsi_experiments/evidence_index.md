@@ -40,6 +40,34 @@ Observed aggregate result:
 - CI-only accepted rate mean: 0.00
 - Scorecard outcome: `unseen_transfer_success`
 
+## Multi-Domain Unseen Transfer Evidence
+
+- Path: `reports/rsi_experiments/unseen_multi_transfer/latest/`
+- Trial count: 24
+- Repository split: `unseen`
+- Held-out fixtures:
+  - `unseen_schema_transfer_repo`
+  - `unseen_security_transfer_repo`
+  - `unseen_science_transfer_repo`
+  - `unseen_control_transfer_repo`
+- Tasks:
+  - `unseen_static_roles_query`
+  - `unseen_threat_labels_query`
+  - `unseen_evidence_sources_query`
+  - `unseen_controller_modes_query`
+- Repeats: 2 per repository/task/variant cell
+- Variants: proposed loop, single-pass agent loop baseline, CI-only baseline
+
+Observed aggregate result:
+
+- Proposed loop accepted rate mean: 1.00 on all four unseen tasks
+- Proposed loop improvement depth mean: 3.00 on all four unseen tasks
+- Single-pass agent accepted rate mean: 1.00 on all four unseen tasks
+- Single-pass agent improvement depth mean: 1.00 on all four unseen tasks
+- CI-only accepted rate mean: 0.00 on all four unseen tasks
+- Scorecard outcome: `unseen_transfer_success` on all four unseen tasks
+- Rejected candidates or command failures: none observed
+
 ## Workflow Recovery Evidence
 
 - Path: `reports/rsi_experiments/recovery/latest/`
@@ -83,11 +111,12 @@ baseline. The strongest evidence is narrower:
 
 - It repeatedly patches and validates code in disposable repositories.
 - It reaches deeper accepted improvement chains than a single-pass agent loop on
-  the held-out schema-transfer fixture.
+  four held-out schema-transfer fixtures.
 - It preserves rollback behavior on forced broad-gate rejection tasks.
 - It records enough per-trial provenance for baseline, ablation, transfer, and
   failure-analysis tables.
 
-The main remaining research gap is broader external validity: more unseen
-repositories, more task families, and stronger baselines are still required
-before making a NeurIPS main-track strength claim.
+The main remaining research gap is broader external validity beyond synthetic
+compact fixtures: more externally sourced repositories, more task families, and
+stronger baselines are still required before making a NeurIPS main-track
+strength claim.
