@@ -1,5 +1,8 @@
 name: RSI Research Experiments
 
+# Push trigger is intentionally limited to this workflow file so a green
+# recovery run can be produced when manual dispatch is unavailable.
+
 on:
   push:
     branches:
