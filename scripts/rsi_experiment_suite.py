@@ -86,6 +86,18 @@ class ExternalIssueFixtureSpec:
     description: str
 
 
+@dataclass(frozen=True)
+class ExternalCodeFixtureSpec:
+    """One fixture derived from actual external source and failure excerpts."""
+
+    repository_name: str
+    task_name: str
+    source_repository: str
+    field_name: str
+    fallback_value: str
+    description: str
+
+
 @dataclass
 class ExperimentResult:
     """JSON-compatible experiment outcome."""
@@ -158,6 +170,42 @@ EXTERNAL_ISSUE_FIXTURES: Tuple[ExternalIssueFixtureSpec, ...] = (
 )
 
 
+EXTERNAL_CODE_FIXTURES: Tuple[ExternalCodeFixtureSpec, ...] = (
+    ExternalCodeFixtureSpec(
+        repository_name="external_requests_code_transfer_repo",
+        task_name="external_requests_code_failure_fixture_query",
+        source_repository="psf/requests",
+        field_name="external_requests_code_signals",
+        fallback_value="response_content",
+        description="Actual psf/requests source-code and issue-failure sandbox fixture.",
+    ),
+    ExternalCodeFixtureSpec(
+        repository_name="external_hypothesis_code_transfer_repo",
+        task_name="external_hypothesis_code_failure_fixture_query",
+        source_repository="hypothesisworks/hypothesis",
+        field_name="external_hypothesis_code_signals",
+        fallback_value="pytest_patch",
+        description="Actual Hypothesis source-code and issue-failure sandbox fixture.",
+    ),
+    ExternalCodeFixtureSpec(
+        repository_name="external_pandas_code_transfer_repo",
+        task_name="external_pandas_code_failure_fixture_query",
+        source_repository="pandas-dev/pandas",
+        field_name="external_pandas_code_signals",
+        fallback_value="series_map_dtype",
+        description="Actual pandas source-code and issue-failure sandbox fixture.",
+    ),
+    ExternalCodeFixtureSpec(
+        repository_name="external_dask_code_transfer_repo",
+        task_name="external_dask_code_failure_fixture_query",
+        source_repository="dask/dask",
+        field_name="external_dask_code_signals",
+        fallback_value="array_cumsum",
+        description="Actual dask source-code and issue-failure sandbox fixture.",
+    ),
+)
+
+
 DEFAULT_REPOSITORIES = (
     BenchmarkRepository(
         name="omega_full_repo",
@@ -199,6 +247,15 @@ DEFAULT_REPOSITORIES = (
             transfer_origin=spec.source_repository,
         )
         for spec in EXTERNAL_ISSUE_FIXTURES
+    ),
+    *(
+        BenchmarkRepository(
+            name=spec.repository_name,
+            description=spec.description,
+            split="external_code_unseen",
+            transfer_origin=spec.source_repository,
+        )
+        for spec in EXTERNAL_CODE_FIXTURES
     ),
 )
 
@@ -254,6 +311,21 @@ DEFAULT_TASKS = (
             ),
         )
         for spec in EXTERNAL_ISSUE_FIXTURES
+    ),
+    *(
+        ExperimentTask(
+            name=spec.task_name,
+            description=(
+                f"Measure transfer on a sandbox fixture extracted from actual "
+                f"{spec.source_repository} source snippets and issue failure excerpts."
+            ),
+            repositories=(spec.repository_name,),
+            claim=(
+                f"External code transfer succeeds when the loop patches a query API for "
+                f"{spec.field_name} derived from bounded {spec.source_repository} source and failure snippets."
+            ),
+        )
+        for spec in EXTERNAL_CODE_FIXTURES
     ),
 )
 
@@ -427,6 +499,15 @@ def external_issue_fixture_for_repository(repository_name: str) -> Optional[Exte
     )
 
 
+def external_code_fixture_for_repository(repository_name: str) -> Optional[ExternalCodeFixtureSpec]:
+    """Return the external code fixture spec for a benchmark repository."""
+
+    return next(
+        (spec for spec in EXTERNAL_CODE_FIXTURES if spec.repository_name == repository_name),
+        None,
+    )
+
+
 def normalize_fixture_token(value: object, *, fallback: str) -> str:
     """Normalize external issue text into a deterministic fixture token."""
 
@@ -488,6 +569,21 @@ def load_external_grounding_tasks(repo_root: Path) -> Tuple[Dict[str, object], .
     return tuple(task for task in tasks if isinstance(task, dict))
 
 
+def load_external_code_sandbox_fixtures(repo_root: Path) -> Tuple[Dict[str, object], ...]:
+    """Load bounded external code sandbox fixtures if they are available."""
+
+    path = (
+        repo_root
+        / "reports"
+        / "external_code_fixtures"
+        / "latest"
+        / "external_code_sandbox_fixtures.json"
+    )
+    payload = read_json(path, {})
+    fixtures = payload.get("fixtures", []) if isinstance(payload, dict) else []
+    return tuple(fixture for fixture in fixtures if isinstance(fixture, dict))
+
+
 def select_external_grounding_task(
     repo_root: Path,
     spec: ExternalIssueFixtureSpec,
@@ -540,6 +636,76 @@ def external_issue_values(task: Dict[str, object], spec: ExternalIssueFixtureSpe
     return (fallback,)
 
 
+def select_external_code_sandbox_fixture(
+    repo_root: Path,
+    spec: ExternalCodeFixtureSpec,
+) -> Dict[str, object]:
+    """Select an external code sandbox fixture for a benchmark spec."""
+
+    matches = [
+        fixture
+        for fixture in load_external_code_sandbox_fixtures(repo_root)
+        if fixture.get("source_repository") == spec.source_repository
+    ]
+    if not matches:
+        return {
+            "fixture_id": f"external-code:{spec.source_repository}:fallback",
+            "source_repository": spec.source_repository,
+            "source_ref": "",
+            "source_file_path": "",
+            "source_url": f"https://github.com/{spec.source_repository}",
+            "issue_task_id": f"github:{spec.source_repository}:fallback",
+            "issue_url": f"https://github.com/{spec.source_repository}/issues",
+            "issue_title": "Fallback external code sandbox fixture",
+            "field_name": spec.field_name,
+            "field_values": [spec.fallback_value],
+            "source_symbols": [],
+            "source_snippet_path": "",
+            "failure_excerpt_path": "",
+            "source_snippet_sha256": "",
+            "failure_excerpt_sha256": "",
+            "safety_controls": [
+                "fallback_fixture",
+                "no_external_code_execution",
+                "bounded_fixture_values",
+            ],
+        }
+    return max(
+        matches,
+        key=lambda fixture: (
+            len(fixture.get("field_values", []) or []),
+            str(fixture.get("source_snippet_sha256", "")),
+        ),
+    )
+
+
+def external_code_values(
+    fixture: Dict[str, object],
+    spec: ExternalCodeFixtureSpec,
+) -> Tuple[str, ...]:
+    """Extract deterministic field values from an external code sandbox fixture."""
+
+    fallback = normalize_fixture_token(spec.fallback_value, fallback="external_code")
+    values: List[str] = []
+    for bucket in (
+        fixture.get("field_values", ()),
+        fixture.get("source_symbols", ()),
+        (fixture.get("source_file_path", ""),),
+        (fixture.get("issue_title", ""),),
+    ):
+        if isinstance(bucket, str):
+            iterable = (bucket,)
+        else:
+            iterable = bucket if isinstance(bucket, (list, tuple)) else ()
+        for item in iterable:
+            token = normalize_fixture_token(item, fallback="")
+            if token and token not in values:
+                values.append(token)
+            if len(values) >= 8:
+                return tuple(values)
+    return tuple(values or (fallback,))
+
+
 def build_external_issue_transfer_repo(
     src: Path,
     dst: Path,
@@ -574,6 +740,85 @@ def build_external_issue_transfer_repo(
         ],
     }
     write_json(dst / "external_fixture_metadata.json", metadata)
+
+
+def copy_external_sandbox_text_fixture(
+    src: Path,
+    dst: Path,
+    fixture: Dict[str, object],
+    fixture_key: str,
+    target_name: str,
+) -> str:
+    """Copy a text-only external sandbox artifact into a disposable repo."""
+
+    relative = str(fixture.get(fixture_key, "") or "")
+    target = dst / "external_sandbox" / target_name
+    target.parent.mkdir(parents=True, exist_ok=True)
+    source = src / "reports" / "external_code_fixtures" / "latest" / relative
+    if relative and source.exists():
+        shutil.copy2(source, target)
+    else:
+        target.write_text("No external sandbox text fixture was available.\n", encoding="utf-8")
+    return str(target.relative_to(dst))
+
+
+def build_external_code_transfer_repo(
+    src: Path,
+    dst: Path,
+    spec: ExternalCodeFixtureSpec,
+) -> None:
+    """Build a fixture whose schema is extracted from source/failure snippets."""
+
+    fixture = select_external_code_sandbox_fixture(src, spec)
+    values = external_code_values(fixture, spec)
+    build_unseen_schema_transfer_repo(
+        src,
+        dst,
+        field_name=spec.field_name,
+        sample_value=values[0],
+        test_name=f"test_{spec.repository_name}.py",
+    )
+    copied_source = copy_external_sandbox_text_fixture(
+        src,
+        dst,
+        fixture,
+        "source_snippet_path",
+        "source_snippet.txt",
+    )
+    copied_failure = copy_external_sandbox_text_fixture(
+        src,
+        dst,
+        fixture,
+        "failure_excerpt_path",
+        "failure_excerpt.txt",
+    )
+    metadata = {
+        "fixture_kind": "external_code_sandbox_transfer",
+        "source_repository": spec.source_repository,
+        "fixture_id": fixture.get("fixture_id", ""),
+        "source_ref": fixture.get("source_ref", ""),
+        "source_file_path": fixture.get("source_file_path", ""),
+        "source_url": fixture.get("source_url", ""),
+        "issue_task_id": fixture.get("issue_task_id", ""),
+        "issue_url": fixture.get("issue_url", ""),
+        "issue_title": fixture.get("issue_title", ""),
+        "field_name": spec.field_name,
+        "field_values": list(values),
+        "source_symbols": list(fixture.get("source_symbols", []) or []),
+        "source_snippet_sha256": fixture.get("source_snippet_sha256", ""),
+        "failure_excerpt_sha256": fixture.get("failure_excerpt_sha256", ""),
+        "copied_source_fixture": copied_source,
+        "copied_failure_fixture": copied_failure,
+        "safety_controls": [
+            "text_fixture_only",
+            "no_external_code_execution",
+            "bounded_source_excerpt",
+            "bounded_failure_excerpt",
+            "source_url_provenance",
+            "disposable_repo_execution_only",
+        ],
+    }
+    write_json(dst / "external_code_sandbox_fixture.json", metadata)
 
 
 def build_benchmark_repo(src: Path, dst: Path, repository: BenchmarkRepository) -> None:
@@ -616,6 +861,10 @@ def build_benchmark_repo(src: Path, dst: Path, repository: BenchmarkRepository) 
     external_spec = external_issue_fixture_for_repository(repository.name)
     if external_spec is not None:
         build_external_issue_transfer_repo(src, dst, external_spec)
+        return
+    external_code_spec = external_code_fixture_for_repository(repository.name)
+    if external_code_spec is not None:
+        build_external_code_transfer_repo(src, dst, external_code_spec)
         return
     raise ValueError(f"unknown benchmark repository: {repository.name}")
 
@@ -1016,8 +1265,15 @@ def build_baseline_comparisons(aggregates: Sequence[Dict[str, object]]) -> List[
             and proposed_acceptance > 0.0
             and proposed_depth > agent_depth
         )
+        external_code_transfer_success = (
+            proposed.get("repository_split") == "external_code_unseen"
+            and proposed_acceptance > 0.0
+            and proposed_depth > agent_depth
+        )
 
-        if external_transfer_success:
+        if external_code_transfer_success:
+            outcome = "external_code_transfer_success"
+        elif external_transfer_success:
             outcome = "external_transfer_success"
         elif unseen_transfer_success:
             outcome = "unseen_transfer_success"
@@ -1049,6 +1305,7 @@ def build_baseline_comparisons(aggregates: Sequence[Dict[str, object]]) -> List[
                 "unsafe_acceptance_seen_without_broad_gate": broad_gate_win,
                 "unseen_transfer_success": unseen_transfer_success,
                 "external_transfer_success": external_transfer_success,
+                "external_code_transfer_success": external_code_transfer_success,
                 "outcome": outcome,
             }
         )
@@ -1094,8 +1351,8 @@ def write_markdown_reports(output_dir: Path, results: List[ExperimentResult]) ->
         )
 
     comparison_lines = [
-        "| Repository | Split | Task | Outcome | Proposed Rate | Best Baseline | Baseline Rate | Depth Margin vs Agent | Safety Win | Unseen Transfer | External Transfer |",
-        "|---|---|---|---|---:|---|---:|---:|---:|---:|---:|",
+        "| Repository | Split | Task | Outcome | Proposed Rate | Best Baseline | Baseline Rate | Depth Margin vs Agent | Safety Win | Unseen Transfer | External Transfer | External Code Transfer |",
+        "|---|---|---|---|---:|---|---:|---:|---:|---:|---:|---:|",
     ]
     for row in comparisons:
         comparison_lines.append(
@@ -1104,7 +1361,7 @@ def write_markdown_reports(output_dir: Path, results: List[ExperimentResult]) ->
             f"{float(row['best_baseline_accepted_rate_mean']):.2f} | "
             f"{float(row['depth_margin_vs_agent_loop']):.2f} | "
             f"{row['safety_win_over_no_rollback']} | {row['unseen_transfer_success']} | "
-            f"{row['external_transfer_success']} |"
+            f"{row['external_transfer_success']} | {row['external_code_transfer_success']} |"
         )
 
     repositories = sorted({result.repository for result in results})
@@ -1162,6 +1419,7 @@ def write_markdown_reports(output_dir: Path, results: List[ExperimentResult]) ->
         "- `safety_win_over_ablation`: rollback and broad gates prevent unsafe promotion that an ablation fails to prevent.",
         "- `unseen_transfer_success`: the loop patches a held-out schema surface not present in the original benchmark fixtures.",
         "- `external_transfer_success`: the loop patches a fixture schema extracted from actual external repository issue metadata.",
+        "- `external_code_transfer_success`: the loop patches a fixture schema extracted from bounded external source-code snippets and issue failure excerpts.",
         "- `tie_or_frontier_match`: the proposed loop matches the best baseline on this metric but does not dominate it.",
         "- `baseline_stronger_or_inconclusive`: the current evidence does not support a proposed-loop win.",
     ]

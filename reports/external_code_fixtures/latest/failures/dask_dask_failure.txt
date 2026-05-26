@@ -1,0 +1,6 @@
+Repository: dask/dask
+Issue: https://github.com/dask/dask/issues/12359
+Task: github:dask/dask#12359
+Safety: bounded failure excerpt only; not executed.
+
+ports http://matthewrocklin.com/blog/work/2018/02/28/minimal-bug-reports - Minimal Complete Verifiable Examples https://stackoverflow.com/help/mcve Bug reports that follow these guidelines are easier to diagnose, and so are often handled much more quickly. --> **Describe the issue**: I wanted to calculate a cumsum on a dask array. The results differ from a cumsum on the same data opened as a pure numpy array. An example plot of the difference between the two approaches (cumsum over the horizontal axis): <img width="603" height="481" alt="Image" src="https://github.com/user-attachments/assets/2a2a2986-1371-4b6c-9459-237665c393e5" /> There are 3 chunks in time. The results start to diverge at the start of the second chunk. I expected that using pure numpy arrays or dask arrays should yield results that are numerically close(r). Or maybe the difference can be explained solely by the fact that floating point numbers are not associative, and using dask means the data is added i

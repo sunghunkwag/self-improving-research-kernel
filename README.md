@@ -64,6 +64,26 @@ bounded task seeds, and writes:
 - `reports/external_grounding/latest/external_grounding_tasks.json`
 - `reports/external_grounding/latest/external_grounding_report.md`
 
+The repository can also transfer bounded source excerpts and issue failure
+excerpts from allowlisted external repositories into text-only sandbox
+fixtures:
+
+```bash
+python scripts/external_code_sandbox_fixtures.py \
+  --repository psf/requests \
+  --repository hypothesisworks/hypothesis \
+  --repository pandas-dev/pandas \
+  --repository dask/dask
+```
+
+The external code sandbox builder writes:
+
+- `reports/external_code_fixtures/latest/external_code_sandbox_fixtures.json`
+- `reports/external_code_fixtures/latest/external_code_sandbox_report.md`
+- bounded `.txt` source and failure excerpts under
+  `reports/external_code_fixtures/latest/snippets/` and
+  `reports/external_code_fixtures/latest/failures/`
+
 Safety controls:
 
 - metadata only
@@ -164,6 +184,10 @@ Additional evidence artifacts:
 - `reports/rsi_experiments/external_transfer/latest/`: fixtures extracted from
   actual external GitHub issue metadata for `psf/requests`,
   `hypothesisworks/hypothesis`, `pandas-dev/pandas`, and `dask/dask`
+- `reports/external_code_fixtures/latest/`: bounded source-code and
+  failure-excerpt sandbox fixtures from the same real external repositories
+- `reports/rsi_experiments/external_code_transfer/latest/`: transfer matrix
+  over the external code sandbox fixtures
 - `reports/rsi_experiments/recovery/latest/`: narrow Actions recovery runs
   used to verify workflow health without overwriting the full matrix
 
@@ -179,6 +203,11 @@ without running the heavier full repository matrix.
 The workflow `External Transfer Experiments` refreshes bounded external GitHub
 issue metadata, builds external issue-derived fixtures, and runs the external
 transfer matrix without executing external repository code.
+
+The workflow `External Code Sandbox Experiments` refreshes the issue metadata,
+fetches bounded external source excerpts as text fixtures, pairs them with
+issue failure excerpts, and runs the transfer matrix against those sandbox
+fixtures. It still executes only the local disposable fixture repositories.
 
 ## Local Safety
 

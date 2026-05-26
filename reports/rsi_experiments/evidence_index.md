@@ -98,6 +98,32 @@ Observed aggregate result:
 - Scorecard outcome: `external_transfer_success` on all four external issue fixtures
 - Rejected candidates or command failures: none observed
 
+## Actual External Code Sandbox Fixture Evidence
+
+- Fixture path: `reports/external_code_fixtures/latest/`
+- Transfer workflow output path:
+  `reports/rsi_experiments/external_code_transfer/latest/`
+- Repository split: `external_code_unseen`
+- Actual source repositories:
+  - `psf/requests`
+  - `hypothesisworks/hypothesis`
+  - `pandas-dev/pandas`
+  - `dask/dask`
+- Extracted signals:
+  - bounded external source-code excerpts stored as `.txt`
+  - bounded issue failure excerpts stored as `.txt`
+  - source file paths, branch refs, source URLs, and SHA-256 hashes
+  - schema field values derived from source and failure signals
+- Safety controls:
+  - no external repository cloning
+  - no external package installation
+  - no external code import or execution
+  - downstream trials execute only disposable local sandbox fixtures
+
+The workflow `External Code Sandbox Experiments` refreshes issue metadata,
+rebuilds these code/failure fixtures, and runs the external-code transfer
+matrix against `external_*_code_transfer_repo` fixtures.
+
 ## Workflow Recovery Evidence
 
 - Path: `reports/rsi_experiments/recovery/latest/`

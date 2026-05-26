@@ -1,12 +1,14 @@
 from scripts.rsi_experiment_suite import (
     DEFAULT_REPOSITORIES,
     DEFAULT_TASKS,
+    EXTERNAL_CODE_FIXTURES,
     EXTERNAL_ISSUE_FIXTURES,
     ExperimentVariant,
     aggregate_results,
     build_baseline_comparisons,
     build_benchmark_repo,
     changed_files,
+    external_code_values,
     external_issue_values,
     normalize_fixture_token,
     remove_policy_registry_surface,
@@ -283,6 +285,90 @@ def test_external_issue_transfer_repository_uses_grounding_metadata(tmp_path):
     assert metadata["field_values"][:2] == ["bug", "help_wanted"]
 
 
+def test_external_code_transfer_repository_uses_sandbox_fixture(tmp_path):
+    source = tmp_path / "source"
+    target = tmp_path / "target"
+    (source / "scripts").mkdir(parents=True)
+    (source / "shared").mkdir()
+    fixture_root = source / "reports" / "external_code_fixtures" / "latest"
+    (fixture_root / "snippets").mkdir(parents=True)
+    (fixture_root / "failures").mkdir()
+    (source / "scripts" / "closed_recursive_self_improvement_loop.py").write_text("", encoding="utf-8")
+    (source / "scripts" / "rsi_policy_registry.py").write_text("", encoding="utf-8")
+    (source / "shared" / "__init__.py").write_text("", encoding="utf-8")
+    (source / "shared" / "local_corpus.py").write_text(
+        "from dataclasses import dataclass\n"
+        "from typing import Tuple\n\n"
+        "@dataclass(frozen=True)\n"
+        "class LocalPythonFileRecord:\n"
+        "    feature_flags: Tuple[str, ...] = ()\n",
+        encoding="utf-8",
+    )
+    (fixture_root / "snippets" / "psf_requests_source.txt").write_text(
+        "Repository: psf/requests\n\nclass Response:\n    pass\n",
+        encoding="utf-8",
+    )
+    (fixture_root / "failures" / "psf_requests_failure.txt").write_text(
+        "response.content raised once and returned empty content later\n",
+        encoding="utf-8",
+    )
+    (fixture_root / "external_code_sandbox_fixtures.json").write_text(
+        """{
+  "fixtures": [
+    {
+      "fixture_id": "external-code:psf/requests",
+      "source_repository": "psf/requests",
+      "source_ref": "main",
+      "source_file_path": "src/requests/models.py",
+      "source_url": "https://raw.githubusercontent.com/psf/requests/main/src/requests/models.py",
+      "issue_task_id": "github:psf/requests#4965",
+      "issue_url": "https://github.com/psf/requests/issues/4965",
+      "issue_title": "Accessing response.content twice forgets read error",
+      "field_name": "external_requests_code_signals",
+      "field_values": ["response_content", "response"],
+      "source_symbols": ["response"],
+      "source_snippet_path": "snippets/psf_requests_source.txt",
+      "failure_excerpt_path": "failures/psf_requests_failure.txt",
+      "source_snippet_sha256": "abc",
+      "failure_excerpt_sha256": "def",
+      "safety_controls": ["text_fixture_only", "no_external_code_execution"]
+    }
+  ]
+}
+""",
+        encoding="utf-8",
+    )
+
+    repository = next(
+        item for item in DEFAULT_REPOSITORIES if item.name == "external_requests_code_transfer_repo"
+    )
+    build_benchmark_repo(source, target, repository)
+
+    text = (target / "shared" / "local_corpus.py").read_text(encoding="utf-8")
+    metadata = __import__("json").loads(
+        (target / "external_code_sandbox_fixture.json").read_text(encoding="utf-8")
+    )
+    assert "external_requests_code_signals: Tuple[str, ...] = ()" in text
+    assert metadata["source_repository"] == "psf/requests"
+    assert metadata["field_values"][:2] == ["response_content", "response"]
+    assert (target / "external_sandbox" / "source_snippet.txt").exists()
+    assert (target / "external_sandbox" / "failure_excerpt.txt").exists()
+
+
+def test_external_code_fixtures_are_catalogued_as_code_unseen():
+    repository = next(
+        item for item in DEFAULT_REPOSITORIES if item.name == "external_requests_code_transfer_repo"
+    )
+    spec = next(
+        item for item in EXTERNAL_CODE_FIXTURES if item.repository_name == repository.name
+    )
+    task = next(item for item in DEFAULT_TASKS if item.name == spec.task_name)
+
+    assert repository.split == "external_code_unseen"
+    assert task.repositories == (repository.name,)
+    assert external_code_values({"field_values": ["Response Content"]}, spec) == ("response_content",)
+
+
 def test_aggregate_results_groups_repeated_trials():
     from scripts.rsi_experiment_suite import ExperimentResult
 
@@ -414,3 +500,39 @@ def test_baseline_comparison_marks_external_transfer_success():
 
     assert comparison["outcome"] == "external_transfer_success"
     assert comparison["external_transfer_success"] is True
+
+
+def test_baseline_comparison_marks_external_code_transfer_success():
+    aggregates = [
+        {
+            "repository": "external_requests_code_transfer_repo",
+            "repository_split": "external_code_unseen",
+            "transfer_origin": "psf/requests",
+            "task": "external_requests_code_failure_fixture_query",
+            "task_claim": "external code transfer",
+            "variant": "verified_closed_loop",
+            "family": "proposed",
+            "accepted_rate_mean": 1.0,
+            "improvement_depth_mean": 3.0,
+            "cost_proxy_seconds_mean": 1.0,
+            "rollback_success_rate": None,
+        },
+        {
+            "repository": "external_requests_code_transfer_repo",
+            "repository_split": "external_code_unseen",
+            "transfer_origin": "psf/requests",
+            "task": "external_requests_code_failure_fixture_query",
+            "task_claim": "external code transfer",
+            "variant": "agent_coding_loop",
+            "family": "baseline_agent_coding_loop",
+            "accepted_rate_mean": 1.0,
+            "improvement_depth_mean": 1.0,
+            "cost_proxy_seconds_mean": 1.0,
+            "rollback_success_rate": None,
+        },
+    ]
+
+    comparison = build_baseline_comparisons(aggregates)[0]
+
+    assert comparison["outcome"] == "external_code_transfer_success"
+    assert comparison["external_code_transfer_success"] is True

@@ -1,0 +1,52 @@
+Repository: hypothesisworks/hypothesis
+Source: https://raw.githubusercontent.com/HypothesisWorks/hypothesis/master/hypothesis/src/_hypothesis_pytestplugin.py
+Ref: master
+Path: hypothesis/src/_hypothesis_pytestplugin.py
+Lines: 396-440
+Safety: text fixture only; not imported or executed.
+
+                examples = report.__dict__.get(FAILING_EXAMPLES_KEY)
+                if examples:
+                    failing_examples.append(json.loads(examples))
+
+        from hypothesis.internal.observability import _WROTE_TO
+
+        if _WROTE_TO:
+            terminalreporter.section("Hypothesis")
+            for fname in sorted(_WROTE_TO):
+                terminalreporter.write_line(f"observations written to {fname}")
+
+        if failing_examples:
+            # This must have been imported already to write the failing examples
+            from hypothesis.extra._patching import gc_patches, make_patch, save_patch
+
+            patch = make_patch(failing_examples)
+            try:
+                gc_patches()
+                fname = save_patch(patch)
+            except Exception:
+                # fail gracefully if we hit any filesystem or permissions problems
+                return
+            if not _WROTE_TO:
+                terminalreporter.section("Hypothesis")
+            terminalreporter.write_line(
+                f"`git apply {fname}` to add failing examples to your code."
+            )
+
+    def pytest_collection_modifyitems(items):
+        if "hypothesis" not in sys.modules:
+            return
+
+        from hypothesis import is_hypothesis_test
+
+        has_hypothesis_tests = False
+        for item in items:
+            if isinstance(item, pytest.Function) and is_hypothesis_test(item.obj):
+                item.add_marker("hypothesis")
+                has_hypothesis_tests = True
+
+        if has_hypothesis_tests:
+            # Collect local constants now, during test collection, so that this
+            # time is not attributed to whatever test happens to run first.
+            # (see https://github.com/HypothesisWorks/hypothesis/issues/4627)
+            # We might miss weird wrapped uses (if there are no other PBTs!),

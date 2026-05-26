@@ -1,0 +1,7 @@
+Repository: psf/requests
+Issue: https://github.com/psf/requests/issues/4965
+Task: github:psf/requests#4965
+Safety: bounded failure excerpt only; not executed.
+
+[python]
+import requests response = requests.post("http://connreset.biz/get/incomplete/chunked", stream=True) try: response.content except Exception: # Error handling code, may try something else or fall through pass content = response.content # empty string

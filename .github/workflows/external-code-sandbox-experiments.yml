@@ -1,0 +1,149 @@
+name: External Code Sandbox Experiments
+
+on:
+  workflow_dispatch:
+    inputs:
+      repeats:
+        description: Repeated trials per external code repository/task/variant cell.
+        required: true
+        default: "2"
+      max_generations:
+        description: Maximum loop generations per experiment run.
+        required: true
+        default: "3"
+      max_candidates:
+        description: Maximum candidates per generation.
+        required: true
+        default: "3"
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: external-code-sandbox-experiments-${{ github.ref }}-${{ github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  external-code-sandbox:
+    name: Actual external code sandbox transfer matrix
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+
+    env:
+      OMEGA_THDSE_ENABLE_RUST: "0"
+      PYTHONUNBUFFERED: "1"
+      PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/thdse:${{ github.workspace }}/thdse/src:${{ github.workspace }}/Cognitive-Core-Engine-Test
+
+    steps:
+      - name: Checkout latest base
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: |
+            requirements-ci.txt
+            thdse/requirements.txt
+
+      - name: Install verification dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-ci.txt
+
+      - name: Configure Git author
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Preflight external code sandbox suite
+        run: |
+          python -m py_compile scripts/external_world_grounding.py scripts/external_code_sandbox_fixtures.py scripts/rsi_experiment_suite.py
+          python -m pytest -q --import-mode=importlib --disable-warnings \
+            tests/test_external_world_grounding.py \
+            tests/test_external_code_sandbox_fixtures.py \
+            tests/test_rsi_experiment_suite.py
+
+      - name: Refresh actual external issue grounding metadata
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python scripts/external_world_grounding.py \
+            --repository psf/requests \
+            --repository hypothesisworks/hypothesis \
+            --repository pandas-dev/pandas \
+            --repository dask/dask \
+            --label-query bug \
+            --limit-per-repo 1 \
+            --output-dir reports/external_grounding/external_transfer/latest
+
+      - name: Build external code sandbox fixtures
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python scripts/external_code_sandbox_fixtures.py \
+            --repository psf/requests \
+            --repository hypothesisworks/hypothesis \
+            --repository pandas-dev/pandas \
+            --repository dask/dask \
+            --grounding-path reports/external_grounding/external_transfer/latest/external_grounding_tasks.json \
+            --output-dir reports/external_code_fixtures/latest \
+            --max-source-chars 1800 \
+            --max-failure-chars 2200
+
+      - name: Run external code sandbox transfer matrix
+        run: |
+          python scripts/rsi_experiment_suite.py \
+            --repo-root "$GITHUB_WORKSPACE" \
+            --output-dir "$GITHUB_WORKSPACE/reports/rsi_experiments/external_code_transfer/latest" \
+            --repository external_requests_code_transfer_repo \
+            --repository external_hypothesis_code_transfer_repo \
+            --repository external_pandas_code_transfer_repo \
+            --repository external_dask_code_transfer_repo \
+            --variant verified_closed_loop \
+            --variant agent_coding_loop \
+            --variant ci_only_validation \
+            --repeats "${{ inputs.repeats }}" \
+            --max-generations "${{ inputs.max_generations }}" \
+            --max-candidates "${{ inputs.max_candidates }}" \
+            --wall-seconds 120 \
+            --timeout-seconds 60
+
+      - name: Show external code sandbox scorecard
+        if: always()
+        run: |
+          if [ -f reports/rsi_experiments/external_code_transfer/latest/baseline_comparison.md ]; then
+            cat reports/rsi_experiments/external_code_transfer/latest/baseline_comparison.md
+          else
+            echo "No external code sandbox scorecard was produced."
+          fi
+
+      - name: Commit external code sandbox reports
+        run: |
+          git status --short
+          git add reports/external_grounding/external_transfer/latest reports/external_code_fixtures/latest reports/rsi_experiments/external_code_transfer/latest
+          if git diff --cached --quiet; then
+            echo "No external code sandbox report changes to commit."
+          else
+            git commit -m "Record external code sandbox experiment results"
+            if ! git push; then
+              echo "::warning::External code sandbox report push failed; uploaded artifacts remain available."
+            fi
+          fi
+
+      - name: Upload external code sandbox artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: external-code-sandbox-experiments
+          path: |
+            reports/external_grounding/external_transfer/latest
+            reports/external_code_fixtures/latest
+            reports/rsi_experiments/external_code_transfer/latest
+          if-no-files-found: ignore
+          retention-days: 30

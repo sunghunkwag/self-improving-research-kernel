@@ -1,0 +1,12 @@
+Repository: hypothesisworks/hypothesis
+Issue: https://github.com/HypothesisWorks/hypothesis/issues/4744
+Task: github:hypothesisworks/hypothesis#4744
+Safety: bounded failure excerpt only; not executed.
+
+[python]
+from hypothesis.strategies import integers from hypothesis import given @given(integers()) def test_two_failures(a): assert a < 0 # note, no newline
+
+---
+
+[diff]
+... --- --- ./test_one.py +++ ./test_one.py @@ -2,5 +2,6 @@ from hypothesis import given @given(integers()) +@example(a=0).via("discovered failure") def test_two_failures(a): assert a < 0 # note, no newline +\ No newline at end of file
