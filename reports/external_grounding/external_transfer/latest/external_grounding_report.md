@@ -1,6 +1,6 @@
 # External Grounding Report
 
-- Generated at: 2026-05-26T22:30:18Z
+- Generated at: 2026-05-26T22:48:03Z
 - Sources: 4
 - Tasks: 4
 

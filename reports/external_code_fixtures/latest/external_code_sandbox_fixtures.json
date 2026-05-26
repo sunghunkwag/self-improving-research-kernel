@@ -174,8 +174,8 @@
       "source_url": "https://raw.githubusercontent.com/dask/dask/main/dask/array/reductions.py"
     }
   ],
-  "generated_at": "2026-05-26T22:45:30Z",
-  "grounding_path": "reports\\external_grounding\\external_transfer\\latest\\external_grounding_tasks.json",
+  "generated_at": "2026-05-26T22:48:07Z",
+  "grounding_path": "reports/external_grounding/external_transfer/latest/external_grounding_tasks.json",
   "safety_model": [
     "External code is fetched only as bounded text excerpts.",
     "No external repository code is cloned, installed, imported, or executed.",
