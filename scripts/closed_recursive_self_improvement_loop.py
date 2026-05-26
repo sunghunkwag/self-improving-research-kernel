@@ -27,7 +27,7 @@ import sys
 import time
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Callable, Dict, List, Optional, Sequence
+from typing import Callable, Dict, List, Optional, Sequence, Tuple
 
 
 Transform = Callable[[str], str]
@@ -87,6 +87,23 @@ class CandidateRecord:
     finished_at: str
     gates: List[Dict[str, object]]
     error: str = ""
+
+
+@dataclass(frozen=True)
+class CandidateFactorySpec:
+    """Declarative recipe for one source-inspection candidate factory."""
+
+    candidate_name: str
+    missing_symbol: str
+    goal_name: str
+    target: str
+    metric: str
+    rationale: str
+    target_relative_path: str
+    test_relative_path: str
+    transform: Transform
+    test_source: str
+    focused_tests: Tuple[str, ...]
 
 
 def utc_now() -> str:
@@ -283,6 +300,71 @@ def test_records_importing_filters_static_imports():
 '''
 
 
+LOCAL_CORPUS_QUERY_SPECS: Tuple[CandidateFactorySpec, ...] = (
+    CandidateFactorySpec(
+        candidate_name="local_corpus_feature_query_v1",
+        missing_symbol="def records_with_feature(",
+        goal_name="make_local_corpus_queryable_by_feature",
+        target="shared.local_corpus.LocalCorpusIndex",
+        metric="new query API plus focused regression test",
+        rationale="The corpus index already extracts feature flags but lacks a stable query API.",
+        target_relative_path="shared/local_corpus.py",
+        test_relative_path="tests/test_local_corpus_feature_query_rewrite.py",
+        transform=add_records_with_feature,
+        test_source=FEATURE_QUERY_TEST,
+        focused_tests=("tests/test_local_corpus_feature_query_rewrite.py",),
+    ),
+    CandidateFactorySpec(
+        candidate_name="local_corpus_import_query_v1",
+        missing_symbol="def records_importing(",
+        goal_name="make_local_corpus_queryable_by_import",
+        target="shared.local_corpus.LocalCorpusIndex",
+        metric="new import query API plus focused regression test",
+        rationale="The corpus index stores static imports but lacks a direct import lookup API.",
+        target_relative_path="shared/local_corpus.py",
+        test_relative_path="tests/test_local_corpus_import_query_rewrite.py",
+        transform=add_records_importing,
+        test_source=IMPORT_QUERY_TEST,
+        focused_tests=("tests/test_local_corpus_import_query_rewrite.py",),
+    ),
+)
+
+
+def candidates_from_specs(
+    repo_root: Path,
+    generation: int,
+    specs: Sequence[CandidateFactorySpec],
+) -> List[CandidatePatch]:
+    """Generate source candidates from declarative missing-capability specs."""
+
+    candidates: List[CandidatePatch] = []
+    source_cache: Dict[str, str] = {}
+    for spec in specs:
+        target_path = repo_root / spec.target_relative_path
+        if spec.target_relative_path not in source_cache:
+            source_cache[spec.target_relative_path] = target_path.read_text(encoding="utf-8")
+        if spec.missing_symbol in source_cache[spec.target_relative_path]:
+            continue
+        candidates.append(
+            CandidatePatch(
+                name=spec.candidate_name,
+                generation=generation,
+                goal=Goal(
+                    name=spec.goal_name,
+                    target=spec.target,
+                    metric=spec.metric,
+                    rationale=spec.rationale,
+                ),
+                target_path=target_path,
+                test_path=repo_root / spec.test_relative_path,
+                transform=spec.transform,
+                test_source=spec.test_source,
+                focused_tests=spec.focused_tests,
+            )
+        )
+    return candidates
+
+
 POLICY_REGISTRY_SOURCE = '''"""Candidate policy registry for the closed RSI loop.
 
 The registry is intentionally declarative. It gives experiments a stable
@@ -315,6 +397,12 @@ def default_policy_capabilities() -> Tuple[PolicyCapability, ...]:
             category="generator",
             evidence="candidate factories inspect repository state before proposing patches",
             risk_control="candidate names are deterministic and budget bounded",
+        ),
+        PolicyCapability(
+            name="history_aware_candidate_ranking",
+            category="generator",
+            evidence="candidate order is derived from persisted accepted/rejected provenance",
+            risk_control="previously rejected candidate names are retried only after fresher options",
         ),
         PolicyCapability(
             name="compile_focused_broad_validation",
@@ -465,50 +553,13 @@ class ClosedRecursiveSelfImprovementLoop:
         """Invent candidates from missing source capabilities."""
 
         local_corpus = self.repo_root / "shared" / "local_corpus.py"
-        text = local_corpus.read_text(encoding="utf-8")
         loop_script = self.repo_root / "scripts" / "closed_recursive_self_improvement_loop.py"
         loop_text = loop_script.read_text(encoding="utf-8") if loop_script.exists() else ""
-        candidates: List[CandidatePatch] = []
-
-        if "def records_with_feature(" not in text:
-            goal = Goal(
-                name="make_local_corpus_queryable_by_feature",
-                target="shared.local_corpus.LocalCorpusIndex",
-                metric="new query API plus focused regression test",
-                rationale="The corpus index already extracts feature flags but lacks a stable query API.",
-            )
-            candidates.append(
-                CandidatePatch(
-                    name="local_corpus_feature_query_v1",
-                    generation=generation,
-                    goal=goal,
-                    target_path=local_corpus,
-                    test_path=self.repo_root / "tests" / "test_local_corpus_feature_query_rewrite.py",
-                    transform=add_records_with_feature,
-                    test_source=FEATURE_QUERY_TEST,
-                    focused_tests=("tests/test_local_corpus_feature_query_rewrite.py",),
-                )
-            )
-
-        if "def records_importing(" not in text:
-            goal = Goal(
-                name="make_local_corpus_queryable_by_import",
-                target="shared.local_corpus.LocalCorpusIndex",
-                metric="new import query API plus focused regression test",
-                rationale="The corpus index stores static imports but lacks a direct import lookup API.",
-            )
-            candidates.append(
-                CandidatePatch(
-                    name="local_corpus_import_query_v1",
-                    generation=generation,
-                    goal=goal,
-                    target_path=local_corpus,
-                    test_path=self.repo_root / "tests" / "test_local_corpus_import_query_rewrite.py",
-                    transform=add_records_importing,
-                    test_source=IMPORT_QUERY_TEST,
-                    focused_tests=("tests/test_local_corpus_import_query_rewrite.py",),
-                )
-            )
+        candidates = candidates_from_specs(
+            self.repo_root,
+            generation,
+            LOCAL_CORPUS_QUERY_SPECS if local_corpus.exists() else (),
+        )
 
         if loop_script.exists() and POLICY_REGISTRY_ACTIVE_MARKER not in loop_text:
             goal = Goal(
@@ -537,6 +588,28 @@ class ClosedRecursiveSelfImprovementLoop:
             )
 
         return candidates
+
+    def rank_candidates(self, candidates: Sequence[CandidatePatch], state: dict) -> List[CandidatePatch]:
+        """Rank candidates with persisted acceptance and rejection provenance."""
+
+        accepted_names = {
+            str(record.get("name"))
+            for record in state.get("accepted", [])
+            if isinstance(record, dict)
+        }
+        rejected_names = {
+            str(record.get("name"))
+            for record in state.get("rejected", [])
+            if isinstance(record, dict)
+        }
+
+        def candidate_key(candidate: CandidatePatch) -> Tuple[int, int, int, str]:
+            rejected_penalty = 1 if candidate.name in rejected_names else 0
+            novelty_bonus = 0 if candidate.name not in accepted_names else 1
+            policy_bonus = 0 if candidate.name.startswith("loop_policy") else 1
+            return (rejected_penalty, novelty_bonus, policy_bonus, candidate.name)
+
+        return sorted(candidates, key=candidate_key)
 
     def run_command(self, label: str, args: Sequence[str], cwd: Path) -> GateResult:
         start = time.monotonic()
@@ -720,7 +793,7 @@ class ClosedRecursiveSelfImprovementLoop:
             if time.monotonic() - started > wall_seconds:
                 break
             generation = int(state.get("active_generation", 0)) + 1
-            candidates = self.invent_candidates(generation)
+            candidates = self.rank_candidates(self.invent_candidates(generation), state)
             if not candidates:
                 break
 

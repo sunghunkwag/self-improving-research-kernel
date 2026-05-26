@@ -49,7 +49,11 @@ The workflow commits promoted patches and state files back to `main`, so the
 next manual run resumes from the latest accepted commit.
 
 The workflow `RSI Research Experiments` runs the review-oriented experiment
-matrix in disposable repository copies. It produces:
+matrix in disposable repository copies. It now evaluates multiple benchmark
+repository fixtures and repeated trials:
+
+- `omega_full_repo`: the full OMEGA-THDSE checkout
+- `compact_kernel_repo`: a minimal kernel fixture for faster repeated trials
 
 - baseline and ablation metrics
 - accepted/rejected candidate rates
@@ -57,8 +61,16 @@ matrix in disposable repository copies. It produces:
 - broad-gate regression counts
 - wall-clock cost proxies
 - improvement depth
+- per-trial seeds and aggregate metrics
 - failure analysis
 - bounded-execution safety report
+
+The experiment suite writes both raw and aggregate artifacts under
+`reports/rsi_experiments/latest/`:
+
+- `metrics.csv`: raw repository/task/variant/repeat outcomes
+- `aggregate_metrics.csv`: grouped means and rollback success rates
+- `benchmark_catalog.json`: repositories, tasks, variants, and repeat count
 
 ## Local Safety
 

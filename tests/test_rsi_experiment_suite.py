@@ -1,8 +1,12 @@
 from scripts.rsi_experiment_suite import (
+    DEFAULT_REPOSITORIES,
     ExperimentVariant,
+    aggregate_results,
+    build_benchmark_repo,
     changed_files,
     remove_policy_registry_surface,
     repository_fingerprint,
+    stable_trial_seed,
     strip_method,
 )
 
@@ -102,3 +106,90 @@ def test_experiment_variant_defaults_to_safe_controls():
     assert variant.persistence is True
     assert variant.max_generations_override is None
     assert variant.max_candidates_override is None
+
+
+def test_stable_trial_seed_changes_by_repeat():
+    first = stable_trial_seed("repo", "task", "variant", 0)
+    second = stable_trial_seed("repo", "task", "variant", 1)
+
+    assert first == stable_trial_seed("repo", "task", "variant", 0)
+    assert first != second
+
+
+def test_compact_benchmark_repository_builder_creates_minimal_repo(tmp_path):
+    source = tmp_path / "source"
+    target = tmp_path / "target"
+    (source / "scripts").mkdir(parents=True)
+    (source / "shared").mkdir()
+    (source / "scripts" / "closed_recursive_self_improvement_loop.py").write_text("", encoding="utf-8")
+    (source / "scripts" / "rsi_policy_registry.py").write_text("", encoding="utf-8")
+    (source / "shared" / "__init__.py").write_text("", encoding="utf-8")
+    (source / "shared" / "local_corpus.py").write_text("", encoding="utf-8")
+
+    compact = next(repository for repository in DEFAULT_REPOSITORIES if repository.name == "compact_kernel_repo")
+    build_benchmark_repo(source, target, compact)
+
+    assert (target / "scripts" / "closed_recursive_self_improvement_loop.py").exists()
+    assert (target / "shared" / "local_corpus.py").exists()
+    assert (target / "tests" / "test_fixture_smoke.py").exists()
+
+
+def test_aggregate_results_groups_repeated_trials():
+    from scripts.rsi_experiment_suite import ExperimentResult
+
+    rows = [
+        ExperimentResult(
+            repository="repo",
+            repository_description="fixture",
+            task="task",
+            variant="variant",
+            family="family",
+            description="description",
+            repeat_index=0,
+            seed="a",
+            exit_code=0,
+            elapsed_s=1.0,
+            accepted_count=1,
+            rejected_count=0,
+            accepted_rate=1.0,
+            regression_gate_failures=0,
+            rollback_correct=None,
+            persistence_file_exists=True,
+            improvement_depth=1,
+            cost_proxy_seconds=1.0,
+            changed_files_count=2,
+            summary_path="summary.json",
+            stdout_tail="",
+            stderr_tail="",
+        ),
+        ExperimentResult(
+            repository="repo",
+            repository_description="fixture",
+            task="task",
+            variant="variant",
+            family="family",
+            description="description",
+            repeat_index=1,
+            seed="b",
+            exit_code=0,
+            elapsed_s=3.0,
+            accepted_count=0,
+            rejected_count=1,
+            accepted_rate=0.0,
+            regression_gate_failures=1,
+            rollback_correct=True,
+            persistence_file_exists=True,
+            improvement_depth=0,
+            cost_proxy_seconds=3.0,
+            changed_files_count=0,
+            summary_path="summary.json",
+            stdout_tail="",
+            stderr_tail="",
+        ),
+    ]
+
+    aggregate = aggregate_results(rows)[0]
+
+    assert aggregate["trial_count"] == 2
+    assert aggregate["accepted_rate_mean"] == 0.5
+    assert aggregate["rollback_success_rate"] == 1.0

@@ -32,6 +32,12 @@ def default_policy_capabilities() -> Tuple[PolicyCapability, ...]:
             risk_control="candidate names are deterministic and budget bounded",
         ),
         PolicyCapability(
+            name="history_aware_candidate_ranking",
+            category="generator",
+            evidence="candidate order is derived from persisted accepted/rejected provenance",
+            risk_control="previously rejected candidate names are retried only after fresher options",
+        ),
+        PolicyCapability(
             name="compile_focused_broad_validation",
             category="validator",
             evidence="candidates must pass py_compile, focused pytest, root pytest, and THDSE core gates",

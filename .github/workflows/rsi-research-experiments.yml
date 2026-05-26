@@ -19,6 +19,10 @@ on:
         description: Per-command timeout in seconds.
         required: true
         default: "420"
+      repeats:
+        description: Repeated trials per repository/task/variant.
+        required: true
+        default: "2"
 
 permissions:
   contents: write
@@ -78,7 +82,8 @@ jobs:
             --max-generations "${{ inputs.max_generations }}" \
             --max-candidates "${{ inputs.max_candidates }}" \
             --wall-seconds "${{ inputs.wall_seconds }}" \
-            --timeout-seconds "${{ inputs.timeout_seconds }}"
+            --timeout-seconds "${{ inputs.timeout_seconds }}" \
+            --repeats "${{ inputs.repeats }}"
 
       - name: Show experiment summary
         if: always()
