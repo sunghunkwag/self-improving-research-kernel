@@ -1,0 +1,92 @@
+{
+  "generated_at": "2026-05-26T13:09:11Z",
+  "safety_model": [
+    "Only issue metadata is fetched.",
+    "No external repository code is cloned or executed.",
+    "Issue bodies are truncated before persistence.",
+    "Repository count and issue count are bounded by CLI limits.",
+    "Every task keeps source URL and retrieval provenance."
+  ],
+  "sources": [
+    {
+      "max_items": 2,
+      "provider": "github",
+      "query": "state=open labels=bug",
+      "repository": "psf/requests"
+    },
+    {
+      "max_items": 2,
+      "provider": "github",
+      "query": "state=open labels=bug",
+      "repository": "pallets/flask"
+    },
+    {
+      "max_items": 2,
+      "provider": "github",
+      "query": "state=open labels=bug",
+      "repository": "pytest-dev/pytest"
+    }
+  ],
+  "tasks": [
+    {
+      "body_excerpt": "`Session.trust_env = False` turns off the checking of environment variables for options including proxy settings (`*_proxy`). But `urllib` picks up and uses these environment proxy settings anyway. `requests` should pass the `trust_env` setting on to `urllib`. (Although I'm not sure if `urllib` has a similar override.) (Proxy setting precedence should be sorted out here as well. They way it is now, environment proxy settings will interfere with (rather than be over-ridden by) the `proxies` argument in `Session.request` or `requests.request` calls and the `Session.proxies` config regardless of `trust_env` settings.)",
+      "created_at": "2014-04-25T03:09:20Z",
+      "grounding_score": 3.0,
+      "issue_number": 2018,
+      "labels": [
+        "Breaking API Change",
+        "Bug",
+        "Planned"
+      ],
+      "provenance": {
+        "retrieved_at": "2026-05-26T13:09:10Z",
+        "source_api": "https://api.github.com/repos/psf/requests/issues",
+        "source_url": "https://github.com/psf/requests/issues/2018"
+      },
+      "provider": "github",
+      "repository": "psf/requests",
+      "safety_controls": [
+        "metadata_only",
+        "no_remote_code_execution",
+        "bounded_issue_count",
+        "bounded_body_excerpt",
+        "repository_allowlist"
+      ],
+      "state": "open",
+      "task_id": "github:psf/requests#2018",
+      "task_kind": "external_bug_repair",
+      "title": "Re-order proxy precedence.",
+      "updated_at": "2026-04-05T12:36:27Z",
+      "url": "https://github.com/psf/requests/issues/2018"
+    },
+    {
+      "body_excerpt": "I had a hard debugging time today because an error in the response stream is only reported when accessing `response.content` for the first time. This is especially irritating when running code in a debugger. ## Expected Result If accessing `response.content` the first time raises an exception I would expect that accessing `response.content` again would also raise an exception (ideally the same). ## Actual Result Instead after raising on the first get, getting `response.content` again returns an empty string. ## Reproduction Steps Here is a patch with a new test case for this: [error_replay_test.diff.gz](https://github.com/requests/requests/files/2838360/error_replay_test.diff.gz). Basically, it boils down to this: ```python import requests response = requests.post(\"http://connreset.biz/get/incomplete/chunked\", stream=True) try: response.content except Exception: # Error handling code, may try something else or fall through pass content = response.content # empty string ``` Output of my test case: ``` $ pipenv run py.test tests/test_lowlevel.py -q --tb=short -k retain F [100%] ============================= FAILURES ============================= _______________ test_response_content_",
+      "created_at": "2019-02-06T21:46:17Z",
+      "grounding_score": 3.0,
+      "issue_number": 4965,
+      "labels": [
+        "Bug"
+      ],
+      "provenance": {
+        "retrieved_at": "2026-05-26T13:09:10Z",
+        "source_api": "https://api.github.com/repos/psf/requests/issues",
+        "source_url": "https://github.com/psf/requests/issues/4965"
+      },
+      "provider": "github",
+      "repository": "psf/requests",
+      "safety_controls": [
+        "metadata_only",
+        "no_remote_code_execution",
+        "bounded_issue_count",
+        "bounded_body_excerpt",
+        "repository_allowlist"
+      ],
+      "state": "open",
+      "task_id": "github:psf/requests#4965",
+      "task_kind": "external_regression_repair",
+      "title": "Accessing response.content twice removes forgets read error",
+      "updated_at": "2026-04-29T02:11:51Z",
+      "url": "https://github.com/psf/requests/issues/4965"
+    }
+  ]
+}

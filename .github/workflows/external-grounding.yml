@@ -1,0 +1,92 @@
+name: External Grounding
+
+on:
+  workflow_dispatch:
+    inputs:
+      limit_per_repo:
+        description: Maximum GitHub issues to read per repository.
+        required: true
+        default: "3"
+      label_query:
+        description: GitHub issue label query.
+        required: true
+        default: "bug"
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: external-grounding-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  external-grounding:
+    name: Fetch bounded external task seeds
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout latest base
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Configure Git author
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Preflight external grounding
+        run: |
+          python -m py_compile scripts/external_world_grounding.py
+          python -m pytest -q --import-mode=importlib --disable-warnings tests/test_external_world_grounding.py
+
+      - name: Fetch external grounding tasks
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python scripts/external_world_grounding.py \
+            --repository psf/requests \
+            --repository pallets/flask \
+            --repository pytest-dev/pytest \
+            --label-query "${{ inputs.label_query }}" \
+            --limit-per-repo "${{ inputs.limit_per_repo }}" \
+            --output-dir reports/external_grounding/latest
+
+      - name: Show external grounding report
+        if: always()
+        run: |
+          if [ -f reports/external_grounding/latest/external_grounding_report.md ]; then
+            cat reports/external_grounding/latest/external_grounding_report.md
+          else
+            echo "No external grounding report was produced."
+          fi
+
+      - name: Commit external grounding report
+        run: |
+          git status --short
+          git add reports/external_grounding/latest
+          if git diff --cached --quiet; then
+            echo "No external grounding report changes to commit."
+          else
+            git commit -m "Record external grounding task seeds"
+            if ! git push; then
+              echo "::warning::External grounding report push failed; uploaded artifacts remain available."
+            fi
+          fi
+
+      - name: Upload external grounding artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: external-grounding
+          path: reports/external_grounding/latest
+          if-no-files-found: ignore
+          retention-days: 30

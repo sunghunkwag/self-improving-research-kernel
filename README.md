@@ -48,6 +48,29 @@ that now combines:
 This makes candidate discovery less dependent on hand-coded candidate names
 while keeping every patch deterministic, reviewable, and gate-verified.
 
+## External Grounding
+
+The repository can now ground RSI experiments in external maintenance signals
+without executing untrusted code:
+
+```bash
+python scripts/external_world_grounding.py --repository psf/requests --limit-per-repo 3
+```
+
+The grounding layer reads public GitHub issue metadata, converts it into
+bounded task seeds, and writes:
+
+- `reports/external_grounding/latest/external_grounding_tasks.json`
+- `reports/external_grounding/latest/external_grounding_report.md`
+
+Safety controls:
+
+- metadata only
+- no external repository cloning
+- no external code execution
+- bounded issue count and body length
+- source URL and retrieval provenance for every task
+
 ## GitHub Actions
 
 The workflow `Closed RSI Loop` can be started manually from the GitHub Actions
