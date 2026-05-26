@@ -39,11 +39,15 @@ def test_repository_fingerprint_ignores_state_directory(tmp_path):
     state = tmp_path / ".omega_rsi_runs"
     state.mkdir()
     (state / "closed_rsi_state.json").write_text("{}", encoding="utf-8")
+    shared = tmp_path / "shared"
+    shared.mkdir()
+    (shared / "atom_bank.json").write_text("{}", encoding="utf-8")
 
     fingerprint = repository_fingerprint(tmp_path)
 
     assert "a.py" in fingerprint
     assert ".omega_rsi_runs/closed_rsi_state.json" not in fingerprint
+    assert "shared/atom_bank.json" not in fingerprint
 
 
 def test_remove_policy_registry_surface_preserves_template_string(tmp_path):
@@ -55,23 +59,32 @@ def test_remove_policy_registry_surface_preserves_template_string(tmp_path):
     (tests / "test_rsi_policy_registry_rewrite.py").write_text("", encoding="utf-8")
     loop = scripts / "closed_recursive_self_improvement_loop.py"
     loop.write_text(
-        'function_insertion = """\\n\\ndef load_policy_registry(repo_root):\\n    pass\\n"""\\n'
-        "POLICY_REGISTRY_ACTIVE = True\n\n"
-        "def load_policy_registry(repo_root):\n"
-        "    return {}\n\n"
-        "class ClosedRecursiveSelfImprovementLoop:\n"
-        "    def policy_surface(self):\n"
-        "        return {}\n\n"
-        "    def load_state(self):\n"
-        "        return {}\n",
+        '''POLICY_REGISTRY_ACTIVE_MARKER = "POLICY_REGISTRY_" + "ACTIVE = True"
+function_insertion = "\\n\\n" + POLICY_REGISTRY_ACTIVE_MARKER + """
+def load_policy_registry(repo_root):
+    pass
+"""
+POLICY_REGISTRY_ACTIVE = True
+
+def load_policy_registry(repo_root):
+    return {}
+
+class ClosedRecursiveSelfImprovementLoop:
+    def policy_surface(self):
+        return {}
+
+    def load_state(self):
+        return {}
+''',
         encoding="utf-8",
     )
 
     remove_policy_registry_surface(tmp_path)
     text = loop.read_text(encoding="utf-8")
 
-    assert 'function_insertion = """' in text
-    assert "POLICY_REGISTRY_ACTIVE = True" not in text
+    assert "function_insertion =" in text
+    assert '"POLICY_REGISTRY_" + "ACTIVE = True"' in text
+    assert not any(line.strip() == "POLICY_REGISTRY_ACTIVE = True" for line in text.splitlines())
     assert "    def policy_surface" not in text
     assert "    def load_state" in text
 

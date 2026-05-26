@@ -32,6 +32,10 @@ EXCLUDED_DIRS = {
     "target",
 }
 
+EXCLUDED_FILES = {
+    "shared/atom_bank.json",
+}
+
 
 @dataclass(frozen=True)
 class ExperimentVariant:
@@ -245,6 +249,8 @@ def iter_fingerprint_files(repo: Path) -> Iterable[Path]:
         relative = path.relative_to(repo)
         parts = set(relative.parts)
         if parts & EXCLUDED_DIRS:
+            continue
+        if relative.as_posix() in EXCLUDED_FILES:
             continue
         if relative.parts[:3] == ("reports", "rsi_experiments"):
             continue
