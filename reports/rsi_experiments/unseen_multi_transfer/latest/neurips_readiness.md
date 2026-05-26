@@ -13,47 +13,47 @@ This report evaluates a bounded, verified recursive self-improvement loop. It do
 
 | Repository | Split | Task | Variant | Repeat | Accepted | Rejected | Rate | Regression Failures | Rollback Correct | Seconds |
 |---|---|---|---:|---:|---:|---:|---:|---:|---:|---:|
-| unseen_schema_transfer_repo | unseen | unseen_static_roles_query | verified_closed_loop | 0 | 3 | 0 | 1.00 | 0 | n/a | 9.67 |
-| unseen_schema_transfer_repo | unseen | unseen_static_roles_query | agent_coding_loop | 0 | 1 | 0 | 1.00 | 0 | n/a | 3.28 |
-| unseen_schema_transfer_repo | unseen | unseen_static_roles_query | ci_only_validation | 0 | 0 | 0 | 0.00 | 0 | n/a | 1.34 |
-| unseen_schema_transfer_repo | unseen | unseen_static_roles_query | verified_closed_loop | 1 | 3 | 0 | 1.00 | 0 | n/a | 8.95 |
-| unseen_schema_transfer_repo | unseen | unseen_static_roles_query | agent_coding_loop | 1 | 1 | 0 | 1.00 | 0 | n/a | 3.02 |
-| unseen_schema_transfer_repo | unseen | unseen_static_roles_query | ci_only_validation | 1 | 0 | 0 | 0.00 | 0 | n/a | 1.41 |
-| unseen_security_transfer_repo | unseen | unseen_threat_labels_query | verified_closed_loop | 0 | 3 | 0 | 1.00 | 0 | n/a | 10.02 |
-| unseen_security_transfer_repo | unseen | unseen_threat_labels_query | agent_coding_loop | 0 | 1 | 0 | 1.00 | 0 | n/a | 3.55 |
-| unseen_security_transfer_repo | unseen | unseen_threat_labels_query | ci_only_validation | 0 | 0 | 0 | 0.00 | 0 | n/a | 1.53 |
-| unseen_security_transfer_repo | unseen | unseen_threat_labels_query | verified_closed_loop | 1 | 3 | 0 | 1.00 | 0 | n/a | 9.59 |
-| unseen_security_transfer_repo | unseen | unseen_threat_labels_query | agent_coding_loop | 1 | 1 | 0 | 1.00 | 0 | n/a | 3.22 |
-| unseen_security_transfer_repo | unseen | unseen_threat_labels_query | ci_only_validation | 1 | 0 | 0 | 0.00 | 0 | n/a | 1.33 |
-| unseen_science_transfer_repo | unseen | unseen_evidence_sources_query | verified_closed_loop | 0 | 3 | 0 | 1.00 | 0 | n/a | 9.28 |
-| unseen_science_transfer_repo | unseen | unseen_evidence_sources_query | agent_coding_loop | 0 | 1 | 0 | 1.00 | 0 | n/a | 3.73 |
-| unseen_science_transfer_repo | unseen | unseen_evidence_sources_query | ci_only_validation | 0 | 0 | 0 | 0.00 | 0 | n/a | 1.61 |
-| unseen_science_transfer_repo | unseen | unseen_evidence_sources_query | verified_closed_loop | 1 | 3 | 0 | 1.00 | 0 | n/a | 10.16 |
-| unseen_science_transfer_repo | unseen | unseen_evidence_sources_query | agent_coding_loop | 1 | 1 | 0 | 1.00 | 0 | n/a | 3.62 |
-| unseen_science_transfer_repo | unseen | unseen_evidence_sources_query | ci_only_validation | 1 | 0 | 0 | 0.00 | 0 | n/a | 1.56 |
-| unseen_control_transfer_repo | unseen | unseen_controller_modes_query | verified_closed_loop | 0 | 3 | 0 | 1.00 | 0 | n/a | 10.75 |
-| unseen_control_transfer_repo | unseen | unseen_controller_modes_query | agent_coding_loop | 0 | 1 | 0 | 1.00 | 0 | n/a | 4.19 |
-| unseen_control_transfer_repo | unseen | unseen_controller_modes_query | ci_only_validation | 0 | 0 | 0 | 0.00 | 0 | n/a | 2.05 |
-| unseen_control_transfer_repo | unseen | unseen_controller_modes_query | verified_closed_loop | 1 | 3 | 0 | 1.00 | 0 | n/a | 11.20 |
-| unseen_control_transfer_repo | unseen | unseen_controller_modes_query | agent_coding_loop | 1 | 1 | 0 | 1.00 | 0 | n/a | 3.38 |
-| unseen_control_transfer_repo | unseen | unseen_controller_modes_query | ci_only_validation | 1 | 0 | 0 | 0.00 | 0 | n/a | 1.48 |
+| unseen_schema_transfer_repo | unseen | unseen_static_roles_query | verified_closed_loop | 0 | 3 | 0 | 1.00 | 0 | n/a | 1.45 |
+| unseen_schema_transfer_repo | unseen | unseen_static_roles_query | agent_coding_loop | 0 | 1 | 0 | 1.00 | 0 | n/a | 0.51 |
+| unseen_schema_transfer_repo | unseen | unseen_static_roles_query | ci_only_validation | 0 | 0 | 0 | 0.00 | 0 | n/a | 0.22 |
+| unseen_schema_transfer_repo | unseen | unseen_static_roles_query | verified_closed_loop | 1 | 3 | 0 | 1.00 | 0 | n/a | 1.42 |
+| unseen_schema_transfer_repo | unseen | unseen_static_roles_query | agent_coding_loop | 1 | 1 | 0 | 1.00 | 0 | n/a | 0.53 |
+| unseen_schema_transfer_repo | unseen | unseen_static_roles_query | ci_only_validation | 1 | 0 | 0 | 0.00 | 0 | n/a | 0.23 |
+| unseen_security_transfer_repo | unseen | unseen_threat_labels_query | verified_closed_loop | 0 | 3 | 0 | 1.00 | 0 | n/a | 1.43 |
+| unseen_security_transfer_repo | unseen | unseen_threat_labels_query | agent_coding_loop | 0 | 1 | 0 | 1.00 | 0 | n/a | 0.52 |
+| unseen_security_transfer_repo | unseen | unseen_threat_labels_query | ci_only_validation | 0 | 0 | 0 | 0.00 | 0 | n/a | 0.22 |
+| unseen_security_transfer_repo | unseen | unseen_threat_labels_query | verified_closed_loop | 1 | 3 | 0 | 1.00 | 0 | n/a | 1.43 |
+| unseen_security_transfer_repo | unseen | unseen_threat_labels_query | agent_coding_loop | 1 | 1 | 0 | 1.00 | 0 | n/a | 0.52 |
+| unseen_security_transfer_repo | unseen | unseen_threat_labels_query | ci_only_validation | 1 | 0 | 0 | 0.00 | 0 | n/a | 0.22 |
+| unseen_science_transfer_repo | unseen | unseen_evidence_sources_query | verified_closed_loop | 0 | 3 | 0 | 1.00 | 0 | n/a | 1.43 |
+| unseen_science_transfer_repo | unseen | unseen_evidence_sources_query | agent_coding_loop | 0 | 1 | 0 | 1.00 | 0 | n/a | 0.52 |
+| unseen_science_transfer_repo | unseen | unseen_evidence_sources_query | ci_only_validation | 0 | 0 | 0 | 0.00 | 0 | n/a | 0.22 |
+| unseen_science_transfer_repo | unseen | unseen_evidence_sources_query | verified_closed_loop | 1 | 3 | 0 | 1.00 | 0 | n/a | 1.43 |
+| unseen_science_transfer_repo | unseen | unseen_evidence_sources_query | agent_coding_loop | 1 | 1 | 0 | 1.00 | 0 | n/a | 0.52 |
+| unseen_science_transfer_repo | unseen | unseen_evidence_sources_query | ci_only_validation | 1 | 0 | 0 | 0.00 | 0 | n/a | 0.23 |
+| unseen_control_transfer_repo | unseen | unseen_controller_modes_query | verified_closed_loop | 0 | 3 | 0 | 1.00 | 0 | n/a | 1.41 |
+| unseen_control_transfer_repo | unseen | unseen_controller_modes_query | agent_coding_loop | 0 | 1 | 0 | 1.00 | 0 | n/a | 0.51 |
+| unseen_control_transfer_repo | unseen | unseen_controller_modes_query | ci_only_validation | 0 | 0 | 0 | 0.00 | 0 | n/a | 0.22 |
+| unseen_control_transfer_repo | unseen | unseen_controller_modes_query | verified_closed_loop | 1 | 3 | 0 | 1.00 | 0 | n/a | 1.42 |
+| unseen_control_transfer_repo | unseen | unseen_controller_modes_query | agent_coding_loop | 1 | 1 | 0 | 1.00 | 0 | n/a | 0.52 |
+| unseen_control_transfer_repo | unseen | unseen_controller_modes_query | ci_only_validation | 1 | 0 | 0 | 0.00 | 0 | n/a | 0.22 |
 
 ## Aggregate Metrics
 
 | Repository | Split | Task | Variant | Trials | Accepted Rate Mean | Regression Failures Mean | Rollback Success | Depth Mean | Seconds Mean |
 |---|---|---|---:|---:|---:|---:|---:|---:|---:|
-| unseen_control_transfer_repo | unseen | unseen_controller_modes_query | agent_coding_loop | 2 | 1.00 | 0.00 | n/a | 1.00 | 3.78 |
-| unseen_control_transfer_repo | unseen | unseen_controller_modes_query | ci_only_validation | 2 | 0.00 | 0.00 | n/a | 0.00 | 1.77 |
-| unseen_control_transfer_repo | unseen | unseen_controller_modes_query | verified_closed_loop | 2 | 1.00 | 0.00 | n/a | 3.00 | 10.98 |
-| unseen_schema_transfer_repo | unseen | unseen_static_roles_query | agent_coding_loop | 2 | 1.00 | 0.00 | n/a | 1.00 | 3.15 |
-| unseen_schema_transfer_repo | unseen | unseen_static_roles_query | ci_only_validation | 2 | 0.00 | 0.00 | n/a | 0.00 | 1.37 |
-| unseen_schema_transfer_repo | unseen | unseen_static_roles_query | verified_closed_loop | 2 | 1.00 | 0.00 | n/a | 3.00 | 9.31 |
-| unseen_science_transfer_repo | unseen | unseen_evidence_sources_query | agent_coding_loop | 2 | 1.00 | 0.00 | n/a | 1.00 | 3.68 |
-| unseen_science_transfer_repo | unseen | unseen_evidence_sources_query | ci_only_validation | 2 | 0.00 | 0.00 | n/a | 0.00 | 1.59 |
-| unseen_science_transfer_repo | unseen | unseen_evidence_sources_query | verified_closed_loop | 2 | 1.00 | 0.00 | n/a | 3.00 | 9.72 |
-| unseen_security_transfer_repo | unseen | unseen_threat_labels_query | agent_coding_loop | 2 | 1.00 | 0.00 | n/a | 1.00 | 3.38 |
-| unseen_security_transfer_repo | unseen | unseen_threat_labels_query | ci_only_validation | 2 | 0.00 | 0.00 | n/a | 0.00 | 1.43 |
-| unseen_security_transfer_repo | unseen | unseen_threat_labels_query | verified_closed_loop | 2 | 1.00 | 0.00 | n/a | 3.00 | 9.80 |
+| unseen_control_transfer_repo | unseen | unseen_controller_modes_query | agent_coding_loop | 2 | 1.00 | 0.00 | n/a | 1.00 | 0.52 |
+| unseen_control_transfer_repo | unseen | unseen_controller_modes_query | ci_only_validation | 2 | 0.00 | 0.00 | n/a | 0.00 | 0.22 |
+| unseen_control_transfer_repo | unseen | unseen_controller_modes_query | verified_closed_loop | 2 | 1.00 | 0.00 | n/a | 3.00 | 1.42 |
+| unseen_schema_transfer_repo | unseen | unseen_static_roles_query | agent_coding_loop | 2 | 1.00 | 0.00 | n/a | 1.00 | 0.52 |
+| unseen_schema_transfer_repo | unseen | unseen_static_roles_query | ci_only_validation | 2 | 0.00 | 0.00 | n/a | 0.00 | 0.23 |
+| unseen_schema_transfer_repo | unseen | unseen_static_roles_query | verified_closed_loop | 2 | 1.00 | 0.00 | n/a | 3.00 | 1.44 |
+| unseen_science_transfer_repo | unseen | unseen_evidence_sources_query | agent_coding_loop | 2 | 1.00 | 0.00 | n/a | 1.00 | 0.52 |
+| unseen_science_transfer_repo | unseen | unseen_evidence_sources_query | ci_only_validation | 2 | 0.00 | 0.00 | n/a | 0.00 | 0.22 |
+| unseen_science_transfer_repo | unseen | unseen_evidence_sources_query | verified_closed_loop | 2 | 1.00 | 0.00 | n/a | 3.00 | 1.43 |
+| unseen_security_transfer_repo | unseen | unseen_threat_labels_query | agent_coding_loop | 2 | 1.00 | 0.00 | n/a | 1.00 | 0.52 |
+| unseen_security_transfer_repo | unseen | unseen_threat_labels_query | ci_only_validation | 2 | 0.00 | 0.00 | n/a | 0.00 | 0.22 |
+| unseen_security_transfer_repo | unseen | unseen_threat_labels_query | verified_closed_loop | 2 | 1.00 | 0.00 | n/a | 3.00 | 1.43 |
 
 ## Baseline And Transfer Scorecard
 
