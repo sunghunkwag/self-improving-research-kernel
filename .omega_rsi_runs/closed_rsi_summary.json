@@ -8,7 +8,7 @@
     {
       "accepted": false,
       "error": "RuntimeError: one or more validation gates failed",
-      "finished_at": "2026-05-26T06:56:29Z",
+      "finished_at": "2026-05-26T07:00:56Z",
       "gates": [
         {
           "args": [
@@ -19,7 +19,7 @@
             "tests/test_local_corpus_feature_query_rewrite.py"
           ],
           "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
-          "elapsed_s": 0.033,
+          "elapsed_s": 0.034,
           "exit_code": 0,
           "label": "local_corpus_feature_query_v1_compile",
           "stderr_tail": "",
@@ -38,7 +38,7 @@
             "tests/test_local_corpus_feature_query_rewrite.py"
           ],
           "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
-          "elapsed_s": 0.495,
+          "elapsed_s": 0.441,
           "exit_code": 0,
           "label": "local_corpus_feature_query_v1_focused",
           "stderr_tail": "",
@@ -57,11 +57,11 @@
             "tests"
           ],
           "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
-          "elapsed_s": 18.733,
-          "exit_code": 0,
+          "elapsed_s": 13.153,
+          "exit_code": 1,
           "label": "local_corpus_feature_query_v1_root_broad",
           "stderr_tail": "",
-          "stdout_tail": "........................................................................ [ 16%]\n........................................................................ [ 33%]\n........................................................................ [ 50%]\n......................................................s................. [ 66%]\n........................................................................ [ 83%]\n.......................................................s..............   [100%]\n428 passed, 4 skipped in 18.26s\n",
+          "stdout_tail": "........................................................................ [ 16%]\n........................................................................ [ 33%]\n........................................................................ [ 50%]\n......................................................s................. [ 66%]\n.....F.................................................................. [ 83%]\n.....................................................F.s..............   [100%]\n=================================== FAILURES ===================================\n____________________________ test_persistence_loop _____________________________\n\n    def test_persistence_loop():\n        \"\"\"Verify that solved problems actually populate the bank.\"\"\"\n        clear_atoms()\n        # Run a tiny subset (just one problem)\n        probs = [p for p in all_problems() if p.name == \"sum_list\"]\n        result = run_suite(\n            probs,\n            SEED_CORPUS,\n            use_behavioural=False,\n            use_goal_direction=False,\n            use_cegr=False,\n            max_cycles=2,\n        )\n    \n        atoms = load_atoms()\n>       assert len(atoms) > 0\nE       assert 0 > 0\nE        +  where 0 = len([])\n\ntests/test_rsi_persistence.py:39: AssertionError\n______________ test_python_fallback_correlate_matrix_is_symmetric ______________\n\n    def test_python_fallback_correlate_matrix_is_symmetric():\n        import sys\n    \n        sys.path.insert(0, str(_THDSE))\n        from src.utils.arena_factory import _PyFhrrArenaExtended  # noqa: E402\n    \n        arena = _PyFhrrArenaExtended(capacity=8, dimension=16)\n        handles = []\n        for value in (0.1, 0.5, 1.2):\n            h = arena.allocate()\n            arena.inject_phases(h, [value] * 16)\n            handles.append(h)\n        matrix = arena.correlate_matrix(handles)\n        n = len(handles)\n        for i in range(n):\n            for j in range(n):\n>               assert matrix[i][j] == pytest.approx(matrix[j][i], abs=1e-9)\n                       ^^^^^^^^^^^^\nE               TypeError: 'float' object is not subscriptable\n\ntests/test_thdse_arena_compliance.py:210: TypeError\n=========================== short test summary info ============================\nFAILED tests/test_rsi_persistence.py::test_persistence_loop - assert 0 > 0\n +  where 0 = len([])\nFAILED tests/test_thdse_arena_compliance.py::test_python_fallback_correlate_matrix_is_symmetric - TypeError: 'float' object is not subscriptable\n2 failed, 426 passed, 4 skipped in 12.70s\n",
           "timed_out": false
         },
         {
@@ -80,11 +80,11 @@
             "tests/test_batch_correlation.py"
           ],
           "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel/thdse",
-          "elapsed_s": 5.645,
-          "exit_code": 1,
+          "elapsed_s": 5.6,
+          "exit_code": 0,
           "label": "local_corpus_feature_query_v1_thdse_core",
           "stderr_tail": "",
-          "stdout_tail": "test_two_handles(self, arena_dim):\n        \"\"\"correlate_matrix([h0, h1]) returns Vec of length 1.\"\"\"\n        arena, dim = arena_dim\n        h0 = arena.allocate()\n        arena.inject_phases(h0, _deterministic_phases(50, dim))\n        h1 = arena.allocate()\n        arena.inject_phases(h1, _deterministic_phases(51, dim))\n        result = arena.correlate_matrix([h0, h1])\n>       assert len(result) == 1\nE       assert 2 == 1\nE        +  where 2 = len([[1.0, 0.050866557381853604], [0.050866557381853604, 1.0]])\n\ntests/test_batch_correlation.py:241: AssertionError\n____________ TestCorrelateMatrixEdgeCases.test_subset_empty_queries ____________\n\nself = <tests.test_batch_correlation.TestCorrelateMatrixEdgeCases object at 0x7fa89c326b50>\narena_dim = (<src.utils.arena_factory._PyFhrrArenaExtended object at 0x7fa89bf37a50>, 128)\n\n    def test_subset_empty_queries(self, arena_dim):\n        \"\"\"correlate_matrix_subset([], targets) returns empty.\"\"\"\n        arena, dim = arena_dim\n        h = arena.allocate()\n        arena.inject_phases(h, _deterministic_phases(60, dim))\n>       assert arena.correlate_matrix_subset([], [h]) == []\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       AttributeError: '_PyFhrrArenaExtended' object has no attribute 'correlate_matrix_subset'\n\ntests/test_batch_correlation.py:250: AttributeError\n____________ TestCorrelateMatrixEdgeCases.test_subset_empty_targets ____________\n\nself = <tests.test_batch_correlation.TestCorrelateMatrixEdgeCases object at 0x7fa89c327650>\narena_dim = (<src.utils.arena_factory._PyFhrrArenaExtended object at 0x7fa89b949650>, 128)\n\n    def test_subset_empty_targets(self, arena_dim):\n        \"\"\"correlate_matrix_subset(queries, []) returns empty.\"\"\"\n        arena, dim = arena_dim\n        h = arena.allocate()\n        arena.inject_phases(h, _deterministic_phases(70, dim))\n>       assert arena.correlate_matrix_subset([h], []) == []\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       AttributeError: '_PyFhrrArenaExtended' object has no attribute 'correlate_matrix_subset'\n\ntests/test_batch_correlation.py:257: AttributeError\n=========================== short test summary info ============================\nFAILED tests/test_batch_correlation.py::TestCorrelateMatrixCorrectness::test_10_vectors - AssertionError: Expected 45 pairs, got 10\nassert 10 == ((10 * (10 - 1)) // 2)\n +  where 10 = len([[1.0, 0.05086655722743922, 0.0013300406936442239, 0.0903177695332613, -0.07693036993174056, 0.047814475092793934, ......814475092793934, -0.07693036999111802, 0.09031776969451019, 0.0013300406689302786, 0.05086655720613288, 1.0, ...], ...])\nFAILED tests/test_batch_correlation.py::TestCorrelateMatrixSubsetCorrectness::test_5_queries_8_targets - AttributeError: '_PyFhrrArenaExtended' object has no attribute 'correlate_matrix_subset'\nFAILED tests/test_batch_correlation.py::TestResonanceMatrixEquivalence::test_20_functions - AssertionError: Resonance mismatch for (proj/file_0.py, proj/file_1.py): batch=0.500000, individual=1.000000\nassert 0.5 < 1e-05\n +  where 0.5 = abs((0.5 - 1.0))\nFAILED tests/test_batch_correlation.py::TestRefactoringDetectorEquivalence::test_identical_results - TypeError: bad operand type for abs(): 'list'\nFAILED tests/test_batch_correlation.py::TestCorrelateMatrixEdgeCases::test_single_handle - assert [[1.0]] == []\n  \n  Left contains one more item: [1.0]\n  \n  Full diff:\n  - []\n  + [\n  +     [\n  +         1.0,\n  +     ],\n  + ]\nFAILED tests/test_batch_correlation.py::TestCorrelateMatrixEdgeCases::test_two_handles - assert 2 == 1\n +  where 2 = len([[1.0, 0.050866557381853604], [0.050866557381853604, 1.0]])\nFAILED tests/test_batch_correlation.py::TestCorrelateMatrixEdgeCases::test_subset_empty_queries - AttributeError: '_PyFhrrArenaExtended' object has no attribute 'correlate_matrix_subset'\nFAILED tests/test_batch_correlation.py::TestCorrelateMatrixEdgeCases::test_subset_empty_targets - AttributeError: '_PyFhrrArenaExtended' object has no attribute 'correlate_matrix_subset'\n8 failed, 28 passed in 5.36s\n",
+          "stdout_tail": "....................................                                     [100%]\n36 passed in 5.33s\n",
           "timed_out": false
         }
       ],
@@ -96,14 +96,14 @@
         "target": "shared.local_corpus.LocalCorpusIndex"
       },
       "name": "local_corpus_feature_query_v1",
-      "started_at": "2026-05-26T06:56:04Z",
+      "started_at": "2026-05-26T07:00:36Z",
       "target_path": "shared/local_corpus.py",
       "test_path": "tests/test_local_corpus_feature_query_rewrite.py"
     },
     {
       "accepted": false,
       "error": "RuntimeError: one or more validation gates failed",
-      "finished_at": "2026-05-26T06:56:52Z",
+      "finished_at": "2026-05-26T07:01:14Z",
       "gates": [
         {
           "args": [
@@ -133,7 +133,7 @@
             "tests/test_local_corpus_import_query_rewrite.py"
           ],
           "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
-          "elapsed_s": 0.199,
+          "elapsed_s": 0.205,
           "exit_code": 0,
           "label": "local_corpus_import_query_v1_focused",
           "stderr_tail": "",
@@ -152,11 +152,11 @@
             "tests"
           ],
           "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
-          "elapsed_s": 17.559,
-          "exit_code": 0,
+          "elapsed_s": 12.312,
+          "exit_code": 1,
           "label": "local_corpus_import_query_v1_root_broad",
           "stderr_tail": "",
-          "stdout_tail": "........................................................................ [ 16%]\n........................................................................ [ 33%]\n........................................................................ [ 50%]\n......................................................s................. [ 66%]\n........................................................................ [ 83%]\n.......................................................s..............   [100%]\n428 passed, 4 skipped in 17.11s\n",
+          "stdout_tail": "........................................................................ [ 16%]\n........................................................................ [ 33%]\n........................................................................ [ 50%]\n......................................................s................. [ 66%]\n.....F.................................................................. [ 83%]\n.....................................................F.s..............   [100%]\n=================================== FAILURES ===================================\n____________________________ test_persistence_loop _____________________________\n\n    def test_persistence_loop():\n        \"\"\"Verify that solved problems actually populate the bank.\"\"\"\n        clear_atoms()\n        # Run a tiny subset (just one problem)\n        probs = [p for p in all_problems() if p.name == \"sum_list\"]\n        result = run_suite(\n            probs,\n            SEED_CORPUS,\n            use_behavioural=False,\n            use_goal_direction=False,\n            use_cegr=False,\n            max_cycles=2,\n        )\n    \n        atoms = load_atoms()\n>       assert len(atoms) > 0\nE       assert 0 > 0\nE        +  where 0 = len([])\n\ntests/test_rsi_persistence.py:39: AssertionError\n______________ test_python_fallback_correlate_matrix_is_symmetric ______________\n\n    def test_python_fallback_correlate_matrix_is_symmetric():\n        import sys\n    \n        sys.path.insert(0, str(_THDSE))\n        from src.utils.arena_factory import _PyFhrrArenaExtended  # noqa: E402\n    \n        arena = _PyFhrrArenaExtended(capacity=8, dimension=16)\n        handles = []\n        for value in (0.1, 0.5, 1.2):\n            h = arena.allocate()\n            arena.inject_phases(h, [value] * 16)\n            handles.append(h)\n        matrix = arena.correlate_matrix(handles)\n        n = len(handles)\n        for i in range(n):\n            for j in range(n):\n>               assert matrix[i][j] == pytest.approx(matrix[j][i], abs=1e-9)\n                       ^^^^^^^^^^^^\nE               TypeError: 'float' object is not subscriptable\n\ntests/test_thdse_arena_compliance.py:210: TypeError\n=========================== short test summary info ============================\nFAILED tests/test_rsi_persistence.py::test_persistence_loop - assert 0 > 0\n +  where 0 = len([])\nFAILED tests/test_thdse_arena_compliance.py::test_python_fallback_correlate_matrix_is_symmetric - TypeError: 'float' object is not subscriptable\n2 failed, 426 passed, 4 skipped in 11.86s\n",
           "timed_out": false
         },
         {
@@ -175,11 +175,11 @@
             "tests/test_batch_correlation.py"
           ],
           "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel/thdse",
-          "elapsed_s": 5.593,
-          "exit_code": 1,
+          "elapsed_s": 5.471,
+          "exit_code": 0,
           "label": "local_corpus_import_query_v1_thdse_core",
           "stderr_tail": "",
-          "stdout_tail": "test_two_handles(self, arena_dim):\n        \"\"\"correlate_matrix([h0, h1]) returns Vec of length 1.\"\"\"\n        arena, dim = arena_dim\n        h0 = arena.allocate()\n        arena.inject_phases(h0, _deterministic_phases(50, dim))\n        h1 = arena.allocate()\n        arena.inject_phases(h1, _deterministic_phases(51, dim))\n        result = arena.correlate_matrix([h0, h1])\n>       assert len(result) == 1\nE       assert 2 == 1\nE        +  where 2 = len([[1.0, 0.050866557381853604], [0.050866557381853604, 1.0]])\n\ntests/test_batch_correlation.py:241: AssertionError\n____________ TestCorrelateMatrixEdgeCases.test_subset_empty_queries ____________\n\nself = <tests.test_batch_correlation.TestCorrelateMatrixEdgeCases object at 0x7f3fee660310>\narena_dim = (<src.utils.arena_factory._PyFhrrArenaExtended object at 0x7f3fee7270d0>, 128)\n\n    def test_subset_empty_queries(self, arena_dim):\n        \"\"\"correlate_matrix_subset([], targets) returns empty.\"\"\"\n        arena, dim = arena_dim\n        h = arena.allocate()\n        arena.inject_phases(h, _deterministic_phases(60, dim))\n>       assert arena.correlate_matrix_subset([], [h]) == []\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       AttributeError: '_PyFhrrArenaExtended' object has no attribute 'correlate_matrix_subset'\n\ntests/test_batch_correlation.py:250: AttributeError\n____________ TestCorrelateMatrixEdgeCases.test_subset_empty_targets ____________\n\nself = <tests.test_batch_correlation.TestCorrelateMatrixEdgeCases object at 0x7f3fee660690>\narena_dim = (<src.utils.arena_factory._PyFhrrArenaExtended object at 0x7f3fee68f290>, 128)\n\n    def test_subset_empty_targets(self, arena_dim):\n        \"\"\"correlate_matrix_subset(queries, []) returns empty.\"\"\"\n        arena, dim = arena_dim\n        h = arena.allocate()\n        arena.inject_phases(h, _deterministic_phases(70, dim))\n>       assert arena.correlate_matrix_subset([h], []) == []\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       AttributeError: '_PyFhrrArenaExtended' object has no attribute 'correlate_matrix_subset'\n\ntests/test_batch_correlation.py:257: AttributeError\n=========================== short test summary info ============================\nFAILED tests/test_batch_correlation.py::TestCorrelateMatrixCorrectness::test_10_vectors - AssertionError: Expected 45 pairs, got 10\nassert 10 == ((10 * (10 - 1)) // 2)\n +  where 10 = len([[1.0, 0.05086655722743922, 0.0013300406936442239, 0.0903177695332613, -0.07693036993174056, 0.047814475092793934, ......814475092793934, -0.07693036999111802, 0.09031776969451019, 0.0013300406689302786, 0.05086655720613288, 1.0, ...], ...])\nFAILED tests/test_batch_correlation.py::TestCorrelateMatrixSubsetCorrectness::test_5_queries_8_targets - AttributeError: '_PyFhrrArenaExtended' object has no attribute 'correlate_matrix_subset'\nFAILED tests/test_batch_correlation.py::TestResonanceMatrixEquivalence::test_20_functions - AssertionError: Resonance mismatch for (proj/file_0.py, proj/file_1.py): batch=0.500000, individual=1.000000\nassert 0.5 < 1e-05\n +  where 0.5 = abs((0.5 - 1.0))\nFAILED tests/test_batch_correlation.py::TestRefactoringDetectorEquivalence::test_identical_results - TypeError: bad operand type for abs(): 'list'\nFAILED tests/test_batch_correlation.py::TestCorrelateMatrixEdgeCases::test_single_handle - assert [[1.0]] == []\n  \n  Left contains one more item: [1.0]\n  \n  Full diff:\n  - []\n  + [\n  +     [\n  +         1.0,\n  +     ],\n  + ]\nFAILED tests/test_batch_correlation.py::TestCorrelateMatrixEdgeCases::test_two_handles - assert 2 == 1\n +  where 2 = len([[1.0, 0.050866557381853604], [0.050866557381853604, 1.0]])\nFAILED tests/test_batch_correlation.py::TestCorrelateMatrixEdgeCases::test_subset_empty_queries - AttributeError: '_PyFhrrArenaExtended' object has no attribute 'correlate_matrix_subset'\nFAILED tests/test_batch_correlation.py::TestCorrelateMatrixEdgeCases::test_subset_empty_targets - AttributeError: '_PyFhrrArenaExtended' object has no attribute 'correlate_matrix_subset'\n8 failed, 28 passed in 5.31s\n",
+          "stdout_tail": "....................................                                     [100%]\n36 passed in 5.22s\n",
           "timed_out": false
         }
       ],
@@ -191,12 +191,12 @@
         "target": "shared.local_corpus.LocalCorpusIndex"
       },
       "name": "local_corpus_import_query_v1",
-      "started_at": "2026-05-26T06:56:29Z",
+      "started_at": "2026-05-26T07:00:56Z",
       "target_path": "shared/local_corpus.py",
       "test_path": "tests/test_local_corpus_import_query_rewrite.py"
     }
   ],
   "state_path": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel/.omega_rsi_runs/closed_rsi_state.json",
   "total_accepted": 0,
-  "total_rejected": 2
+  "total_rejected": 4
 }

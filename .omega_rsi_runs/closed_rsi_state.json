@@ -192,6 +192,196 @@
       "started_at": "2026-05-26T06:56:29Z",
       "target_path": "shared/local_corpus.py",
       "test_path": "tests/test_local_corpus_import_query_rewrite.py"
+    },
+    {
+      "accepted": false,
+      "error": "RuntimeError: one or more validation gates failed",
+      "finished_at": "2026-05-26T07:00:56Z",
+      "gates": [
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "py_compile",
+            "shared/local_corpus.py",
+            "tests/test_local_corpus_feature_query_rewrite.py"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
+          "elapsed_s": 0.034,
+          "exit_code": 0,
+          "label": "local_corpus_feature_query_v1_compile",
+          "stderr_tail": "",
+          "stdout_tail": "",
+          "timed_out": false
+        },
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "pytest",
+            "-q",
+            "--import-mode=importlib",
+            "--maxfail=5",
+            "--disable-warnings",
+            "tests/test_local_corpus_feature_query_rewrite.py"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
+          "elapsed_s": 0.441,
+          "exit_code": 0,
+          "label": "local_corpus_feature_query_v1_focused",
+          "stderr_tail": "",
+          "stdout_tail": ".                                                                        [100%]\n1 passed in 0.02s\n",
+          "timed_out": false
+        },
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "pytest",
+            "-q",
+            "--import-mode=importlib",
+            "--maxfail=20",
+            "--disable-warnings",
+            "tests"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
+          "elapsed_s": 13.153,
+          "exit_code": 1,
+          "label": "local_corpus_feature_query_v1_root_broad",
+          "stderr_tail": "",
+          "stdout_tail": "........................................................................ [ 16%]\n........................................................................ [ 33%]\n........................................................................ [ 50%]\n......................................................s................. [ 66%]\n.....F.................................................................. [ 83%]\n.....................................................F.s..............   [100%]\n=================================== FAILURES ===================================\n____________________________ test_persistence_loop _____________________________\n\n    def test_persistence_loop():\n        \"\"\"Verify that solved problems actually populate the bank.\"\"\"\n        clear_atoms()\n        # Run a tiny subset (just one problem)\n        probs = [p for p in all_problems() if p.name == \"sum_list\"]\n        result = run_suite(\n            probs,\n            SEED_CORPUS,\n            use_behavioural=False,\n            use_goal_direction=False,\n            use_cegr=False,\n            max_cycles=2,\n        )\n    \n        atoms = load_atoms()\n>       assert len(atoms) > 0\nE       assert 0 > 0\nE        +  where 0 = len([])\n\ntests/test_rsi_persistence.py:39: AssertionError\n______________ test_python_fallback_correlate_matrix_is_symmetric ______________\n\n    def test_python_fallback_correlate_matrix_is_symmetric():\n        import sys\n    \n        sys.path.insert(0, str(_THDSE))\n        from src.utils.arena_factory import _PyFhrrArenaExtended  # noqa: E402\n    \n        arena = _PyFhrrArenaExtended(capacity=8, dimension=16)\n        handles = []\n        for value in (0.1, 0.5, 1.2):\n            h = arena.allocate()\n            arena.inject_phases(h, [value] * 16)\n            handles.append(h)\n        matrix = arena.correlate_matrix(handles)\n        n = len(handles)\n        for i in range(n):\n            for j in range(n):\n>               assert matrix[i][j] == pytest.approx(matrix[j][i], abs=1e-9)\n                       ^^^^^^^^^^^^\nE               TypeError: 'float' object is not subscriptable\n\ntests/test_thdse_arena_compliance.py:210: TypeError\n=========================== short test summary info ============================\nFAILED tests/test_rsi_persistence.py::test_persistence_loop - assert 0 > 0\n +  where 0 = len([])\nFAILED tests/test_thdse_arena_compliance.py::test_python_fallback_correlate_matrix_is_symmetric - TypeError: 'float' object is not subscriptable\n2 failed, 426 passed, 4 skipped in 12.70s\n",
+          "timed_out": false
+        },
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "pytest",
+            "-q",
+            "--import-mode=importlib",
+            "--maxfail=20",
+            "--disable-warnings",
+            "tests/test_execution_sandbox.py",
+            "tests/test_adaptive_threshold.py",
+            "tests/test_direct_io_scoring.py",
+            "tests/test_structural_diff.py",
+            "tests/test_batch_correlation.py"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel/thdse",
+          "elapsed_s": 5.6,
+          "exit_code": 0,
+          "label": "local_corpus_feature_query_v1_thdse_core",
+          "stderr_tail": "",
+          "stdout_tail": "....................................                                     [100%]\n36 passed in 5.33s\n",
+          "timed_out": false
+        }
+      ],
+      "generation": 1,
+      "goal": {
+        "metric": "new query API plus focused regression test",
+        "name": "make_local_corpus_queryable_by_feature",
+        "rationale": "The corpus index already extracts feature flags but lacks a stable query API.",
+        "target": "shared.local_corpus.LocalCorpusIndex"
+      },
+      "name": "local_corpus_feature_query_v1",
+      "started_at": "2026-05-26T07:00:36Z",
+      "target_path": "shared/local_corpus.py",
+      "test_path": "tests/test_local_corpus_feature_query_rewrite.py"
+    },
+    {
+      "accepted": false,
+      "error": "RuntimeError: one or more validation gates failed",
+      "finished_at": "2026-05-26T07:01:14Z",
+      "gates": [
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "py_compile",
+            "shared/local_corpus.py",
+            "tests/test_local_corpus_import_query_rewrite.py"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
+          "elapsed_s": 0.034,
+          "exit_code": 0,
+          "label": "local_corpus_import_query_v1_compile",
+          "stderr_tail": "",
+          "stdout_tail": "",
+          "timed_out": false
+        },
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "pytest",
+            "-q",
+            "--import-mode=importlib",
+            "--maxfail=5",
+            "--disable-warnings",
+            "tests/test_local_corpus_import_query_rewrite.py"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
+          "elapsed_s": 0.205,
+          "exit_code": 0,
+          "label": "local_corpus_import_query_v1_focused",
+          "stderr_tail": "",
+          "stdout_tail": ".                                                                        [100%]\n1 passed in 0.02s\n",
+          "timed_out": false
+        },
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "pytest",
+            "-q",
+            "--import-mode=importlib",
+            "--maxfail=20",
+            "--disable-warnings",
+            "tests"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
+          "elapsed_s": 12.312,
+          "exit_code": 1,
+          "label": "local_corpus_import_query_v1_root_broad",
+          "stderr_tail": "",
+          "stdout_tail": "........................................................................ [ 16%]\n........................................................................ [ 33%]\n........................................................................ [ 50%]\n......................................................s................. [ 66%]\n.....F.................................................................. [ 83%]\n.....................................................F.s..............   [100%]\n=================================== FAILURES ===================================\n____________________________ test_persistence_loop _____________________________\n\n    def test_persistence_loop():\n        \"\"\"Verify that solved problems actually populate the bank.\"\"\"\n        clear_atoms()\n        # Run a tiny subset (just one problem)\n        probs = [p for p in all_problems() if p.name == \"sum_list\"]\n        result = run_suite(\n            probs,\n            SEED_CORPUS,\n            use_behavioural=False,\n            use_goal_direction=False,\n            use_cegr=False,\n            max_cycles=2,\n        )\n    \n        atoms = load_atoms()\n>       assert len(atoms) > 0\nE       assert 0 > 0\nE        +  where 0 = len([])\n\ntests/test_rsi_persistence.py:39: AssertionError\n______________ test_python_fallback_correlate_matrix_is_symmetric ______________\n\n    def test_python_fallback_correlate_matrix_is_symmetric():\n        import sys\n    \n        sys.path.insert(0, str(_THDSE))\n        from src.utils.arena_factory import _PyFhrrArenaExtended  # noqa: E402\n    \n        arena = _PyFhrrArenaExtended(capacity=8, dimension=16)\n        handles = []\n        for value in (0.1, 0.5, 1.2):\n            h = arena.allocate()\n            arena.inject_phases(h, [value] * 16)\n            handles.append(h)\n        matrix = arena.correlate_matrix(handles)\n        n = len(handles)\n        for i in range(n):\n            for j in range(n):\n>               assert matrix[i][j] == pytest.approx(matrix[j][i], abs=1e-9)\n                       ^^^^^^^^^^^^\nE               TypeError: 'float' object is not subscriptable\n\ntests/test_thdse_arena_compliance.py:210: TypeError\n=========================== short test summary info ============================\nFAILED tests/test_rsi_persistence.py::test_persistence_loop - assert 0 > 0\n +  where 0 = len([])\nFAILED tests/test_thdse_arena_compliance.py::test_python_fallback_correlate_matrix_is_symmetric - TypeError: 'float' object is not subscriptable\n2 failed, 426 passed, 4 skipped in 11.86s\n",
+          "timed_out": false
+        },
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "pytest",
+            "-q",
+            "--import-mode=importlib",
+            "--maxfail=20",
+            "--disable-warnings",
+            "tests/test_execution_sandbox.py",
+            "tests/test_adaptive_threshold.py",
+            "tests/test_direct_io_scoring.py",
+            "tests/test_structural_diff.py",
+            "tests/test_batch_correlation.py"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel/thdse",
+          "elapsed_s": 5.471,
+          "exit_code": 0,
+          "label": "local_corpus_import_query_v1_thdse_core",
+          "stderr_tail": "",
+          "stdout_tail": "....................................                                     [100%]\n36 passed in 5.22s\n",
+          "timed_out": false
+        }
+      ],
+      "generation": 1,
+      "goal": {
+        "metric": "new import query API plus focused regression test",
+        "name": "make_local_corpus_queryable_by_import",
+        "rationale": "The corpus index stores static imports but lacks a direct import lookup API.",
+        "target": "shared.local_corpus.LocalCorpusIndex"
+      },
+      "name": "local_corpus_import_query_v1",
+      "started_at": "2026-05-26T07:00:56Z",
+      "target_path": "shared/local_corpus.py",
+      "test_path": "tests/test_local_corpus_import_query_rewrite.py"
     }
   ]
 }
