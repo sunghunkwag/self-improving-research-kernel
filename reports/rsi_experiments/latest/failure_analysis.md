@@ -6,6 +6,12 @@
 - Regression gate failures: 2
 - Exit code: 0
 
+## forced_broad_regression / agent_coding_loop
+
+- Rejected candidates: 1
+- Regression gate failures: 1
+- Exit code: 0
+
 ## forced_broad_regression / no_thdse_core_gate
 
 - Rejected candidates: 2
