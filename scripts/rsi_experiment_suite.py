@@ -49,6 +49,8 @@ class ExperimentVariant:
     rollback: bool = True
     persistence: bool = True
     run_loop: bool = True
+    max_generations_override: Optional[int] = None
+    max_candidates_override: Optional[int] = None
 
 
 @dataclass(frozen=True)
@@ -104,6 +106,24 @@ DEFAULT_VARIANTS = (
         name="verified_closed_loop",
         family="proposed",
         description="Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",
+    ),
+    ExperimentVariant(
+        name="agent_coding_loop",
+        family="baseline_agent_coding_loop",
+        description="Baseline: single-pass automated coding loop with validation but without persistent recursive depth.",
+        persistence=False,
+        max_generations_override=1,
+        max_candidates_override=1,
+    ),
+    ExperimentVariant(
+        name="evolutionary_repair_loop",
+        family="baseline_evolutionary_repair_loop",
+        description="Baseline: retry candidate repair loop using focused validation without broad gates or persistent self-policy depth.",
+        broad_gate=False,
+        thdse_core_gate=False,
+        persistence=False,
+        max_generations_override=3,
+        max_candidates_override=3,
     ),
     ExperimentVariant(
         name="focused_only_loop",
@@ -309,6 +329,8 @@ def run_loop_variant(
     timeout_s: int,
 ) -> subprocess.CompletedProcess[str]:
     py = sys.executable
+    effective_generations = variant.max_generations_override or max_generations
+    effective_candidates = variant.max_candidates_override or max_candidates
     args = [
         py,
         "scripts/closed_recursive_self_improvement_loop.py",
@@ -318,9 +340,9 @@ def run_loop_variant(
         str(repo / ".omega_rsi_runs"),
         "--apply",
         "--max-generations",
-        str(max_generations),
+        str(effective_generations),
         "--max-candidates",
-        str(max_candidates),
+        str(effective_candidates),
         "--wall-seconds",
         str(wall_seconds),
         "--timeout-seconds",
@@ -426,6 +448,7 @@ def write_markdown_reports(output_dir: Path, results: List[ExperimentResult]) ->
         "## Review-Relevant Claims",
         "",
         "- The proposed loop can patch real repository code and persist accepted/rejected provenance.",
+        "- The matrix includes CI-only, single-pass agent coding, and evolutionary repair baselines.",
         "- Broad gates reduce regression risk relative to focused-only ablations.",
         "- Rollback behavior is measurable on forced broad-gate rejection tasks.",
         "- Persistence can be ablated to show that resume depth depends on durable state.",

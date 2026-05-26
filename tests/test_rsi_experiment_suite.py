@@ -100,3 +100,5 @@ def test_experiment_variant_defaults_to_safe_controls():
     assert variant.thdse_core_gate is True
     assert variant.rollback is True
     assert variant.persistence is True
+    assert variant.max_generations_override is None
+    assert variant.max_candidates_override is None
