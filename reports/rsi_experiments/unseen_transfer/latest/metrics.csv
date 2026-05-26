@@ -1,0 +1,559 @@
+repository,repository_description,task,variant,family,description,repeat_index,seed,exit_code,elapsed_s,accepted_count,rejected_count,accepted_rate,regression_gate_failures,rollback_correct,persistence_file_exists,improvement_depth,cost_proxy_seconds,changed_files_count,summary_path,stdout_tail,stderr_tail,repository_split,transfer_origin,task_description,task_claim
+unseen_schema_transfer_repo,Held-out compact fixture with an unseen tuple-valued record field that tests schema transfer beyond the original task distribution.,unseen_static_roles_query,verified_closed_loop,proposed,"Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",0,7f03b5b3d253,0,13.766,3,0,1.0,0,,True,3,13.766,4,C:\Users\starg\AppData\Local\Temp\rsi_experiments_cby5flhu\unseen_schema_transfer_repo__unseen_static_roles_query__verified_closed_loop__r0\.omega_rsi_runs\closed_rsi_summary.json,"ared.local_corpus.LocalCorpusIndex""
+      },
+      ""name"": ""autonomous_local_corpus_static_roles_query_v1"",
+      ""started_at"": ""2026-05-26T21:53:47Z"",
+      ""target_path"": ""shared\\local_corpus.py"",
+      ""test_path"": ""tests\\test_autonomous_local_corpus_static_roles_query_v1.py""
+    },
+    {
+      ""accepted"": true,
+      ""error"": """",
+      ""extra_paths"": [],
+      ""finished_at"": ""2026-05-26T21:53:57Z"",
+      ""gates"": [
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""py_compile"",
+            ""shared\\local_corpus.py"",
+            ""tests\\test_emergent_local_corpus_definitions_membership_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_cby5flhu\\unseen_schema_transfer_repo__unseen_static_roles_query__verified_closed_loop__r0"",
+          ""elapsed_s"": 0.203,
+          ""exit_code"": 0,
+          ""label"": ""emergent_local_corpus_definitions_membership_v1_compile"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": """",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=5"",
+            ""--disable-warnings"",
+            ""tests/test_emergent_local_corpus_definitions_membership_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_cby5flhu\\unseen_schema_transfer_repo__unseen_static_roles_query__verified_closed_loop__r0"",
+          ""elapsed_s"": 2.516,
+          ""exit_code"": 0,
+          ""label"": ""emergent_local_corpus_definitions_membership_v1_focused"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": "".                                                                        [100%]\n1 passed in 0.02s\n"",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=20"",
+            ""--disable-warnings"",
+            ""tests""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_cby5flhu\\unseen_schema_transfer_repo__unseen_static_roles_query__verified_closed_loop__r0"",
+          ""elapsed_s"": 2.0,
+          ""exit_code"": 0,
+          ""label"": ""emergent_local_corpus_definitions_membership_v1_root_broad"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": "".....                                                                    [100%]\n5 passed in 0.06s\n"",
+          ""timed_out"": false
+        }
+      ],
+      ""generation"": 3,
+      ""goal"": {
+        ""metric"": ""planner score 9.999 plus generated regression test"",
+        ""name"": ""emergently_query_local_corpus_definitions"",
+        ""rationale"": ""The bounded emergent planner generated an alternate membership query hypothesis for definitions. Evidence: field:definitions, method:records_matching_definitions, strategy:alternate_tuple_membership."",
+        ""target"": ""shared.local_corpus.LocalCorpusIndex""
+      },
+      ""name"": ""emergent_local_corpus_definitions_membership_v1"",
+      ""started_at"": ""2026-05-26T21:53:53Z"",
+      ""target_path"": ""shared\\local_corpus.py"",
+      ""test_path"": ""tests\\test_emergent_local_corpus_definitions_membership_v1.py""
+    }
+  ],
+  ""active_base"": ""emergent_local_corpus_definitions_membership_v1"",
+  ""active_generation"": 3,
+  ""broad_gate"": true,
+  ""dry_run"": false,
+  ""persistence"": true,
+  ""rejected_this_run"": [],
+  ""rollback"": true,
+  ""state_path"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_cby5flhu\\unseen_schema_transfer_repo__unseen_static_roles_query__verified_closed_loop__r0\\.omega_rsi_runs\\closed_rsi_state.json"",
+  ""thdse_core_gate"": true,
+  ""total_accepted"": 3,
+  ""total_rejected"": 0
+}
+",,unseen,compact_kernel_repo,Measure whether schema-driven generation transfers to a held-out tuple-valued LocalPythonFileRecord field.,Unseen transfer succeeds when the loop patches a query API for a field absent from the original benchmark repositories.
+unseen_schema_transfer_repo,Held-out compact fixture with an unseen tuple-valued record field that tests schema transfer beyond the original task distribution.,unseen_static_roles_query,agent_coding_loop,baseline_agent_coding_loop,Baseline: single-pass automated coding loop with validation but without persistent recursive depth.,0,b888d83f6717,0,4.453,1,0,1.0,0,,False,1,4.453,2,C:\Users\starg\AppData\Local\Temp\rsi_experiments_cby5flhu\unseen_schema_transfer_repo__unseen_static_roles_query__agent_coding_loop__r0\.omega_rsi_runs\closed_rsi_summary.json,"{
+  ""accepted_this_run"": [
+    {
+      ""accepted"": true,
+      ""error"": """",
+      ""extra_paths"": [],
+      ""finished_at"": ""2026-05-26T21:54:02Z"",
+      ""gates"": [
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""py_compile"",
+            ""shared\\local_corpus.py"",
+            ""tests\\test_autonomous_local_corpus_definitions_query_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_cby5flhu\\unseen_schema_transfer_repo__unseen_static_roles_query__agent_coding_loop__r0"",
+          ""elapsed_s"": 0.172,
+          ""exit_code"": 0,
+          ""label"": ""autonomous_local_corpus_definitions_query_v1_compile"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": """",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=5"",
+            ""--disable-warnings"",
+            ""tests/test_autonomous_local_corpus_definitions_query_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_cby5flhu\\unseen_schema_transfer_repo__unseen_static_roles_query__agent_coding_loop__r0"",
+          ""elapsed_s"": 2.0,
+          ""exit_code"": 0,
+          ""label"": ""autonomous_local_corpus_definitions_query_v1_focused"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": "".                                                                        [100%]\n1 passed in 0.03s\n"",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=20"",
+            ""--disable-warnings"",
+            ""tests""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_cby5flhu\\unseen_schema_transfer_repo__unseen_static_roles_query__agent_coding_loop__r0"",
+          ""elapsed_s"": 1.953,
+          ""exit_code"": 0,
+          ""label"": ""autonomous_local_corpus_definitions_query_v1_root_broad"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": ""...                                                                      [100%]\n3 passed in 0.06s\n"",
+          ""timed_out"": false
+        }
+      ],
+      ""generation"": 1,
+      ""goal"": {
+        ""metric"": ""planner score 11.999 plus generated regression test"",
+        ""name"": ""autonomously_query_local_corpus_definitions"",
+        ""rationale"": ""The planner found a tuple-valued definitions field without a matching query API on LocalCorpusIndex. Evidence: field:definitions, method:records_with_definition, strategy:tuple_membership, canonical_strategy_bonus."",
+        ""target"": ""shared.local_corpus.LocalCorpusIndex""
+      },
+      ""name"": ""autonomous_local_corpus_definitions_query_v1"",
+      ""started_at"": ""2026-05-26T21:53:58Z"",
+      ""target_path"": ""shared\\local_corpus.py"",
+      ""test_path"": ""tests\\test_autonomous_local_corpus_definitions_query_v1.py""
+    }
+  ],
+  ""active_base"": ""autonomous_local_corpus_definitions_query_v1"",
+  ""active_generation"": 1,
+  ""broad_gate"": true,
+  ""dry_run"": false,
+  ""persistence"": false,
+  ""rejected_this_run"": [],
+  ""rollback"": true,
+  ""state_path"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_cby5flhu\\unseen_schema_transfer_repo__unseen_static_roles_query__agent_coding_loop__r0\\.omega_rsi_runs\\closed_rsi_state.json"",
+  ""thdse_core_gate"": true,
+  ""total_accepted"": 1,
+  ""total_rejected"": 0
+}
+",,unseen,compact_kernel_repo,Measure whether schema-driven generation transfers to a held-out tuple-valued LocalPythonFileRecord field.,Unseen transfer succeeds when the loop patches a query API for a field absent from the original benchmark repositories.
+unseen_schema_transfer_repo,Held-out compact fixture with an unseen tuple-valued record field that tests schema transfer beyond the original task distribution.,unseen_static_roles_query,ci_only_validation,baseline_ci_only,Baseline: run validation without candidate generation or code patching.,0,8704527e6a2e,0,2.157,0,0,0.0,0,,False,0,2.157,0,C:\Users\starg\AppData\Local\Temp\rsi_experiments_cby5flhu\unseen_schema_transfer_repo__unseen_static_roles_query__ci_only_validation__r0\.omega_rsi_runs\closed_rsi_summary.json,"..                                                                       [100%]
+2 passed in 0.06s
+",,unseen,compact_kernel_repo,Measure whether schema-driven generation transfers to a held-out tuple-valued LocalPythonFileRecord field.,Unseen transfer succeeds when the loop patches a query API for a field absent from the original benchmark repositories.
+unseen_schema_transfer_repo,Held-out compact fixture with an unseen tuple-valued record field that tests schema transfer beyond the original task distribution.,unseen_static_roles_query,verified_closed_loop,proposed,"Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",1,0998d073f6ed,0,11.25,3,0,1.0,0,,True,3,11.25,4,C:\Users\starg\AppData\Local\Temp\rsi_experiments_cby5flhu\unseen_schema_transfer_repo__unseen_static_roles_query__verified_closed_loop__r1\.omega_rsi_runs\closed_rsi_summary.json,"ed.local_corpus.LocalCorpusIndex""
+      },
+      ""name"": ""autonomous_local_corpus_static_roles_query_v1"",
+      ""started_at"": ""2026-05-26T21:54:09Z"",
+      ""target_path"": ""shared\\local_corpus.py"",
+      ""test_path"": ""tests\\test_autonomous_local_corpus_static_roles_query_v1.py""
+    },
+    {
+      ""accepted"": true,
+      ""error"": """",
+      ""extra_paths"": [],
+      ""finished_at"": ""2026-05-26T21:54:16Z"",
+      ""gates"": [
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""py_compile"",
+            ""shared\\local_corpus.py"",
+            ""tests\\test_emergent_local_corpus_definitions_membership_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_cby5flhu\\unseen_schema_transfer_repo__unseen_static_roles_query__verified_closed_loop__r1"",
+          ""elapsed_s"": 0.141,
+          ""exit_code"": 0,
+          ""label"": ""emergent_local_corpus_definitions_membership_v1_compile"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": """",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=5"",
+            ""--disable-warnings"",
+            ""tests/test_emergent_local_corpus_definitions_membership_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_cby5flhu\\unseen_schema_transfer_repo__unseen_static_roles_query__verified_closed_loop__r1"",
+          ""elapsed_s"": 1.562,
+          ""exit_code"": 0,
+          ""label"": ""emergent_local_corpus_definitions_membership_v1_focused"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": "".                                                                        [100%]\n1 passed in 0.02s\n"",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=20"",
+            ""--disable-warnings"",
+            ""tests""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_cby5flhu\\unseen_schema_transfer_repo__unseen_static_roles_query__verified_closed_loop__r1"",
+          ""elapsed_s"": 1.422,
+          ""exit_code"": 0,
+          ""label"": ""emergent_local_corpus_definitions_membership_v1_root_broad"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": "".....                                                                    [100%]\n5 passed in 0.04s\n"",
+          ""timed_out"": false
+        }
+      ],
+      ""generation"": 3,
+      ""goal"": {
+        ""metric"": ""planner score 9.999 plus generated regression test"",
+        ""name"": ""emergently_query_local_corpus_definitions"",
+        ""rationale"": ""The bounded emergent planner generated an alternate membership query hypothesis for definitions. Evidence: field:definitions, method:records_matching_definitions, strategy:alternate_tuple_membership."",
+        ""target"": ""shared.local_corpus.LocalCorpusIndex""
+      },
+      ""name"": ""emergent_local_corpus_definitions_membership_v1"",
+      ""started_at"": ""2026-05-26T21:54:13Z"",
+      ""target_path"": ""shared\\local_corpus.py"",
+      ""test_path"": ""tests\\test_emergent_local_corpus_definitions_membership_v1.py""
+    }
+  ],
+  ""active_base"": ""emergent_local_corpus_definitions_membership_v1"",
+  ""active_generation"": 3,
+  ""broad_gate"": true,
+  ""dry_run"": false,
+  ""persistence"": true,
+  ""rejected_this_run"": [],
+  ""rollback"": true,
+  ""state_path"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_cby5flhu\\unseen_schema_transfer_repo__unseen_static_roles_query__verified_closed_loop__r1\\.omega_rsi_runs\\closed_rsi_state.json"",
+  ""thdse_core_gate"": true,
+  ""total_accepted"": 3,
+  ""total_rejected"": 0
+}
+",,unseen,compact_kernel_repo,Measure whether schema-driven generation transfers to a held-out tuple-valued LocalPythonFileRecord field.,Unseen transfer succeeds when the loop patches a query API for a field absent from the original benchmark repositories.
+unseen_schema_transfer_repo,Held-out compact fixture with an unseen tuple-valued record field that tests schema transfer beyond the original task distribution.,unseen_static_roles_query,agent_coding_loop,baseline_agent_coding_loop,Baseline: single-pass automated coding loop with validation but without persistent recursive depth.,1,d32b4be26a2b,0,3.188,1,0,1.0,0,,False,1,3.188,2,C:\Users\starg\AppData\Local\Temp\rsi_experiments_cby5flhu\unseen_schema_transfer_repo__unseen_static_roles_query__agent_coding_loop__r1\.omega_rsi_runs\closed_rsi_summary.json,"{
+  ""accepted_this_run"": [
+    {
+      ""accepted"": true,
+      ""error"": """",
+      ""extra_paths"": [],
+      ""finished_at"": ""2026-05-26T21:54:19Z"",
+      ""gates"": [
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""py_compile"",
+            ""shared\\local_corpus.py"",
+            ""tests\\test_autonomous_local_corpus_definitions_query_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_cby5flhu\\unseen_schema_transfer_repo__unseen_static_roles_query__agent_coding_loop__r1"",
+          ""elapsed_s"": 0.109,
+          ""exit_code"": 0,
+          ""label"": ""autonomous_local_corpus_definitions_query_v1_compile"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": """",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=5"",
+            ""--disable-warnings"",
+            ""tests/test_autonomous_local_corpus_definitions_query_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_cby5flhu\\unseen_schema_transfer_repo__unseen_static_roles_query__agent_coding_loop__r1"",
+          ""elapsed_s"": 1.391,
+          ""exit_code"": 0,
+          ""label"": ""autonomous_local_corpus_definitions_query_v1_focused"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": "".                                                                        [100%]\n1 passed in 0.02s\n"",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=20"",
+            ""--disable-warnings"",
+            ""tests""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_cby5flhu\\unseen_schema_transfer_repo__unseen_static_roles_query__agent_coding_loop__r1"",
+          ""elapsed_s"": 1.531,
+          ""exit_code"": 0,
+          ""label"": ""autonomous_local_corpus_definitions_query_v1_root_broad"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": ""...                                                                      [100%]\n3 passed in 0.08s\n"",
+          ""timed_out"": false
+        }
+      ],
+      ""generation"": 1,
+      ""goal"": {
+        ""metric"": ""planner score 11.999 plus generated regression test"",
+        ""name"": ""autonomously_query_local_corpus_definitions"",
+        ""rationale"": ""The planner found a tuple-valued definitions field without a matching query API on LocalCorpusIndex. Evidence: field:definitions, method:records_with_definition, strategy:tuple_membership, canonical_strategy_bonus."",
+        ""target"": ""shared.local_corpus.LocalCorpusIndex""
+      },
+      ""name"": ""autonomous_local_corpus_definitions_query_v1"",
+      ""started_at"": ""2026-05-26T21:54:16Z"",
+      ""target_path"": ""shared\\local_corpus.py"",
+      ""test_path"": ""tests\\test_autonomous_local_corpus_definitions_query_v1.py""
+    }
+  ],
+  ""active_base"": ""autonomous_local_corpus_definitions_query_v1"",
+  ""active_generation"": 1,
+  ""broad_gate"": true,
+  ""dry_run"": false,
+  ""persistence"": false,
+  ""rejected_this_run"": [],
+  ""rollback"": true,
+  ""state_path"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_cby5flhu\\unseen_schema_transfer_repo__unseen_static_roles_query__agent_coding_loop__r1\\.omega_rsi_runs\\closed_rsi_state.json"",
+  ""thdse_core_gate"": true,
+  ""total_accepted"": 1,
+  ""total_rejected"": 0
+}
+",,unseen,compact_kernel_repo,Measure whether schema-driven generation transfers to a held-out tuple-valued LocalPythonFileRecord field.,Unseen transfer succeeds when the loop patches a query API for a field absent from the original benchmark repositories.
+unseen_schema_transfer_repo,Held-out compact fixture with an unseen tuple-valued record field that tests schema transfer beyond the original task distribution.,unseen_static_roles_query,ci_only_validation,baseline_ci_only,Baseline: run validation without candidate generation or code patching.,1,ede292c89be7,0,1.437,0,0,0.0,0,,False,0,1.437,0,C:\Users\starg\AppData\Local\Temp\rsi_experiments_cby5flhu\unseen_schema_transfer_repo__unseen_static_roles_query__ci_only_validation__r1\.omega_rsi_runs\closed_rsi_summary.json,"..                                                                       [100%]
+2 passed in 0.05s
+",,unseen,compact_kernel_repo,Measure whether schema-driven generation transfers to a held-out tuple-valued LocalPythonFileRecord field.,Unseen transfer succeeds when the loop patches a query API for a field absent from the original benchmark repositories.
+unseen_schema_transfer_repo,Held-out compact fixture with an unseen tuple-valued record field that tests schema transfer beyond the original task distribution.,unseen_static_roles_query,verified_closed_loop,proposed,"Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",2,bb1d6ae13190,0,9.938,3,0,1.0,0,,True,3,9.938,4,C:\Users\starg\AppData\Local\Temp\rsi_experiments_cby5flhu\unseen_schema_transfer_repo__unseen_static_roles_query__verified_closed_loop__r2\.omega_rsi_runs\closed_rsi_summary.json,"red.local_corpus.LocalCorpusIndex""
+      },
+      ""name"": ""autonomous_local_corpus_static_roles_query_v1"",
+      ""started_at"": ""2026-05-26T21:54:24Z"",
+      ""target_path"": ""shared\\local_corpus.py"",
+      ""test_path"": ""tests\\test_autonomous_local_corpus_static_roles_query_v1.py""
+    },
+    {
+      ""accepted"": true,
+      ""error"": """",
+      ""extra_paths"": [],
+      ""finished_at"": ""2026-05-26T21:54:30Z"",
+      ""gates"": [
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""py_compile"",
+            ""shared\\local_corpus.py"",
+            ""tests\\test_emergent_local_corpus_definitions_membership_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_cby5flhu\\unseen_schema_transfer_repo__unseen_static_roles_query__verified_closed_loop__r2"",
+          ""elapsed_s"": 0.14,
+          ""exit_code"": 0,
+          ""label"": ""emergent_local_corpus_definitions_membership_v1_compile"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": """",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=5"",
+            ""--disable-warnings"",
+            ""tests/test_emergent_local_corpus_definitions_membership_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_cby5flhu\\unseen_schema_transfer_repo__unseen_static_roles_query__verified_closed_loop__r2"",
+          ""elapsed_s"": 1.657,
+          ""exit_code"": 0,
+          ""label"": ""emergent_local_corpus_definitions_membership_v1_focused"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": "".                                                                        [100%]\n1 passed in 0.02s\n"",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=20"",
+            ""--disable-warnings"",
+            ""tests""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_cby5flhu\\unseen_schema_transfer_repo__unseen_static_roles_query__verified_closed_loop__r2"",
+          ""elapsed_s"": 1.406,
+          ""exit_code"": 0,
+          ""label"": ""emergent_local_corpus_definitions_membership_v1_root_broad"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": "".....                                                                    [100%]\n5 passed in 0.04s\n"",
+          ""timed_out"": false
+        }
+      ],
+      ""generation"": 3,
+      ""goal"": {
+        ""metric"": ""planner score 9.999 plus generated regression test"",
+        ""name"": ""emergently_query_local_corpus_definitions"",
+        ""rationale"": ""The bounded emergent planner generated an alternate membership query hypothesis for definitions. Evidence: field:definitions, method:records_matching_definitions, strategy:alternate_tuple_membership."",
+        ""target"": ""shared.local_corpus.LocalCorpusIndex""
+      },
+      ""name"": ""emergent_local_corpus_definitions_membership_v1"",
+      ""started_at"": ""2026-05-26T21:54:27Z"",
+      ""target_path"": ""shared\\local_corpus.py"",
+      ""test_path"": ""tests\\test_emergent_local_corpus_definitions_membership_v1.py""
+    }
+  ],
+  ""active_base"": ""emergent_local_corpus_definitions_membership_v1"",
+  ""active_generation"": 3,
+  ""broad_gate"": true,
+  ""dry_run"": false,
+  ""persistence"": true,
+  ""rejected_this_run"": [],
+  ""rollback"": true,
+  ""state_path"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_cby5flhu\\unseen_schema_transfer_repo__unseen_static_roles_query__verified_closed_loop__r2\\.omega_rsi_runs\\closed_rsi_state.json"",
+  ""thdse_core_gate"": true,
+  ""total_accepted"": 3,
+  ""total_rejected"": 0
+}
+",,unseen,compact_kernel_repo,Measure whether schema-driven generation transfers to a held-out tuple-valued LocalPythonFileRecord field.,Unseen transfer succeeds when the loop patches a query API for a field absent from the original benchmark repositories.
+unseen_schema_transfer_repo,Held-out compact fixture with an unseen tuple-valued record field that tests schema transfer beyond the original task distribution.,unseen_static_roles_query,agent_coding_loop,baseline_agent_coding_loop,Baseline: single-pass automated coding loop with validation but without persistent recursive depth.,2,5b10f3e723ed,0,3.109,1,0,1.0,0,,False,1,3.109,2,C:\Users\starg\AppData\Local\Temp\rsi_experiments_cby5flhu\unseen_schema_transfer_repo__unseen_static_roles_query__agent_coding_loop__r2\.omega_rsi_runs\closed_rsi_summary.json,"{
+  ""accepted_this_run"": [
+    {
+      ""accepted"": true,
+      ""error"": """",
+      ""extra_paths"": [],
+      ""finished_at"": ""2026-05-26T21:54:34Z"",
+      ""gates"": [
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""py_compile"",
+            ""shared\\local_corpus.py"",
+            ""tests\\test_autonomous_local_corpus_definitions_query_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_cby5flhu\\unseen_schema_transfer_repo__unseen_static_roles_query__agent_coding_loop__r2"",
+          ""elapsed_s"": 0.125,
+          ""exit_code"": 0,
+          ""label"": ""autonomous_local_corpus_definitions_query_v1_compile"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": """",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=5"",
+            ""--disable-warnings"",
+            ""tests/test_autonomous_local_corpus_definitions_query_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_cby5flhu\\unseen_schema_transfer_repo__unseen_static_roles_query__agent_coding_loop__r2"",
+          ""elapsed_s"": 1.39,
+          ""exit_code"": 0,
+          ""label"": ""autonomous_local_corpus_definitions_query_v1_focused"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": "".                                                                        [100%]\n1 passed in 0.02s\n"",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=20"",
+            ""--disable-warnings"",
+            ""tests""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_cby5flhu\\unseen_schema_transfer_repo__unseen_static_roles_query__agent_coding_loop__r2"",
+          ""elapsed_s"": 1.469,
+          ""exit_code"": 0,
+          ""label"": ""autonomous_local_corpus_definitions_query_v1_root_broad"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": ""...                                                                      [100%]\n3 passed in 0.04s\n"",
+          ""timed_out"": false
+        }
+      ],
+      ""generation"": 1,
+      ""goal"": {
+        ""metric"": ""planner score 11.999 plus generated regression test"",
+        ""name"": ""autonomously_query_local_corpus_definitions"",
+        ""rationale"": ""The planner found a tuple-valued definitions field without a matching query API on LocalCorpusIndex. Evidence: field:definitions, method:records_with_definition, strategy:tuple_membership, canonical_strategy_bonus."",
+        ""target"": ""shared.local_corpus.LocalCorpusIndex""
+      },
+      ""name"": ""autonomous_local_corpus_definitions_query_v1"",
+      ""started_at"": ""2026-05-26T21:54:31Z"",
+      ""target_path"": ""shared\\local_corpus.py"",
+      ""test_path"": ""tests\\test_autonomous_local_corpus_definitions_query_v1.py""
+    }
+  ],
+  ""active_base"": ""autonomous_local_corpus_definitions_query_v1"",
+  ""active_generation"": 1,
+  ""broad_gate"": true,
+  ""dry_run"": false,
+  ""persistence"": false,
+  ""rejected_this_run"": [],
+  ""rollback"": true,
+  ""state_path"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_cby5flhu\\unseen_schema_transfer_repo__unseen_static_roles_query__agent_coding_loop__r2\\.omega_rsi_runs\\closed_rsi_state.json"",
+  ""thdse_core_gate"": true,
+  ""total_accepted"": 1,
+  ""total_rejected"": 0
+}
+",,unseen,compact_kernel_repo,Measure whether schema-driven generation transfers to a held-out tuple-valued LocalPythonFileRecord field.,Unseen transfer succeeds when the loop patches a query API for a field absent from the original benchmark repositories.
+unseen_schema_transfer_repo,Held-out compact fixture with an unseen tuple-valued record field that tests schema transfer beyond the original task distribution.,unseen_static_roles_query,ci_only_validation,baseline_ci_only,Baseline: run validation without candidate generation or code patching.,2,f6c85e7bedc9,0,1.547,0,0,0.0,0,,False,0,1.547,0,C:\Users\starg\AppData\Local\Temp\rsi_experiments_cby5flhu\unseen_schema_transfer_repo__unseen_static_roles_query__ci_only_validation__r2\.omega_rsi_runs\closed_rsi_summary.json,"..                                                                       [100%]
+2 passed in 0.05s
+",,unseen,compact_kernel_repo,Measure whether schema-driven generation transfers to a held-out tuple-valued LocalPythonFileRecord field.,Unseen transfer succeeds when the loop patches a query API for a field absent from the original benchmark repositories.

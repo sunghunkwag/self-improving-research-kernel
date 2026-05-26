@@ -149,6 +149,21 @@ The experiment suite writes both raw and aggregate artifacts under
 - `metrics.csv`: raw repository/task/variant/repeat outcomes
 - `aggregate_metrics.csv`: grouped means and rollback success rates
 - `benchmark_catalog.json`: repositories, tasks, variants, and repeat count
+- `baseline_comparison.md`: proposed-loop vs baseline scorecard
+- `evidence_scorecard.json`: machine-readable win/tie/inconclusive labels
+
+Additional evidence artifacts:
+
+- `reports/rsi_experiments/evidence_index.md`: index of repeated, transfer,
+  baseline, ablation, and failure-analysis evidence
+- `reports/rsi_experiments/unseen_transfer/latest/`: held-out schema-transfer
+  smoke matrix with three repeated trials per variant
+
+The held-out transfer fixture `unseen_schema_transfer_repo` adds a tuple-valued
+record field absent from the original benchmark repositories. The proposed loop
+must infer and patch the missing query surface from schema structure, then
+record the result as an unseen transfer cell rather than as another seen-repo
+repair.
 
 ## Local Safety
 

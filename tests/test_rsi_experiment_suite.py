@@ -1,13 +1,16 @@
 from scripts.rsi_experiment_suite import (
     DEFAULT_REPOSITORIES,
+    DEFAULT_TASKS,
     ExperimentVariant,
     aggregate_results,
+    build_baseline_comparisons,
     build_benchmark_repo,
     changed_files,
     remove_policy_registry_surface,
     repository_fingerprint,
     stable_trial_seed,
     strip_method,
+    task_applies_to_repository,
 )
 
 
@@ -134,6 +137,41 @@ def test_compact_benchmark_repository_builder_creates_minimal_repo(tmp_path):
     assert (target / "tests" / "test_fixture_smoke.py").exists()
 
 
+def test_unseen_schema_transfer_repository_adds_held_out_tuple_field(tmp_path):
+    source = tmp_path / "source"
+    target = tmp_path / "target"
+    (source / "scripts").mkdir(parents=True)
+    (source / "shared").mkdir()
+    (source / "scripts" / "closed_recursive_self_improvement_loop.py").write_text("", encoding="utf-8")
+    (source / "scripts" / "rsi_policy_registry.py").write_text("", encoding="utf-8")
+    (source / "shared" / "__init__.py").write_text("", encoding="utf-8")
+    (source / "shared" / "local_corpus.py").write_text(
+        "from dataclasses import dataclass\n"
+        "from typing import Tuple\n\n"
+        "@dataclass(frozen=True)\n"
+        "class LocalPythonFileRecord:\n"
+        "    feature_flags: Tuple[str, ...] = ()\n",
+        encoding="utf-8",
+    )
+
+    unseen = next(repository for repository in DEFAULT_REPOSITORIES if repository.name == "unseen_schema_transfer_repo")
+    build_benchmark_repo(source, target, unseen)
+
+    text = (target / "shared" / "local_corpus.py").read_text(encoding="utf-8")
+    assert unseen.split == "unseen"
+    assert "static_roles: Tuple[str, ...] = ()" in text
+    assert (target / "tests" / "test_unseen_schema_fixture.py").exists()
+
+
+def test_unseen_transfer_task_is_limited_to_unseen_repository():
+    unseen_task = next(task for task in DEFAULT_TASKS if task.name == "unseen_static_roles_query")
+    compact = next(repository for repository in DEFAULT_REPOSITORIES if repository.name == "compact_kernel_repo")
+    unseen = next(repository for repository in DEFAULT_REPOSITORIES if repository.name == "unseen_schema_transfer_repo")
+
+    assert task_applies_to_repository(unseen_task, unseen) is True
+    assert task_applies_to_repository(unseen_task, compact) is False
+
+
 def test_aggregate_results_groups_repeated_trials():
     from scripts.rsi_experiment_suite import ExperimentResult
 
@@ -193,3 +231,39 @@ def test_aggregate_results_groups_repeated_trials():
     assert aggregate["trial_count"] == 2
     assert aggregate["accepted_rate_mean"] == 0.5
     assert aggregate["rollback_success_rate"] == 1.0
+
+
+def test_baseline_comparison_marks_unseen_transfer_success():
+    aggregates = [
+        {
+            "repository": "unseen_schema_transfer_repo",
+            "repository_split": "unseen",
+            "transfer_origin": "compact_kernel_repo",
+            "task": "unseen_static_roles_query",
+            "task_claim": "held-out transfer",
+            "variant": "verified_closed_loop",
+            "family": "proposed",
+            "accepted_rate_mean": 1.0,
+            "improvement_depth_mean": 1.0,
+            "cost_proxy_seconds_mean": 1.0,
+            "rollback_success_rate": None,
+        },
+        {
+            "repository": "unseen_schema_transfer_repo",
+            "repository_split": "unseen",
+            "transfer_origin": "compact_kernel_repo",
+            "task": "unseen_static_roles_query",
+            "task_claim": "held-out transfer",
+            "variant": "ci_only_validation",
+            "family": "baseline_ci_only",
+            "accepted_rate_mean": 0.0,
+            "improvement_depth_mean": 0.0,
+            "cost_proxy_seconds_mean": 1.0,
+            "rollback_success_rate": None,
+        },
+    ]
+
+    comparison = build_baseline_comparisons(aggregates)[0]
+
+    assert comparison["outcome"] == "unseen_transfer_success"
+    assert comparison["unseen_transfer_success"] is True

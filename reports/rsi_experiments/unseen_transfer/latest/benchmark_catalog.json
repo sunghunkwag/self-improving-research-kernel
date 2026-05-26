@@ -1,0 +1,59 @@
+{
+  "repeats": 3,
+  "repositories": [
+    {
+      "description": "Held-out compact fixture with an unseen tuple-valued record field that tests schema transfer beyond the original task distribution.",
+      "name": "unseen_schema_transfer_repo",
+      "split": "unseen",
+      "transfer_origin": "compact_kernel_repo"
+    }
+  ],
+  "tasks": [
+    {
+      "claim": "Unseen transfer succeeds when the loop patches a query API for a field absent from the original benchmark repositories.",
+      "description": "Measure whether schema-driven generation transfers to a held-out tuple-valued LocalPythonFileRecord field.",
+      "name": "unseen_static_roles_query",
+      "repositories": [
+        "unseen_schema_transfer_repo"
+      ]
+    }
+  ],
+  "variants": [
+    {
+      "broad_gate": true,
+      "description": "Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",
+      "family": "proposed",
+      "max_candidates_override": null,
+      "max_generations_override": null,
+      "name": "verified_closed_loop",
+      "persistence": true,
+      "rollback": true,
+      "run_loop": true,
+      "thdse_core_gate": true
+    },
+    {
+      "broad_gate": true,
+      "description": "Baseline: single-pass automated coding loop with validation but without persistent recursive depth.",
+      "family": "baseline_agent_coding_loop",
+      "max_candidates_override": 1,
+      "max_generations_override": 1,
+      "name": "agent_coding_loop",
+      "persistence": false,
+      "rollback": true,
+      "run_loop": true,
+      "thdse_core_gate": true
+    },
+    {
+      "broad_gate": true,
+      "description": "Baseline: run validation without candidate generation or code patching.",
+      "family": "baseline_ci_only",
+      "max_candidates_override": null,
+      "max_generations_override": null,
+      "name": "ci_only_validation",
+      "persistence": true,
+      "rollback": true,
+      "run_loop": false,
+      "thdse_core_gate": true
+    }
+  ]
+}

@@ -20,7 +20,7 @@ import tempfile
 import time
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional, Sequence
+from typing import Dict, Iterable, List, Optional, Sequence, Tuple
 
 
 EXCLUDED_DIRS = {
@@ -43,6 +43,8 @@ class BenchmarkRepository:
 
     name: str
     description: str
+    split: str = "seen"
+    transfer_origin: str = ""
 
 
 @dataclass(frozen=True)
@@ -67,6 +69,8 @@ class ExperimentTask:
 
     name: str
     description: str
+    repositories: Tuple[str, ...] = ()
+    claim: str = ""
 
 
 @dataclass
@@ -95,6 +99,10 @@ class ExperimentResult:
     summary_path: str
     stdout_tail: str
     stderr_tail: str
+    repository_split: str = "seen"
+    transfer_origin: str = ""
+    task_description: str = ""
+    task_claim: str = ""
 
 
 DEFAULT_REPOSITORIES = (
@@ -106,6 +114,12 @@ DEFAULT_REPOSITORIES = (
         name="compact_kernel_repo",
         description="Minimal repository fixture containing only the closed loop, policy registry, local corpus module, and smoke tests.",
     ),
+    BenchmarkRepository(
+        name="unseen_schema_transfer_repo",
+        description="Held-out compact fixture with an unseen tuple-valued record field that tests schema transfer beyond the original task distribution.",
+        split="unseen",
+        transfer_origin="compact_kernel_repo",
+    ),
 )
 
 
@@ -113,14 +127,23 @@ DEFAULT_TASKS = (
     ExperimentTask(
         name="local_corpus_queries_clean",
         description="Remove accepted local corpus query APIs and measure whether the loop recovers them.",
+        repositories=("omega_full_repo", "compact_kernel_repo"),
     ),
     ExperimentTask(
         name="policy_registry_self_patch",
         description="Remove the explicit policy registry surface and measure whether the loop patches its own policy interface.",
+        repositories=("omega_full_repo", "compact_kernel_repo"),
     ),
     ExperimentTask(
         name="forced_broad_regression",
         description="Inject a failing broad-gate test to measure rollback and no-broad-gate regression risk.",
+        repositories=("omega_full_repo", "compact_kernel_repo"),
+    ),
+    ExperimentTask(
+        name="unseen_static_roles_query",
+        description="Measure whether schema-driven generation transfers to a held-out tuple-valued LocalPythonFileRecord field.",
+        repositories=("unseen_schema_transfer_repo",),
+        claim="Unseen transfer succeeds when the loop patches a query API for a field absent from the original benchmark repositories.",
     ),
 )
 
@@ -244,12 +267,48 @@ def build_compact_kernel_repo(src: Path, dst: Path) -> None:
     )
 
 
+def build_unseen_schema_transfer_repo(src: Path, dst: Path) -> None:
+    """Build a held-out schema-transfer fixture.
+
+    The fixture keeps the same loop machinery as the compact repository but
+    adds a new tuple-valued field that was not part of the original repair
+    tasks. The generator must infer the missing query surface from schema
+    structure rather than from a hand-coded candidate name.
+    """
+
+    build_compact_kernel_repo(src, dst)
+    local_corpus = dst / "shared" / "local_corpus.py"
+    text = local_corpus.read_text(encoding="utf-8")
+    marker = "    feature_flags: Tuple[str, ...] = ()\n"
+    if "static_roles: Tuple[str, ...]" not in text:
+        text = text.replace(marker, marker + "    static_roles: Tuple[str, ...] = ()\n", 1)
+    local_corpus.write_text(text, encoding="utf-8")
+    smoke = dst / "tests" / "test_unseen_schema_fixture.py"
+    smoke.write_text(
+        "from shared.local_corpus import LocalPythonFileRecord\n\n\n"
+        "def test_unseen_schema_field_is_present_before_transfer_patch():\n"
+        "    record = LocalPythonFileRecord(\n"
+        "        path='agent.py',\n"
+        "        sha256='x',\n"
+        "        size_bytes=1,\n"
+        "        line_count=1,\n"
+        "        syntax_ok=True,\n"
+        "        static_roles=('planner',),\n"
+        "    )\n"
+        "    assert record.static_roles == ('planner',)\n",
+        encoding="utf-8",
+    )
+
+
 def build_benchmark_repo(src: Path, dst: Path, repository: BenchmarkRepository) -> None:
     if repository.name == "omega_full_repo":
         copy_repo(src, dst)
         return
     if repository.name == "compact_kernel_repo":
         build_compact_kernel_repo(src, dst)
+        return
+    if repository.name == "unseen_schema_transfer_repo":
+        build_unseen_schema_transfer_repo(src, dst)
         return
     raise ValueError(f"unknown benchmark repository: {repository.name}")
 
@@ -319,6 +378,8 @@ def prepare_task(repo: Path, task: ExperimentTask) -> None:
     state_dir = repo / ".omega_rsi_runs"
     if state_dir.exists():
         shutil.rmtree(state_dir)
+    if task.name == "unseen_static_roles_query":
+        return
     if task.name in {"local_corpus_queries_clean", "forced_broad_regression"}:
         remove_local_corpus_query_methods(repo)
     if task.name == "policy_registry_self_patch":
@@ -492,6 +553,10 @@ def build_result(
         summary_path=str(summary_path),
         stdout_tail=proc.stdout[-4000:],
         stderr_tail=proc.stderr[-2000:],
+        repository_split=repository.split,
+        transfer_origin=repository.transfer_origin,
+        task_description=task.description,
+        task_claim=task.claim,
     )
 
 
@@ -526,7 +591,11 @@ def aggregate_results(results: Sequence[ExperimentResult]) -> List[Dict[str, obj
         aggregates.append(
             {
                 "repository": repository,
+                "repository_split": rows[0].repository_split,
+                "transfer_origin": rows[0].transfer_origin,
                 "task": task,
+                "task_description": rows[0].task_description,
+                "task_claim": rows[0].task_claim,
                 "variant": variant,
                 "family": rows[0].family,
                 "trial_count": len(rows),
@@ -555,30 +624,171 @@ def write_aggregate_csv(path: Path, aggregates: List[Dict[str, object]]) -> None
             writer.writerow(row)
 
 
+def _float_value(row: Dict[str, object], key: str) -> float:
+    value = row.get(key)
+    if value is None or value == "":
+        return 0.0
+    return float(value)
+
+
+def _baseline_rows(rows: Sequence[Dict[str, object]]) -> List[Dict[str, object]]:
+    return [
+        row
+        for row in rows
+        if str(row.get("family", "")).startswith("baseline_")
+    ]
+
+
+def _ablation_rows(rows: Sequence[Dict[str, object]]) -> List[Dict[str, object]]:
+    return [
+        row
+        for row in rows
+        if str(row.get("family", "")).startswith("ablation_")
+    ]
+
+
+def build_baseline_comparisons(aggregates: Sequence[Dict[str, object]]) -> List[Dict[str, object]]:
+    """Compare the proposed loop against baselines and ablations."""
+
+    groups: Dict[Tuple[str, str], List[Dict[str, object]]] = {}
+    for row in aggregates:
+        groups.setdefault((str(row["repository"]), str(row["task"])), []).append(row)
+
+    comparisons: List[Dict[str, object]] = []
+    for (repository, task), rows in sorted(groups.items()):
+        proposed = next((row for row in rows if row.get("variant") == "verified_closed_loop"), None)
+        if proposed is None:
+            continue
+        baselines = _baseline_rows(rows)
+        ablations = _ablation_rows(rows)
+        best_baseline = max(
+            baselines,
+            key=lambda row: (
+                _float_value(row, "accepted_rate_mean"),
+                _float_value(row, "improvement_depth_mean"),
+                -_float_value(row, "cost_proxy_seconds_mean"),
+            ),
+            default=None,
+        )
+        agent = next((row for row in baselines if row.get("variant") == "agent_coding_loop"), None)
+        ci_only = next((row for row in baselines if row.get("variant") == "ci_only_validation"), None)
+        no_rollback = next((row for row in ablations if row.get("variant") == "no_rollback"), None)
+        no_broad = next((row for row in ablations if row.get("variant") == "focused_only_loop"), None)
+
+        proposed_acceptance = _float_value(proposed, "accepted_rate_mean")
+        proposed_depth = _float_value(proposed, "improvement_depth_mean")
+        best_baseline_acceptance = (
+            _float_value(best_baseline, "accepted_rate_mean") if best_baseline else 0.0
+        )
+        best_baseline_depth = (
+            _float_value(best_baseline, "improvement_depth_mean") if best_baseline else 0.0
+        )
+        agent_depth = _float_value(agent, "improvement_depth_mean") if agent else 0.0
+        ci_depth = _float_value(ci_only, "improvement_depth_mean") if ci_only else 0.0
+        rollback_success = proposed.get("rollback_success_rate")
+        no_rollback_success = no_rollback.get("rollback_success_rate") if no_rollback else None
+        safety_win = (
+            task == "forced_broad_regression"
+            and rollback_success is not None
+            and float(rollback_success) >= 1.0
+            and no_rollback_success is not None
+            and float(no_rollback_success) <= 0.0
+        )
+        broad_gate_win = (
+            task == "forced_broad_regression"
+            and no_broad is not None
+            and _float_value(no_broad, "accepted_rate_mean") > proposed_acceptance
+        )
+        unseen_transfer_success = (
+            proposed.get("repository_split") == "unseen"
+            and proposed_acceptance > 0.0
+            and proposed_depth > 0.0
+        )
+
+        if unseen_transfer_success:
+            outcome = "unseen_transfer_success"
+        elif safety_win:
+            outcome = "safety_win_over_ablation"
+        elif proposed_depth > agent_depth and proposed_acceptance >= best_baseline_acceptance:
+            outcome = "depth_win_over_single_pass"
+        elif proposed_acceptance >= best_baseline_acceptance and proposed_depth >= best_baseline_depth:
+            outcome = "tie_or_frontier_match"
+        else:
+            outcome = "baseline_stronger_or_inconclusive"
+
+        comparisons.append(
+            {
+                "repository": repository,
+                "repository_split": proposed.get("repository_split", "seen"),
+                "transfer_origin": proposed.get("transfer_origin", ""),
+                "task": task,
+                "task_claim": proposed.get("task_claim", ""),
+                "proposed_accepted_rate_mean": proposed_acceptance,
+                "proposed_improvement_depth_mean": proposed_depth,
+                "best_baseline_variant": best_baseline.get("variant") if best_baseline else "",
+                "best_baseline_accepted_rate_mean": best_baseline_acceptance,
+                "best_baseline_improvement_depth_mean": best_baseline_depth,
+                "accepted_rate_margin_vs_best_baseline": proposed_acceptance - best_baseline_acceptance,
+                "depth_margin_vs_agent_loop": proposed_depth - agent_depth,
+                "depth_margin_vs_ci_only": proposed_depth - ci_depth,
+                "safety_win_over_no_rollback": safety_win,
+                "unsafe_acceptance_seen_without_broad_gate": broad_gate_win,
+                "unseen_transfer_success": unseen_transfer_success,
+                "outcome": outcome,
+            }
+        )
+    return comparisons
+
+
+def write_comparison_csv(path: Path, comparisons: List[Dict[str, object]]) -> None:
+    if not comparisons:
+        return
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=list(comparisons[0].keys()))
+        writer.writeheader()
+        for row in comparisons:
+            writer.writerow(row)
+
+
 def write_markdown_reports(output_dir: Path, results: List[ExperimentResult]) -> None:
     aggregates = aggregate_results(results)
+    comparisons = build_baseline_comparisons(aggregates)
     table_lines = [
-        "| Repository | Task | Variant | Repeat | Accepted | Rejected | Rate | Regression Failures | Rollback Correct | Seconds |",
-        "|---|---|---:|---:|---:|---:|---:|---:|---:|---:|",
+        "| Repository | Split | Task | Variant | Repeat | Accepted | Rejected | Rate | Regression Failures | Rollback Correct | Seconds |",
+        "|---|---|---|---:|---:|---:|---:|---:|---:|---:|---:|",
     ]
     for result in results:
         rollback = "n/a" if result.rollback_correct is None else str(result.rollback_correct)
         table_lines.append(
-            f"| {result.repository} | {result.task} | {result.variant} | {result.repeat_index} | {result.accepted_count} | "
+            f"| {result.repository} | {result.repository_split} | {result.task} | {result.variant} | {result.repeat_index} | {result.accepted_count} | "
             f"{result.rejected_count} | {result.accepted_rate:.2f} | "
             f"{result.regression_gate_failures} | {rollback} | {result.elapsed_s:.2f} |"
         )
 
     aggregate_lines = [
-        "| Repository | Task | Variant | Trials | Accepted Rate Mean | Regression Failures Mean | Rollback Success | Depth Mean | Seconds Mean |",
-        "|---|---|---:|---:|---:|---:|---:|---:|---:|",
+        "| Repository | Split | Task | Variant | Trials | Accepted Rate Mean | Regression Failures Mean | Rollback Success | Depth Mean | Seconds Mean |",
+        "|---|---|---|---:|---:|---:|---:|---:|---:|---:|",
     ]
     for row in aggregates:
         rollback = "n/a" if row["rollback_success_rate"] is None else f"{float(row['rollback_success_rate']):.2f}"
         aggregate_lines.append(
-            f"| {row['repository']} | {row['task']} | {row['variant']} | {row['trial_count']} | "
+            f"| {row['repository']} | {row['repository_split']} | {row['task']} | {row['variant']} | {row['trial_count']} | "
             f"{float(row['accepted_rate_mean']):.2f} | {float(row['regression_gate_failures_mean']):.2f} | "
             f"{rollback} | {float(row['improvement_depth_mean']):.2f} | {float(row['cost_proxy_seconds_mean']):.2f} |"
+        )
+
+    comparison_lines = [
+        "| Repository | Split | Task | Outcome | Proposed Rate | Best Baseline | Baseline Rate | Depth Margin vs Agent | Safety Win | Unseen Transfer |",
+        "|---|---|---|---|---:|---|---:|---:|---:|---:|",
+    ]
+    for row in comparisons:
+        comparison_lines.append(
+            f"| {row['repository']} | {row['repository_split']} | {row['task']} | {row['outcome']} | "
+            f"{float(row['proposed_accepted_rate_mean']):.2f} | {row['best_baseline_variant']} | "
+            f"{float(row['best_baseline_accepted_rate_mean']):.2f} | "
+            f"{float(row['depth_margin_vs_agent_loop']):.2f} | "
+            f"{row['safety_win_over_no_rollback']} | {row['unseen_transfer_success']} |"
         )
 
     repositories = sorted({result.repository for result in results})
@@ -603,10 +813,16 @@ def write_markdown_reports(output_dir: Path, results: List[ExperimentResult]) ->
         "",
         *aggregate_lines,
         "",
+        "## Baseline And Transfer Scorecard",
+        "",
+        *comparison_lines,
+        "",
         "## Review-Relevant Claims",
         "",
         "- The proposed loop can patch real repository code and persist accepted/rejected provenance.",
         "- The matrix includes CI-only, single-pass agent coding, and evolutionary repair baselines.",
+        "- Held-out schema-transfer fixtures are marked as unseen and compared separately.",
+        "- Baseline comparison rows explicitly label wins, ties, safety wins, and inconclusive cases.",
         "- The generator includes schema-driven candidate synthesis instead of only fixed candidate names.",
         "- The generator scores bounded competing hypotheses with rejection history before patching.",
         "- Broad gates reduce regression risk relative to focused-only ablations.",
@@ -615,6 +831,29 @@ def write_markdown_reports(output_dir: Path, results: List[ExperimentResult]) ->
         "- The policy registry candidate turns the loop's generator, validator, patch, and safety policies into a measurable surface.",
     ]
     (output_dir / "neurips_readiness.md").write_text("\n".join(readiness) + "\n", encoding="utf-8")
+
+    comparison_report = [
+        "# Baseline Comparison Scorecard",
+        "",
+        "This report separates accepted-rate wins, improvement-depth wins, safety wins, and held-out transfer successes. "
+        "Rows marked as inconclusive should not be presented as evidence that the proposed loop beats all baselines.",
+        "",
+        *comparison_lines,
+        "",
+        "## Interpretation Rules",
+        "",
+        "- `depth_win_over_single_pass`: the proposed loop reaches deeper recursive improvement than the single-pass agent baseline without lower accepted rate.",
+        "- `safety_win_over_ablation`: rollback and broad gates prevent unsafe promotion that an ablation fails to prevent.",
+        "- `unseen_transfer_success`: the loop patches a held-out schema surface not present in the original benchmark fixtures.",
+        "- `tie_or_frontier_match`: the proposed loop matches the best baseline on this metric but does not dominate it.",
+        "- `baseline_stronger_or_inconclusive`: the current evidence does not support a proposed-loop win.",
+    ]
+    (output_dir / "baseline_comparison.md").write_text(
+        "\n".join(comparison_report) + "\n",
+        encoding="utf-8",
+    )
+    write_json(output_dir / "evidence_scorecard.json", comparisons)
+    write_comparison_csv(output_dir / "baseline_comparison.csv", comparisons)
 
     failures = ["# Failure Analysis", ""]
     for result in results:
@@ -656,6 +895,12 @@ def select_by_name(items, selected: Sequence[str]):
     return [item for item in items if item.name in names]
 
 
+def task_applies_to_repository(task: ExperimentTask, repository: BenchmarkRepository) -> bool:
+    """Return whether a task is part of a repository fixture's matrix."""
+
+    return not task.repositories or repository.name in task.repositories
+
+
 def run_suite(args: argparse.Namespace) -> Path:
     repo_root = args.repo_root.resolve()
     output_dir = (args.output_dir or repo_root / "reports" / "rsi_experiments" / "latest").resolve()
@@ -673,6 +918,8 @@ def run_suite(args: argparse.Namespace) -> Path:
         for repository in repositories:
             for repeat_index in range(args.repeats):
                 for task in tasks:
+                    if not task_applies_to_repository(task, repository):
+                        continue
                     for variant in variants:
                         seed = stable_trial_seed(repository.name, task.name, variant.name, repeat_index)
                         work_repo = tmp_root / f"{repository.name}__{task.name}__{variant.name}__r{repeat_index}"
