@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+
+# Rust
+target/
+*.pdb
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Compiled wheels (build artifacts)
+*.whl
+
+# Evidence logs
+evidence_*.jsonl
+
+# RSI persistence
+shared/atom_bank.json
+.omega_rsi_runs/STOP_CLOSED_RSI
