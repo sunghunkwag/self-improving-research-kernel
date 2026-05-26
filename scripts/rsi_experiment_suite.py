@@ -197,21 +197,27 @@ def remove_policy_registry_surface(repo: Path) -> None:
         pass
     loop_path = repo / "scripts" / "closed_recursive_self_improvement_loop.py"
     text = loop_path.read_text(encoding="utf-8")
-    text = text.replace("POLICY_REGISTRY_ACTIVE = True\n\n", "")
-    text = re.sub(
-        r"\n\ndef load_policy_registry\(repo_root: Path\).*?(?=\n\nclass ClosedRecursiveSelfImprovementLoop:)",
-        "\n",
-        text,
-        count=1,
-        flags=re.DOTALL,
-    )
-    text = re.sub(
-        r"\n    def policy_surface\(self\).*?(?=\n    def load_state\(self\))",
-        "\n",
-        text,
-        count=1,
-        flags=re.DOTALL,
-    )
+    lines = text.splitlines(keepends=True)
+    stripped: List[str] = []
+    i = 0
+    while i < len(lines):
+        if lines[i].strip() == "POLICY_REGISTRY_ACTIVE = True":
+            while i < len(lines) and not lines[i].startswith("class ClosedRecursiveSelfImprovementLoop:"):
+                i += 1
+            continue
+        stripped.append(lines[i])
+        i += 1
+    lines = stripped
+    stripped = []
+    i = 0
+    while i < len(lines):
+        if lines[i].startswith("    def policy_surface(self)"):
+            while i < len(lines) and not lines[i].startswith("    def load_state(self)"):
+                i += 1
+            continue
+        stripped.append(lines[i])
+        i += 1
+    text = "".join(stripped)
     loop_path.write_text(text, encoding="utf-8")
 
 

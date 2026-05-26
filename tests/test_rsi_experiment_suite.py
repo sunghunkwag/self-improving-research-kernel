@@ -1,6 +1,7 @@
 from scripts.rsi_experiment_suite import (
     ExperimentVariant,
     changed_files,
+    remove_policy_registry_surface,
     repository_fingerprint,
     strip_method,
 )
@@ -43,6 +44,36 @@ def test_repository_fingerprint_ignores_state_directory(tmp_path):
 
     assert "a.py" in fingerprint
     assert ".omega_rsi_runs/closed_rsi_state.json" not in fingerprint
+
+
+def test_remove_policy_registry_surface_preserves_template_string(tmp_path):
+    scripts = tmp_path / "scripts"
+    tests = tmp_path / "tests"
+    scripts.mkdir()
+    tests.mkdir()
+    (scripts / "rsi_policy_registry.py").write_text("", encoding="utf-8")
+    (tests / "test_rsi_policy_registry_rewrite.py").write_text("", encoding="utf-8")
+    loop = scripts / "closed_recursive_self_improvement_loop.py"
+    loop.write_text(
+        'function_insertion = """\\n\\ndef load_policy_registry(repo_root):\\n    pass\\n"""\\n'
+        "POLICY_REGISTRY_ACTIVE = True\n\n"
+        "def load_policy_registry(repo_root):\n"
+        "    return {}\n\n"
+        "class ClosedRecursiveSelfImprovementLoop:\n"
+        "    def policy_surface(self):\n"
+        "        return {}\n\n"
+        "    def load_state(self):\n"
+        "        return {}\n",
+        encoding="utf-8",
+    )
+
+    remove_policy_registry_surface(tmp_path)
+    text = loop.read_text(encoding="utf-8")
+
+    assert 'function_insertion = """' in text
+    assert "POLICY_REGISTRY_ACTIVE = True" not in text
+    assert "    def policy_surface" not in text
+    assert "    def load_state" in text
 
 
 def test_experiment_variant_defaults_to_safe_controls():
