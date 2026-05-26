@@ -1,0 +1,157 @@
+{
+  "generated_at": "2026-05-26T22:25:22Z",
+  "safety_model": [
+    "Only issue metadata is fetched.",
+    "No external repository code is cloned or executed.",
+    "Issue bodies are truncated before persistence.",
+    "Repository count and issue count are bounded by CLI limits.",
+    "Every task keeps source URL and retrieval provenance."
+  ],
+  "sources": [
+    {
+      "max_items": 1,
+      "provider": "github",
+      "query": "state=open labels=bug",
+      "repository": "psf/requests"
+    },
+    {
+      "max_items": 1,
+      "provider": "github",
+      "query": "state=open labels=bug",
+      "repository": "hypothesisworks/hypothesis"
+    },
+    {
+      "max_items": 1,
+      "provider": "github",
+      "query": "state=open labels=bug",
+      "repository": "pandas-dev/pandas"
+    },
+    {
+      "max_items": 1,
+      "provider": "github",
+      "query": "state=open labels=bug",
+      "repository": "dask/dask"
+    }
+  ],
+  "tasks": [
+    {
+      "body_excerpt": "<!-- Please include a self-contained copy-pastable example that generates the issue if possible. Please be concise with code posted. See guidelines below on how to provide a good bug report: - Craft Minimal Bug Reports http://matthewrocklin.com/blog/work/2018/02/28/minimal-bug-reports - Minimal Complete Verifiable Examples https://stackoverflow.com/help/mcve Bug reports that follow these guidelines are easier to diagnose, and so are often handled much more quickly. --> **Describe the issue**: I wanted to calculate a cumsum on a dask array. The results differ from a cumsum on the same data opened as a pure numpy array. An example plot of the difference between the two approaches (cumsum over the horizontal axis): <img width=\"603\" height=\"481\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/2a2a2986-1371-4b6c-9459-237665c393e5\" /> There are 3 chunks in time. The results start to diverge at the start of the second chunk. I expected that using pure numpy arrays or dask arrays should yield results that are numerically close(r). Or maybe the difference can be explained solely by the fact that floating point numbers are not associative, and using dask means the data is added i",
+      "created_at": "2026-04-23T09:02:47Z",
+      "grounding_score": 3.0,
+      "issue_number": 12359,
+      "labels": [
+        "array",
+        "bug",
+        "needs triage"
+      ],
+      "provenance": {
+        "retrieved_at": "2026-05-26T22:25:22Z",
+        "source_api": "https://api.github.com/repos/dask/dask/issues",
+        "source_url": "https://github.com/dask/dask/issues/12359"
+      },
+      "provider": "github",
+      "repository": "dask/dask",
+      "safety_controls": [
+        "metadata_only",
+        "no_remote_code_execution",
+        "bounded_issue_count",
+        "bounded_body_excerpt",
+        "repository_allowlist"
+      ],
+      "state": "open",
+      "task_id": "github:dask/dask#12359",
+      "task_kind": "external_bug_repair",
+      "title": "'cumsum' results differ from 'cumsum' on a pure numpy array",
+      "updated_at": "2026-05-21T15:05:45Z",
+      "url": "https://github.com/dask/dask/issues/12359"
+    },
+    {
+      "body_excerpt": "The pytest plugin uses difflib's `unified_diff()` to generate git patches. However, git expects a `\\ No newline at end of file` annotation if there is no newline at the end of the source file and unified_diff doesn't add it. **test_one.py** ```python from hypothesis.strategies import integers from hypothesis import given @given(integers()) def test_two_failures(a): assert a < 0 # note, no newline ``` Change required to generated patch file: ```diff ... --- --- ./test_one.py +++ ./test_one.py @@ -2,5 +2,6 @@ from hypothesis import given @given(integers()) +@example(a=0).via(\"discovered failure\") def test_two_failures(a): assert a < 0 # note, no newline +\\ No newline at end of file ``` I think a simple check in `make_patch()` is all that is needed or, otherwise, to use `git` to generate the patch instead of difflib, but that would require a call to subprocess.",
+      "created_at": "2026-05-26T09:43:12Z",
+      "grounding_score": 3.0,
+      "issue_number": 4744,
+      "labels": [
+        "bug"
+      ],
+      "provenance": {
+        "retrieved_at": "2026-05-26T22:25:21Z",
+        "source_api": "https://api.github.com/repos/hypothesisworks/hypothesis/issues",
+        "source_url": "https://github.com/HypothesisWorks/hypothesis/issues/4744"
+      },
+      "provider": "github",
+      "repository": "hypothesisworks/hypothesis",
+      "safety_controls": [
+        "metadata_only",
+        "no_remote_code_execution",
+        "bounded_issue_count",
+        "bounded_body_excerpt",
+        "repository_allowlist"
+      ],
+      "state": "open",
+      "task_id": "github:hypothesisworks/hypothesis#4744",
+      "task_kind": "external_regression_repair",
+      "title": "Pytest plugin produces corrupt patch if source file doesn't end in a newline",
+      "updated_at": "2026-05-26T16:22:39Z",
+      "url": "https://github.com/HypothesisWorks/hypothesis/issues/4744"
+    },
+    {
+      "body_excerpt": "### Pandas version checks - [x] I have checked that this issue has not already been reported. - [x] I have confirmed this bug exists on the [latest version](https://pandas.pydata.org/docs/whatsnew/index.html) of pandas. - [x] I have confirmed this bug exists on the [main branch](https://pandas.pydata.org/docs/dev/getting_started/install.html#installing-the-development-version-of-pandas) of pandas. ### Issue Description In `a.map(b)`, when both a and b are Series and b's dtype is non-nullable, Pandas dynamically changes the output dtype if it can't match all the keys. This behaviour changed in the nightlies vs. 3.0; however I am seeing inconsistencies which make little sense to me. ### Use case 1: Not all elements of `a.values` are in `b.index` ```python a = pd.Series([1, 2]) b = pd.Series([10, 20], index=[2, 3]) ``` output (pandas 3.0): np.float64 output (pandas 3.1 nightly): np.float64 ### Use case 2: Some values of `a` are NULL ```python a = pd.Series([1, None], dtype=\"Int16\") b = pd.Series([10, 20], index=[2, 1]) ``` output (pandas 3.0): np.float64 output (pandas 3.1 nightly): Float64 ```python a = pd.Series([1, None], dtype=\"int16[pyarrow]\") b = pd.Series([10, 20], index=[2, 1]",
+      "created_at": "2026-05-26T13:37:47Z",
+      "grounding_score": 3.0,
+      "issue_number": 65735,
+      "labels": [
+        "Bug",
+        "Needs Triage"
+      ],
+      "provenance": {
+        "retrieved_at": "2026-05-26T22:25:22Z",
+        "source_api": "https://api.github.com/repos/pandas-dev/pandas/issues",
+        "source_url": "https://github.com/pandas-dev/pandas/issues/65735"
+      },
+      "provider": "github",
+      "repository": "pandas-dev/pandas",
+      "safety_controls": [
+        "metadata_only",
+        "no_remote_code_execution",
+        "bounded_issue_count",
+        "bounded_body_excerpt",
+        "repository_allowlist"
+      ],
+      "state": "open",
+      "task_id": "github:pandas-dev/pandas#65735",
+      "task_kind": "external_regression_repair",
+      "title": "BUG: Incoherent dynamic dtype changes in `.map()`",
+      "updated_at": "2026-05-26T13:52:56Z",
+      "url": "https://github.com/pandas-dev/pandas/issues/65735"
+    },
+    {
+      "body_excerpt": "I had a hard debugging time today because an error in the response stream is only reported when accessing `response.content` for the first time. This is especially irritating when running code in a debugger. ## Expected Result If accessing `response.content` the first time raises an exception I would expect that accessing `response.content` again would also raise an exception (ideally the same). ## Actual Result Instead after raising on the first get, getting `response.content` again returns an empty string. ## Reproduction Steps Here is a patch with a new test case for this: [error_replay_test.diff.gz](https://github.com/requests/requests/files/2838360/error_replay_test.diff.gz). Basically, it boils down to this: ```python import requests response = requests.post(\"http://connreset.biz/get/incomplete/chunked\", stream=True) try: response.content except Exception: # Error handling code, may try something else or fall through pass content = response.content # empty string ``` Output of my test case: ``` $ pipenv run py.test tests/test_lowlevel.py -q --tb=short -k retain F [100%] ============================= FAILURES ============================= _______________ test_response_content_",
+      "created_at": "2019-02-06T21:46:17Z",
+      "grounding_score": 3.0,
+      "issue_number": 4965,
+      "labels": [
+        "Bug"
+      ],
+      "provenance": {
+        "retrieved_at": "2026-05-26T22:25:21Z",
+        "source_api": "https://api.github.com/repos/psf/requests/issues",
+        "source_url": "https://github.com/psf/requests/issues/4965"
+      },
+      "provider": "github",
+      "repository": "psf/requests",
+      "safety_controls": [
+        "metadata_only",
+        "no_remote_code_execution",
+        "bounded_issue_count",
+        "bounded_body_excerpt",
+        "repository_allowlist"
+      ],
+      "state": "open",
+      "task_id": "github:psf/requests#4965",
+      "task_kind": "external_regression_repair",
+      "title": "Accessing response.content twice removes forgets read error",
+      "updated_at": "2026-04-29T02:11:51Z",
+      "url": "https://github.com/psf/requests/issues/4965"
+    }
+  ]
+}

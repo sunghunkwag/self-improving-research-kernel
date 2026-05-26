@@ -4,7 +4,10 @@ This report separates accepted-rate wins, improvement-depth wins, safety wins, a
 
 | Repository | Split | Task | Outcome | Proposed Rate | Best Baseline | Baseline Rate | Depth Margin vs Agent | Safety Win | Unseen Transfer | External Transfer |
 |---|---|---|---|---:|---|---:|---:|---:|---:|---:|
-| unseen_schema_transfer_repo | unseen | unseen_static_roles_query | unseen_transfer_success | 1.00 | agent_coding_loop | 1.00 | 2.00 | False | True | False |
+| external_dask_issue_transfer_repo | external_unseen | external_dask_array_labels_query | external_transfer_success | 1.00 | agent_coding_loop | 1.00 | 2.00 | False | False | True |
+| external_hypothesis_issue_transfer_repo | external_unseen | external_hypothesis_patch_signals_query | external_transfer_success | 1.00 | agent_coding_loop | 1.00 | 2.00 | False | False | True |
+| external_pandas_issue_transfer_repo | external_unseen | external_pandas_failure_terms_query | external_transfer_success | 1.00 | agent_coding_loop | 1.00 | 2.00 | False | False | True |
+| external_requests_issue_transfer_repo | external_unseen | external_requests_issue_labels_query | external_transfer_success | 1.00 | agent_coding_loop | 1.00 | 2.00 | False | False | True |
 
 ## Interpretation Rules
 

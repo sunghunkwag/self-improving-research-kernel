@@ -1,0 +1,160 @@
+{
+  "repeats": 2,
+  "repositories": [
+    {
+      "description": "Actual psf/requests issue-label fixture extracted from public GitHub issue metadata.",
+      "name": "external_requests_issue_transfer_repo",
+      "split": "external_unseen",
+      "transfer_origin": "psf/requests"
+    },
+    {
+      "description": "Actual Hypothesis issue-title fixture extracted from public GitHub issue metadata.",
+      "name": "external_hypothesis_issue_transfer_repo",
+      "split": "external_unseen",
+      "transfer_origin": "hypothesisworks/hypothesis"
+    },
+    {
+      "description": "Actual pandas issue-title fixture extracted from public GitHub issue metadata.",
+      "name": "external_pandas_issue_transfer_repo",
+      "split": "external_unseen",
+      "transfer_origin": "pandas-dev/pandas"
+    },
+    {
+      "description": "Actual dask issue-label fixture extracted from public GitHub issue metadata.",
+      "name": "external_dask_issue_transfer_repo",
+      "split": "external_unseen",
+      "transfer_origin": "dask/dask"
+    }
+  ],
+  "tasks": [
+    {
+      "claim": "",
+      "description": "Remove accepted local corpus query APIs and measure whether the loop recovers them.",
+      "name": "local_corpus_queries_clean",
+      "repositories": [
+        "omega_full_repo",
+        "compact_kernel_repo"
+      ]
+    },
+    {
+      "claim": "",
+      "description": "Remove the explicit policy registry surface and measure whether the loop patches its own policy interface.",
+      "name": "policy_registry_self_patch",
+      "repositories": [
+        "omega_full_repo",
+        "compact_kernel_repo"
+      ]
+    },
+    {
+      "claim": "",
+      "description": "Inject a failing broad-gate test to measure rollback and no-broad-gate regression risk.",
+      "name": "forced_broad_regression",
+      "repositories": [
+        "omega_full_repo",
+        "compact_kernel_repo"
+      ]
+    },
+    {
+      "claim": "Unseen transfer succeeds when the loop patches a query API for a field absent from the original benchmark repositories.",
+      "description": "Measure whether schema-driven generation transfers to a held-out tuple-valued LocalPythonFileRecord field.",
+      "name": "unseen_static_roles_query",
+      "repositories": [
+        "unseen_schema_transfer_repo"
+      ]
+    },
+    {
+      "claim": "Security-domain unseen transfer succeeds when the loop patches a query API for threat labels absent from the seen fixtures.",
+      "description": "Measure schema transfer on a held-out security-oriented tuple-valued record field.",
+      "name": "unseen_threat_labels_query",
+      "repositories": [
+        "unseen_security_transfer_repo"
+      ]
+    },
+    {
+      "claim": "Science-domain unseen transfer succeeds when the loop patches a query API for evidence sources absent from the seen fixtures.",
+      "description": "Measure schema transfer on a held-out science-oriented tuple-valued record field.",
+      "name": "unseen_evidence_sources_query",
+      "repositories": [
+        "unseen_science_transfer_repo"
+      ]
+    },
+    {
+      "claim": "Control-domain unseen transfer succeeds when the loop patches a query API for controller modes absent from the seen fixtures.",
+      "description": "Measure schema transfer on a held-out control-oriented tuple-valued record field.",
+      "name": "unseen_controller_modes_query",
+      "repositories": [
+        "unseen_control_transfer_repo"
+      ]
+    },
+    {
+      "claim": "External transfer succeeds when the loop patches a query API for external_issue_labels extracted from psf/requests issue metadata.",
+      "description": "Measure transfer on a fixture extracted from psf/requests issue metadata.",
+      "name": "external_requests_issue_labels_query",
+      "repositories": [
+        "external_requests_issue_transfer_repo"
+      ]
+    },
+    {
+      "claim": "External transfer succeeds when the loop patches a query API for external_patch_signals extracted from hypothesisworks/hypothesis issue metadata.",
+      "description": "Measure transfer on a fixture extracted from hypothesisworks/hypothesis issue metadata.",
+      "name": "external_hypothesis_patch_signals_query",
+      "repositories": [
+        "external_hypothesis_issue_transfer_repo"
+      ]
+    },
+    {
+      "claim": "External transfer succeeds when the loop patches a query API for external_failure_terms extracted from pandas-dev/pandas issue metadata.",
+      "description": "Measure transfer on a fixture extracted from pandas-dev/pandas issue metadata.",
+      "name": "external_pandas_failure_terms_query",
+      "repositories": [
+        "external_pandas_issue_transfer_repo"
+      ]
+    },
+    {
+      "claim": "External transfer succeeds when the loop patches a query API for external_array_labels extracted from dask/dask issue metadata.",
+      "description": "Measure transfer on a fixture extracted from dask/dask issue metadata.",
+      "name": "external_dask_array_labels_query",
+      "repositories": [
+        "external_dask_issue_transfer_repo"
+      ]
+    }
+  ],
+  "variants": [
+    {
+      "broad_gate": true,
+      "description": "Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",
+      "family": "proposed",
+      "max_candidates_override": null,
+      "max_generations_override": null,
+      "name": "verified_closed_loop",
+      "persistence": true,
+      "rollback": true,
+      "run_loop": true,
+      "thdse_core_gate": true
+    },
+    {
+      "broad_gate": true,
+      "description": "Baseline: single-pass automated coding loop with validation but without persistent recursive depth.",
+      "family": "baseline_agent_coding_loop",
+      "max_candidates_override": 1,
+      "max_generations_override": 1,
+      "name": "agent_coding_loop",
+      "persistence": false,
+      "rollback": true,
+      "run_loop": true,
+      "thdse_core_gate": true
+    },
+    {
+      "broad_gate": true,
+      "description": "Baseline: run validation without candidate generation or code patching.",
+      "family": "baseline_ci_only",
+      "max_candidates_override": null,
+      "max_generations_override": null,
+      "name": "ci_only_validation",
+      "persistence": true,
+      "rollback": true,
+      "run_loop": false,
+      "thdse_core_gate": true
+    }
+  ]
+}

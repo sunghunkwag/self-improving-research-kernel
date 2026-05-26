@@ -30,9 +30,9 @@ This report evaluates a bounded, verified recursive self-improvement loop. It do
 
 ## Baseline And Transfer Scorecard
 
-| Repository | Split | Task | Outcome | Proposed Rate | Best Baseline | Baseline Rate | Depth Margin vs Agent | Safety Win | Unseen Transfer |
-|---|---|---|---|---:|---|---:|---:|---:|---:|
-| unseen_schema_transfer_repo | unseen | unseen_static_roles_query | unseen_transfer_success | 1.00 | agent_coding_loop | 1.00 | 2.00 | False | True |
+| Repository | Split | Task | Outcome | Proposed Rate | Best Baseline | Baseline Rate | Depth Margin vs Agent | Safety Win | Unseen Transfer | External Transfer |
+|---|---|---|---|---:|---|---:|---:|---:|---:|---:|
+| unseen_schema_transfer_repo | unseen | unseen_static_roles_query | unseen_transfer_success | 1.00 | agent_coding_loop | 1.00 | 2.00 | False | True | False |
 
 ## Review-Relevant Claims
 

@@ -161,6 +161,9 @@ Additional evidence artifacts:
 - `reports/rsi_experiments/unseen_multi_transfer/latest/`: four held-out
   schema-transfer fixtures across generic, security, science, and control
   domains
+- `reports/rsi_experiments/external_transfer/latest/`: fixtures extracted from
+  actual external GitHub issue metadata for `psf/requests`,
+  `hypothesisworks/hypothesis`, `pandas-dev/pandas`, and `dask/dask`
 - `reports/rsi_experiments/recovery/latest/`: narrow Actions recovery runs
   used to verify workflow health without overwriting the full matrix
 
@@ -172,6 +175,10 @@ repair.
 
 The workflow `Unseen Transfer Experiments` runs the multi-domain unseen matrix
 without running the heavier full repository matrix.
+
+The workflow `External Transfer Experiments` refreshes bounded external GitHub
+issue metadata, builds external issue-derived fixtures, and runs the external
+transfer matrix without executing external repository code.
 
 ## Local Safety
 

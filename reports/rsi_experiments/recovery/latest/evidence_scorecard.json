@@ -6,6 +6,7 @@
     "best_baseline_variant": "",
     "depth_margin_vs_agent_loop": 1.0,
     "depth_margin_vs_ci_only": 1.0,
+    "external_transfer_success": false,
     "outcome": "unseen_transfer_success",
     "proposed_accepted_rate_mean": 1.0,
     "proposed_improvement_depth_mean": 1.0,

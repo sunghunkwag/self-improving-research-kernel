@@ -1,11 +1,14 @@
 from scripts.rsi_experiment_suite import (
     DEFAULT_REPOSITORIES,
     DEFAULT_TASKS,
+    EXTERNAL_ISSUE_FIXTURES,
     ExperimentVariant,
     aggregate_results,
     build_baseline_comparisons,
     build_benchmark_repo,
     changed_files,
+    external_issue_values,
+    normalize_fixture_token,
     remove_policy_registry_surface,
     repository_fingerprint,
     stable_trial_seed,
@@ -210,6 +213,76 @@ def test_unseen_transfer_task_is_limited_to_unseen_repository():
     assert unseen_task_names <= {task.name for task in DEFAULT_TASKS}
 
 
+def test_external_issue_values_normalize_actual_metadata():
+    task = {
+        "labels": ("Bug", "area: code health"),
+        "title": "Patch corrupt diff when file lacks newline",
+        "body_excerpt": "",
+    }
+    label_spec = next(
+        repository
+        for repository in DEFAULT_REPOSITORIES
+        if repository.name == "external_requests_issue_transfer_repo"
+    )
+    assert label_spec.split == "external_unseen"
+    spec = next(
+        item
+        for item in EXTERNAL_ISSUE_FIXTURES
+        if item.repository_name == "external_requests_issue_transfer_repo"
+    )
+
+    assert external_issue_values(task, spec)[:2] == ("bug", "area_code_health")
+    assert normalize_fixture_token("Needs Triage!", fallback="fallback") == "needs_triage"
+
+
+def test_external_issue_transfer_repository_uses_grounding_metadata(tmp_path):
+    source = tmp_path / "source"
+    target = tmp_path / "target"
+    (source / "scripts").mkdir(parents=True)
+    (source / "shared").mkdir()
+    (source / "reports" / "external_grounding" / "latest").mkdir(parents=True)
+    (source / "scripts" / "closed_recursive_self_improvement_loop.py").write_text("", encoding="utf-8")
+    (source / "scripts" / "rsi_policy_registry.py").write_text("", encoding="utf-8")
+    (source / "shared" / "__init__.py").write_text("", encoding="utf-8")
+    (source / "shared" / "local_corpus.py").write_text(
+        "from dataclasses import dataclass\n"
+        "from typing import Tuple\n\n"
+        "@dataclass(frozen=True)\n"
+        "class LocalPythonFileRecord:\n"
+        "    feature_flags: Tuple[str, ...] = ()\n",
+        encoding="utf-8",
+    )
+    (source / "reports" / "external_grounding" / "latest" / "external_grounding_tasks.json").write_text(
+        """{
+  "tasks": [
+    {
+      "repository": "psf/requests",
+      "task_id": "github:psf/requests#1",
+      "title": "Proxy bug",
+      "body_excerpt": "",
+      "labels": ["Bug", "help wanted"],
+      "task_kind": "external_bug_repair",
+      "url": "https://github.com/psf/requests/issues/1",
+      "grounding_score": 3.0
+    }
+  ]
+}
+""",
+        encoding="utf-8",
+    )
+
+    repository = next(
+        item for item in DEFAULT_REPOSITORIES if item.name == "external_requests_issue_transfer_repo"
+    )
+    build_benchmark_repo(source, target, repository)
+
+    text = (target / "shared" / "local_corpus.py").read_text(encoding="utf-8")
+    metadata = __import__("json").loads((target / "external_fixture_metadata.json").read_text(encoding="utf-8"))
+    assert "external_issue_labels: Tuple[str, ...] = ()" in text
+    assert metadata["source_repository"] == "psf/requests"
+    assert metadata["field_values"][:2] == ["bug", "help_wanted"]
+
+
 def test_aggregate_results_groups_repeated_trials():
     from scripts.rsi_experiment_suite import ExperimentResult
 
@@ -305,3 +378,39 @@ def test_baseline_comparison_marks_unseen_transfer_success():
 
     assert comparison["outcome"] == "unseen_transfer_success"
     assert comparison["unseen_transfer_success"] is True
+
+
+def test_baseline_comparison_marks_external_transfer_success():
+    aggregates = [
+        {
+            "repository": "external_requests_issue_transfer_repo",
+            "repository_split": "external_unseen",
+            "transfer_origin": "psf/requests",
+            "task": "external_requests_issue_labels_query",
+            "task_claim": "external transfer",
+            "variant": "verified_closed_loop",
+            "family": "proposed",
+            "accepted_rate_mean": 1.0,
+            "improvement_depth_mean": 3.0,
+            "cost_proxy_seconds_mean": 1.0,
+            "rollback_success_rate": None,
+        },
+        {
+            "repository": "external_requests_issue_transfer_repo",
+            "repository_split": "external_unseen",
+            "transfer_origin": "psf/requests",
+            "task": "external_requests_issue_labels_query",
+            "task_claim": "external transfer",
+            "variant": "agent_coding_loop",
+            "family": "baseline_agent_coding_loop",
+            "accepted_rate_mean": 1.0,
+            "improvement_depth_mean": 1.0,
+            "cost_proxy_seconds_mean": 1.0,
+            "rollback_success_rate": None,
+        },
+    ]
+
+    comparison = build_baseline_comparisons(aggregates)[0]
+
+    assert comparison["outcome"] == "external_transfer_success"
+    assert comparison["external_transfer_success"] is True

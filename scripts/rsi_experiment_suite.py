@@ -73,6 +73,19 @@ class ExperimentTask:
     claim: str = ""
 
 
+@dataclass(frozen=True)
+class ExternalIssueFixtureSpec:
+    """One fixture derived from actual external GitHub issue metadata."""
+
+    repository_name: str
+    task_name: str
+    source_repository: str
+    field_name: str
+    value_source: str
+    fallback_value: str
+    description: str
+
+
 @dataclass
 class ExperimentResult:
     """JSON-compatible experiment outcome."""
@@ -103,6 +116,46 @@ class ExperimentResult:
     transfer_origin: str = ""
     task_description: str = ""
     task_claim: str = ""
+
+
+EXTERNAL_ISSUE_FIXTURES: Tuple[ExternalIssueFixtureSpec, ...] = (
+    ExternalIssueFixtureSpec(
+        repository_name="external_requests_issue_transfer_repo",
+        task_name="external_requests_issue_labels_query",
+        source_repository="psf/requests",
+        field_name="external_issue_labels",
+        value_source="labels",
+        fallback_value="bug",
+        description="Actual psf/requests issue-label fixture extracted from public GitHub issue metadata.",
+    ),
+    ExternalIssueFixtureSpec(
+        repository_name="external_hypothesis_issue_transfer_repo",
+        task_name="external_hypothesis_patch_signals_query",
+        source_repository="hypothesisworks/hypothesis",
+        field_name="external_patch_signals",
+        value_source="title_terms",
+        fallback_value="patch",
+        description="Actual Hypothesis issue-title fixture extracted from public GitHub issue metadata.",
+    ),
+    ExternalIssueFixtureSpec(
+        repository_name="external_pandas_issue_transfer_repo",
+        task_name="external_pandas_failure_terms_query",
+        source_repository="pandas-dev/pandas",
+        field_name="external_failure_terms",
+        value_source="title_terms",
+        fallback_value="dtype",
+        description="Actual pandas issue-title fixture extracted from public GitHub issue metadata.",
+    ),
+    ExternalIssueFixtureSpec(
+        repository_name="external_dask_issue_transfer_repo",
+        task_name="external_dask_array_labels_query",
+        source_repository="dask/dask",
+        field_name="external_array_labels",
+        value_source="labels",
+        fallback_value="array",
+        description="Actual dask issue-label fixture extracted from public GitHub issue metadata.",
+    ),
+)
 
 
 DEFAULT_REPOSITORIES = (
@@ -137,6 +190,15 @@ DEFAULT_REPOSITORIES = (
         description="Held-out control-oriented fixture with controller-mode schema absent from the seen benchmark repositories.",
         split="unseen",
         transfer_origin="compact_kernel_repo",
+    ),
+    *(
+        BenchmarkRepository(
+            name=spec.repository_name,
+            description=spec.description,
+            split="external_unseen",
+            transfer_origin=spec.source_repository,
+        )
+        for spec in EXTERNAL_ISSUE_FIXTURES
     ),
 )
 
@@ -180,6 +242,18 @@ DEFAULT_TASKS = (
         description="Measure schema transfer on a held-out control-oriented tuple-valued record field.",
         repositories=("unseen_control_transfer_repo",),
         claim="Control-domain unseen transfer succeeds when the loop patches a query API for controller modes absent from the seen fixtures.",
+    ),
+    *(
+        ExperimentTask(
+            name=spec.task_name,
+            description=f"Measure transfer on a fixture extracted from {spec.source_repository} issue metadata.",
+            repositories=(spec.repository_name,),
+            claim=(
+                f"External transfer succeeds when the loop patches a query API for "
+                f"{spec.field_name} extracted from {spec.source_repository} issue metadata."
+            ),
+        )
+        for spec in EXTERNAL_ISSUE_FIXTURES
     ),
 )
 
@@ -344,6 +418,164 @@ def build_unseen_schema_transfer_repo(
     )
 
 
+def external_issue_fixture_for_repository(repository_name: str) -> Optional[ExternalIssueFixtureSpec]:
+    """Return the external issue fixture spec for a benchmark repository."""
+
+    return next(
+        (spec for spec in EXTERNAL_ISSUE_FIXTURES if spec.repository_name == repository_name),
+        None,
+    )
+
+
+def normalize_fixture_token(value: object, *, fallback: str) -> str:
+    """Normalize external issue text into a deterministic fixture token."""
+
+    text = str(value or "").lower()
+    compact = re.sub(r"[^a-z0-9]+", "_", text).strip("_")
+    if not compact:
+        compact = fallback
+    if not compact:
+        return ""
+    if compact[0].isdigit():
+        compact = f"x_{compact}"
+    return compact[:48]
+
+
+def extract_title_terms(text: str, *, fallback: str) -> Tuple[str, ...]:
+    """Extract compact title/body terms from an external issue record."""
+
+    stopwords = {
+        "and",
+        "are",
+        "bug",
+        "for",
+        "from",
+        "into",
+        "the",
+        "this",
+        "when",
+        "with",
+    }
+    terms: List[str] = []
+    for raw in re.findall(r"[A-Za-z][A-Za-z0-9_]{2,}", text.lower()):
+        token = normalize_fixture_token(raw, fallback=fallback)
+        if token in stopwords or token in terms:
+            continue
+        terms.append(token)
+        if len(terms) >= 5:
+            break
+    return tuple(terms or (fallback,))
+
+
+def load_external_grounding_tasks(repo_root: Path) -> Tuple[Dict[str, object], ...]:
+    """Load actual external grounding tasks if they are available."""
+
+    transfer_path = (
+        repo_root
+        / "reports"
+        / "external_grounding"
+        / "external_transfer"
+        / "latest"
+        / "external_grounding_tasks.json"
+    )
+    path = (
+        transfer_path
+        if transfer_path.exists()
+        else repo_root / "reports" / "external_grounding" / "latest" / "external_grounding_tasks.json"
+    )
+    payload = read_json(path, {})
+    tasks = payload.get("tasks", []) if isinstance(payload, dict) else []
+    return tuple(task for task in tasks if isinstance(task, dict))
+
+
+def select_external_grounding_task(
+    repo_root: Path,
+    spec: ExternalIssueFixtureSpec,
+) -> Dict[str, object]:
+    """Select the highest-scoring external issue task for a fixture spec."""
+
+    matches = [
+        task
+        for task in load_external_grounding_tasks(repo_root)
+        if task.get("repository") == spec.source_repository
+        and task.get("task_kind") != "external_grounding_error"
+    ]
+    if not matches:
+        return {
+            "repository": spec.source_repository,
+            "task_id": f"github:{spec.source_repository}:fallback",
+            "title": "Fallback external issue fixture",
+            "body_excerpt": "",
+            "labels": (spec.fallback_value,),
+            "task_kind": "external_fixture_fallback",
+            "url": f"https://github.com/{spec.source_repository}/issues",
+            "grounding_score": 0.0,
+        }
+    return max(
+        matches,
+        key=lambda task: (
+            float(task.get("grounding_score", 0.0) or 0.0),
+            str(task.get("task_id", "")),
+        ),
+    )
+
+
+def external_issue_values(task: Dict[str, object], spec: ExternalIssueFixtureSpec) -> Tuple[str, ...]:
+    """Extract fixture values from an actual external issue task."""
+
+    fallback = normalize_fixture_token(spec.fallback_value, fallback="external")
+    if spec.value_source == "labels":
+        labels = task.get("labels", ())
+        values = [
+            normalize_fixture_token(label, fallback=fallback)
+            for label in labels
+            if normalize_fixture_token(label, fallback="")
+        ]
+        return tuple(dict.fromkeys(values)) or (fallback,)
+    if spec.value_source == "title_terms":
+        text = f"{task.get('title', '')} {task.get('body_excerpt', '')}"
+        return extract_title_terms(text, fallback=fallback)
+    if spec.value_source == "task_kind":
+        return (normalize_fixture_token(task.get("task_kind", ""), fallback=fallback),)
+    return (fallback,)
+
+
+def build_external_issue_transfer_repo(
+    src: Path,
+    dst: Path,
+    spec: ExternalIssueFixtureSpec,
+) -> None:
+    """Build a fixture whose schema is extracted from actual external issues."""
+
+    task = select_external_grounding_task(src, spec)
+    values = external_issue_values(task, spec)
+    build_unseen_schema_transfer_repo(
+        src,
+        dst,
+        field_name=spec.field_name,
+        sample_value=values[0],
+        test_name=f"test_{spec.repository_name}.py",
+    )
+    metadata = {
+        "fixture_kind": "external_issue_metadata_transfer",
+        "source_repository": spec.source_repository,
+        "source_task_id": task.get("task_id", ""),
+        "source_url": task.get("url", ""),
+        "source_title": task.get("title", ""),
+        "source_task_kind": task.get("task_kind", ""),
+        "field_name": spec.field_name,
+        "value_source": spec.value_source,
+        "field_values": list(values),
+        "safety_controls": [
+            "metadata_only",
+            "no_external_code_execution",
+            "bounded_fixture_values",
+            "source_url_provenance",
+        ],
+    }
+    write_json(dst / "external_fixture_metadata.json", metadata)
+
+
 def build_benchmark_repo(src: Path, dst: Path, repository: BenchmarkRepository) -> None:
     if repository.name == "omega_full_repo":
         copy_repo(src, dst)
@@ -380,6 +612,10 @@ def build_benchmark_repo(src: Path, dst: Path, repository: BenchmarkRepository) 
             sample_value="stabilizing_feedback",
             test_name="test_unseen_control_schema_fixture.py",
         )
+        return
+    external_spec = external_issue_fixture_for_repository(repository.name)
+    if external_spec is not None:
+        build_external_issue_transfer_repo(src, dst, external_spec)
         return
     raise ValueError(f"unknown benchmark repository: {repository.name}")
 
@@ -775,8 +1011,15 @@ def build_baseline_comparisons(aggregates: Sequence[Dict[str, object]]) -> List[
             and proposed_acceptance > 0.0
             and proposed_depth > 0.0
         )
+        external_transfer_success = (
+            proposed.get("repository_split") == "external_unseen"
+            and proposed_acceptance > 0.0
+            and proposed_depth > agent_depth
+        )
 
-        if unseen_transfer_success:
+        if external_transfer_success:
+            outcome = "external_transfer_success"
+        elif unseen_transfer_success:
             outcome = "unseen_transfer_success"
         elif safety_win:
             outcome = "safety_win_over_ablation"
@@ -805,6 +1048,7 @@ def build_baseline_comparisons(aggregates: Sequence[Dict[str, object]]) -> List[
                 "safety_win_over_no_rollback": safety_win,
                 "unsafe_acceptance_seen_without_broad_gate": broad_gate_win,
                 "unseen_transfer_success": unseen_transfer_success,
+                "external_transfer_success": external_transfer_success,
                 "outcome": outcome,
             }
         )
@@ -850,8 +1094,8 @@ def write_markdown_reports(output_dir: Path, results: List[ExperimentResult]) ->
         )
 
     comparison_lines = [
-        "| Repository | Split | Task | Outcome | Proposed Rate | Best Baseline | Baseline Rate | Depth Margin vs Agent | Safety Win | Unseen Transfer |",
-        "|---|---|---|---|---:|---|---:|---:|---:|---:|",
+        "| Repository | Split | Task | Outcome | Proposed Rate | Best Baseline | Baseline Rate | Depth Margin vs Agent | Safety Win | Unseen Transfer | External Transfer |",
+        "|---|---|---|---|---:|---|---:|---:|---:|---:|---:|",
     ]
     for row in comparisons:
         comparison_lines.append(
@@ -859,7 +1103,8 @@ def write_markdown_reports(output_dir: Path, results: List[ExperimentResult]) ->
             f"{float(row['proposed_accepted_rate_mean']):.2f} | {row['best_baseline_variant']} | "
             f"{float(row['best_baseline_accepted_rate_mean']):.2f} | "
             f"{float(row['depth_margin_vs_agent_loop']):.2f} | "
-            f"{row['safety_win_over_no_rollback']} | {row['unseen_transfer_success']} |"
+            f"{row['safety_win_over_no_rollback']} | {row['unseen_transfer_success']} | "
+            f"{row['external_transfer_success']} |"
         )
 
     repositories = sorted({result.repository for result in results})
@@ -916,6 +1161,7 @@ def write_markdown_reports(output_dir: Path, results: List[ExperimentResult]) ->
         "- `depth_win_over_single_pass`: the proposed loop reaches deeper recursive improvement than the single-pass agent baseline without lower accepted rate.",
         "- `safety_win_over_ablation`: rollback and broad gates prevent unsafe promotion that an ablation fails to prevent.",
         "- `unseen_transfer_success`: the loop patches a held-out schema surface not present in the original benchmark fixtures.",
+        "- `external_transfer_success`: the loop patches a fixture schema extracted from actual external repository issue metadata.",
         "- `tie_or_frontier_match`: the proposed loop matches the best baseline on this metric but does not dominate it.",
         "- `baseline_stronger_or_inconclusive`: the current evidence does not support a proposed-loop win.",
     ]

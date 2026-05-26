@@ -1,0 +1,1471 @@
+repository,repository_description,task,variant,family,description,repeat_index,seed,exit_code,elapsed_s,accepted_count,rejected_count,accepted_rate,regression_gate_failures,rollback_correct,persistence_file_exists,improvement_depth,cost_proxy_seconds,changed_files_count,summary_path,stdout_tail,stderr_tail,repository_split,transfer_origin,task_description,task_claim
+external_requests_issue_transfer_repo,Actual psf/requests issue-label fixture extracted from public GitHub issue metadata.,external_requests_issue_labels_query,verified_closed_loop,proposed,"Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",0,acc0bbe45d3e,0,8.688,3,0,1.0,0,,True,3,8.688,4,C:\Users\starg\AppData\Local\Temp\rsi_experiments_2zgnhmnh\external_requests_issue_transfer_repo__external_requests_issue_labels_query__verified_closed_loop__r0\.omega_rsi_runs\closed_rsi_summary.json,"s_query_v1"",
+      ""started_at"": ""2026-05-26T22:25:33Z"",
+      ""target_path"": ""shared\\local_corpus.py"",
+      ""test_path"": ""tests\\test_autonomous_local_corpus_external_issue_labels_query_v1.py""
+    },
+    {
+      ""accepted"": true,
+      ""error"": """",
+      ""extra_paths"": [],
+      ""finished_at"": ""2026-05-26T22:25:39Z"",
+      ""gates"": [
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""py_compile"",
+            ""shared\\local_corpus.py"",
+            ""tests\\test_emergent_local_corpus_definitions_membership_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_requests_issue_transfer_repo__external_requests_issue_labels_query__verified_closed_loop__r0"",
+          ""elapsed_s"": 0.109,
+          ""exit_code"": 0,
+          ""label"": ""emergent_local_corpus_definitions_membership_v1_compile"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": """",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=5"",
+            ""--disable-warnings"",
+            ""tests/test_emergent_local_corpus_definitions_membership_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_requests_issue_transfer_repo__external_requests_issue_labels_query__verified_closed_loop__r0"",
+          ""elapsed_s"": 1.297,
+          ""exit_code"": 0,
+          ""label"": ""emergent_local_corpus_definitions_membership_v1_focused"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": "".                                                                        [100%]\n1 passed in 0.02s\n"",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=20"",
+            ""--disable-warnings"",
+            ""tests""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_requests_issue_transfer_repo__external_requests_issue_labels_query__verified_closed_loop__r0"",
+          ""elapsed_s"": 1.328,
+          ""exit_code"": 0,
+          ""label"": ""emergent_local_corpus_definitions_membership_v1_root_broad"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": "".....                                                                    [100%]\n5 passed in 0.04s\n"",
+          ""timed_out"": false
+        }
+      ],
+      ""generation"": 3,
+      ""goal"": {
+        ""metric"": ""planner score 9.999 plus generated regression test"",
+        ""name"": ""emergently_query_local_corpus_definitions"",
+        ""rationale"": ""The bounded emergent planner generated an alternate membership query hypothesis for definitions. Evidence: field:definitions, method:records_matching_definitions, strategy:alternate_tuple_membership."",
+        ""target"": ""shared.local_corpus.LocalCorpusIndex""
+      },
+      ""name"": ""emergent_local_corpus_definitions_membership_v1"",
+      ""started_at"": ""2026-05-26T22:25:36Z"",
+      ""target_path"": ""shared\\local_corpus.py"",
+      ""test_path"": ""tests\\test_emergent_local_corpus_definitions_membership_v1.py""
+    }
+  ],
+  ""active_base"": ""emergent_local_corpus_definitions_membership_v1"",
+  ""active_generation"": 3,
+  ""broad_gate"": true,
+  ""dry_run"": false,
+  ""persistence"": true,
+  ""rejected_this_run"": [],
+  ""rollback"": true,
+  ""state_path"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_requests_issue_transfer_repo__external_requests_issue_labels_query__verified_closed_loop__r0\\.omega_rsi_runs\\closed_rsi_state.json"",
+  ""thdse_core_gate"": true,
+  ""total_accepted"": 3,
+  ""total_rejected"": 0
+}
+",,external_unseen,psf/requests,Measure transfer on a fixture extracted from psf/requests issue metadata.,External transfer succeeds when the loop patches a query API for external_issue_labels extracted from psf/requests issue metadata.
+external_requests_issue_transfer_repo,Actual psf/requests issue-label fixture extracted from public GitHub issue metadata.,external_requests_issue_labels_query,agent_coding_loop,baseline_agent_coding_loop,Baseline: single-pass automated coding loop with validation but without persistent recursive depth.,0,cd1e39ecb604,0,2.891,1,0,1.0,0,,False,1,2.891,2,C:\Users\starg\AppData\Local\Temp\rsi_experiments_2zgnhmnh\external_requests_issue_transfer_repo__external_requests_issue_labels_query__agent_coding_loop__r0\.omega_rsi_runs\closed_rsi_summary.json,"{
+  ""accepted_this_run"": [
+    {
+      ""accepted"": true,
+      ""error"": """",
+      ""extra_paths"": [],
+      ""finished_at"": ""2026-05-26T22:25:42Z"",
+      ""gates"": [
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""py_compile"",
+            ""shared\\local_corpus.py"",
+            ""tests\\test_autonomous_local_corpus_definitions_query_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_requests_issue_transfer_repo__external_requests_issue_labels_query__agent_coding_loop__r0"",
+          ""elapsed_s"": 0.125,
+          ""exit_code"": 0,
+          ""label"": ""autonomous_local_corpus_definitions_query_v1_compile"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": """",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=5"",
+            ""--disable-warnings"",
+            ""tests/test_autonomous_local_corpus_definitions_query_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_requests_issue_transfer_repo__external_requests_issue_labels_query__agent_coding_loop__r0"",
+          ""elapsed_s"": 1.344,
+          ""exit_code"": 0,
+          ""label"": ""autonomous_local_corpus_definitions_query_v1_focused"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": "".                                                                        [100%]\n1 passed in 0.02s\n"",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=20"",
+            ""--disable-warnings"",
+            ""tests""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_requests_issue_transfer_repo__external_requests_issue_labels_query__agent_coding_loop__r0"",
+          ""elapsed_s"": 1.297,
+          ""exit_code"": 0,
+          ""label"": ""autonomous_local_corpus_definitions_query_v1_root_broad"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": ""...                                                                      [100%]\n3 passed in 0.05s\n"",
+          ""timed_out"": false
+        }
+      ],
+      ""generation"": 1,
+      ""goal"": {
+        ""metric"": ""planner score 11.999 plus generated regression test"",
+        ""name"": ""autonomously_query_local_corpus_definitions"",
+        ""rationale"": ""The planner found a tuple-valued definitions field without a matching query API on LocalCorpusIndex. Evidence: field:definitions, method:records_with_definition, strategy:tuple_membership, canonical_strategy_bonus."",
+        ""target"": ""shared.local_corpus.LocalCorpusIndex""
+      },
+      ""name"": ""autonomous_local_corpus_definitions_query_v1"",
+      ""started_at"": ""2026-05-26T22:25:39Z"",
+      ""target_path"": ""shared\\local_corpus.py"",
+      ""test_path"": ""tests\\test_autonomous_local_corpus_definitions_query_v1.py""
+    }
+  ],
+  ""active_base"": ""autonomous_local_corpus_definitions_query_v1"",
+  ""active_generation"": 1,
+  ""broad_gate"": true,
+  ""dry_run"": false,
+  ""persistence"": false,
+  ""rejected_this_run"": [],
+  ""rollback"": true,
+  ""state_path"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_requests_issue_transfer_repo__external_requests_issue_labels_query__agent_coding_loop__r0\\.omega_rsi_runs\\closed_rsi_state.json"",
+  ""thdse_core_gate"": true,
+  ""total_accepted"": 1,
+  ""total_rejected"": 0
+}
+",,external_unseen,psf/requests,Measure transfer on a fixture extracted from psf/requests issue metadata.,External transfer succeeds when the loop patches a query API for external_issue_labels extracted from psf/requests issue metadata.
+external_requests_issue_transfer_repo,Actual psf/requests issue-label fixture extracted from public GitHub issue metadata.,external_requests_issue_labels_query,ci_only_validation,baseline_ci_only,Baseline: run validation without candidate generation or code patching.,0,e4a470402b39,0,1.328,0,0,0.0,0,,False,0,1.328,0,C:\Users\starg\AppData\Local\Temp\rsi_experiments_2zgnhmnh\external_requests_issue_transfer_repo__external_requests_issue_labels_query__ci_only_validation__r0\.omega_rsi_runs\closed_rsi_summary.json,"..                                                                       [100%]
+2 passed in 0.05s
+",,external_unseen,psf/requests,Measure transfer on a fixture extracted from psf/requests issue metadata.,External transfer succeeds when the loop patches a query API for external_issue_labels extracted from psf/requests issue metadata.
+external_requests_issue_transfer_repo,Actual psf/requests issue-label fixture extracted from public GitHub issue metadata.,external_requests_issue_labels_query,verified_closed_loop,proposed,"Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",1,e8b216155722,0,8.797,3,0,1.0,0,,True,3,8.797,4,C:\Users\starg\AppData\Local\Temp\rsi_experiments_2zgnhmnh\external_requests_issue_transfer_repo__external_requests_issue_labels_query__verified_closed_loop__r1\.omega_rsi_runs\closed_rsi_summary.json,"s_query_v1"",
+      ""started_at"": ""2026-05-26T22:25:46Z"",
+      ""target_path"": ""shared\\local_corpus.py"",
+      ""test_path"": ""tests\\test_autonomous_local_corpus_external_issue_labels_query_v1.py""
+    },
+    {
+      ""accepted"": true,
+      ""error"": """",
+      ""extra_paths"": [],
+      ""finished_at"": ""2026-05-26T22:25:52Z"",
+      ""gates"": [
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""py_compile"",
+            ""shared\\local_corpus.py"",
+            ""tests\\test_emergent_local_corpus_definitions_membership_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_requests_issue_transfer_repo__external_requests_issue_labels_query__verified_closed_loop__r1"",
+          ""elapsed_s"": 0.203,
+          ""exit_code"": 0,
+          ""label"": ""emergent_local_corpus_definitions_membership_v1_compile"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": """",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=5"",
+            ""--disable-warnings"",
+            ""tests/test_emergent_local_corpus_definitions_membership_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_requests_issue_transfer_repo__external_requests_issue_labels_query__verified_closed_loop__r1"",
+          ""elapsed_s"": 1.328,
+          ""exit_code"": 0,
+          ""label"": ""emergent_local_corpus_definitions_membership_v1_focused"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": "".                                                                        [100%]\n1 passed in 0.02s\n"",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=20"",
+            ""--disable-warnings"",
+            ""tests""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_requests_issue_transfer_repo__external_requests_issue_labels_query__verified_closed_loop__r1"",
+          ""elapsed_s"": 1.453,
+          ""exit_code"": 0,
+          ""label"": ""emergent_local_corpus_definitions_membership_v1_root_broad"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": "".....                                                                    [100%]\n5 passed in 0.04s\n"",
+          ""timed_out"": false
+        }
+      ],
+      ""generation"": 3,
+      ""goal"": {
+        ""metric"": ""planner score 9.999 plus generated regression test"",
+        ""name"": ""emergently_query_local_corpus_definitions"",
+        ""rationale"": ""The bounded emergent planner generated an alternate membership query hypothesis for definitions. Evidence: field:definitions, method:records_matching_definitions, strategy:alternate_tuple_membership."",
+        ""target"": ""shared.local_corpus.LocalCorpusIndex""
+      },
+      ""name"": ""emergent_local_corpus_definitions_membership_v1"",
+      ""started_at"": ""2026-05-26T22:25:49Z"",
+      ""target_path"": ""shared\\local_corpus.py"",
+      ""test_path"": ""tests\\test_emergent_local_corpus_definitions_membership_v1.py""
+    }
+  ],
+  ""active_base"": ""emergent_local_corpus_definitions_membership_v1"",
+  ""active_generation"": 3,
+  ""broad_gate"": true,
+  ""dry_run"": false,
+  ""persistence"": true,
+  ""rejected_this_run"": [],
+  ""rollback"": true,
+  ""state_path"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_requests_issue_transfer_repo__external_requests_issue_labels_query__verified_closed_loop__r1\\.omega_rsi_runs\\closed_rsi_state.json"",
+  ""thdse_core_gate"": true,
+  ""total_accepted"": 3,
+  ""total_rejected"": 0
+}
+",,external_unseen,psf/requests,Measure transfer on a fixture extracted from psf/requests issue metadata.,External transfer succeeds when the loop patches a query API for external_issue_labels extracted from psf/requests issue metadata.
+external_requests_issue_transfer_repo,Actual psf/requests issue-label fixture extracted from public GitHub issue metadata.,external_requests_issue_labels_query,agent_coding_loop,baseline_agent_coding_loop,Baseline: single-pass automated coding loop with validation but without persistent recursive depth.,1,416446ccee40,0,2.984,1,0,1.0,0,,False,1,2.984,2,C:\Users\starg\AppData\Local\Temp\rsi_experiments_2zgnhmnh\external_requests_issue_transfer_repo__external_requests_issue_labels_query__agent_coding_loop__r1\.omega_rsi_runs\closed_rsi_summary.json,"{
+  ""accepted_this_run"": [
+    {
+      ""accepted"": true,
+      ""error"": """",
+      ""extra_paths"": [],
+      ""finished_at"": ""2026-05-26T22:25:55Z"",
+      ""gates"": [
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""py_compile"",
+            ""shared\\local_corpus.py"",
+            ""tests\\test_autonomous_local_corpus_definitions_query_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_requests_issue_transfer_repo__external_requests_issue_labels_query__agent_coding_loop__r1"",
+          ""elapsed_s"": 0.109,
+          ""exit_code"": 0,
+          ""label"": ""autonomous_local_corpus_definitions_query_v1_compile"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": """",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=5"",
+            ""--disable-warnings"",
+            ""tests/test_autonomous_local_corpus_definitions_query_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_requests_issue_transfer_repo__external_requests_issue_labels_query__agent_coding_loop__r1"",
+          ""elapsed_s"": 1.391,
+          ""exit_code"": 0,
+          ""label"": ""autonomous_local_corpus_definitions_query_v1_focused"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": "".                                                                        [100%]\n1 passed in 0.02s\n"",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=20"",
+            ""--disable-warnings"",
+            ""tests""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_requests_issue_transfer_repo__external_requests_issue_labels_query__agent_coding_loop__r1"",
+          ""elapsed_s"": 1.359,
+          ""exit_code"": 0,
+          ""label"": ""autonomous_local_corpus_definitions_query_v1_root_broad"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": ""...                                                                      [100%]\n3 passed in 0.05s\n"",
+          ""timed_out"": false
+        }
+      ],
+      ""generation"": 1,
+      ""goal"": {
+        ""metric"": ""planner score 11.999 plus generated regression test"",
+        ""name"": ""autonomously_query_local_corpus_definitions"",
+        ""rationale"": ""The planner found a tuple-valued definitions field without a matching query API on LocalCorpusIndex. Evidence: field:definitions, method:records_with_definition, strategy:tuple_membership, canonical_strategy_bonus."",
+        ""target"": ""shared.local_corpus.LocalCorpusIndex""
+      },
+      ""name"": ""autonomous_local_corpus_definitions_query_v1"",
+      ""started_at"": ""2026-05-26T22:25:52Z"",
+      ""target_path"": ""shared\\local_corpus.py"",
+      ""test_path"": ""tests\\test_autonomous_local_corpus_definitions_query_v1.py""
+    }
+  ],
+  ""active_base"": ""autonomous_local_corpus_definitions_query_v1"",
+  ""active_generation"": 1,
+  ""broad_gate"": true,
+  ""dry_run"": false,
+  ""persistence"": false,
+  ""rejected_this_run"": [],
+  ""rollback"": true,
+  ""state_path"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_requests_issue_transfer_repo__external_requests_issue_labels_query__agent_coding_loop__r1\\.omega_rsi_runs\\closed_rsi_state.json"",
+  ""thdse_core_gate"": true,
+  ""total_accepted"": 1,
+  ""total_rejected"": 0
+}
+",,external_unseen,psf/requests,Measure transfer on a fixture extracted from psf/requests issue metadata.,External transfer succeeds when the loop patches a query API for external_issue_labels extracted from psf/requests issue metadata.
+external_requests_issue_transfer_repo,Actual psf/requests issue-label fixture extracted from public GitHub issue metadata.,external_requests_issue_labels_query,ci_only_validation,baseline_ci_only,Baseline: run validation without candidate generation or code patching.,1,a120002850c3,0,1.312,0,0,0.0,0,,False,0,1.312,0,C:\Users\starg\AppData\Local\Temp\rsi_experiments_2zgnhmnh\external_requests_issue_transfer_repo__external_requests_issue_labels_query__ci_only_validation__r1\.omega_rsi_runs\closed_rsi_summary.json,"..                                                                       [100%]
+2 passed in 0.05s
+",,external_unseen,psf/requests,Measure transfer on a fixture extracted from psf/requests issue metadata.,External transfer succeeds when the loop patches a query API for external_issue_labels extracted from psf/requests issue metadata.
+external_hypothesis_issue_transfer_repo,Actual Hypothesis issue-title fixture extracted from public GitHub issue metadata.,external_hypothesis_patch_signals_query,verified_closed_loop,proposed,"Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",0,c02b654b6ad7,0,9.0,3,0,1.0,0,,True,3,9.0,4,C:\Users\starg\AppData\Local\Temp\rsi_experiments_2zgnhmnh\external_hypothesis_issue_transfer_repo__external_hypothesis_patch_signals_query__verified_closed_loop__r0\.omega_rsi_runs\closed_rsi_summary.json,"tarted_at"": ""2026-05-26T22:26:00Z"",
+      ""target_path"": ""shared\\local_corpus.py"",
+      ""test_path"": ""tests\\test_autonomous_local_corpus_external_patch_signals_query_v1.py""
+    },
+    {
+      ""accepted"": true,
+      ""error"": """",
+      ""extra_paths"": [],
+      ""finished_at"": ""2026-05-26T22:26:06Z"",
+      ""gates"": [
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""py_compile"",
+            ""shared\\local_corpus.py"",
+            ""tests\\test_emergent_local_corpus_definitions_membership_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_hypothesis_issue_transfer_repo__external_hypothesis_patch_signals_query__verified_closed_loop__r0"",
+          ""elapsed_s"": 0.204,
+          ""exit_code"": 0,
+          ""label"": ""emergent_local_corpus_definitions_membership_v1_compile"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": """",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=5"",
+            ""--disable-warnings"",
+            ""tests/test_emergent_local_corpus_definitions_membership_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_hypothesis_issue_transfer_repo__external_hypothesis_patch_signals_query__verified_closed_loop__r0"",
+          ""elapsed_s"": 1.328,
+          ""exit_code"": 0,
+          ""label"": ""emergent_local_corpus_definitions_membership_v1_focused"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": "".                                                                        [100%]\n1 passed in 0.02s\n"",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=20"",
+            ""--disable-warnings"",
+            ""tests""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_hypothesis_issue_transfer_repo__external_hypothesis_patch_signals_query__verified_closed_loop__r0"",
+          ""elapsed_s"": 1.437,
+          ""exit_code"": 0,
+          ""label"": ""emergent_local_corpus_definitions_membership_v1_root_broad"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": "".....                                                                    [100%]\n5 passed in 0.04s\n"",
+          ""timed_out"": false
+        }
+      ],
+      ""generation"": 3,
+      ""goal"": {
+        ""metric"": ""planner score 9.999 plus generated regression test"",
+        ""name"": ""emergently_query_local_corpus_definitions"",
+        ""rationale"": ""The bounded emergent planner generated an alternate membership query hypothesis for definitions. Evidence: field:definitions, method:records_matching_definitions, strategy:alternate_tuple_membership."",
+        ""target"": ""shared.local_corpus.LocalCorpusIndex""
+      },
+      ""name"": ""emergent_local_corpus_definitions_membership_v1"",
+      ""started_at"": ""2026-05-26T22:26:03Z"",
+      ""target_path"": ""shared\\local_corpus.py"",
+      ""test_path"": ""tests\\test_emergent_local_corpus_definitions_membership_v1.py""
+    }
+  ],
+  ""active_base"": ""emergent_local_corpus_definitions_membership_v1"",
+  ""active_generation"": 3,
+  ""broad_gate"": true,
+  ""dry_run"": false,
+  ""persistence"": true,
+  ""rejected_this_run"": [],
+  ""rollback"": true,
+  ""state_path"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_hypothesis_issue_transfer_repo__external_hypothesis_patch_signals_query__verified_closed_loop__r0\\.omega_rsi_runs\\closed_rsi_state.json"",
+  ""thdse_core_gate"": true,
+  ""total_accepted"": 3,
+  ""total_rejected"": 0
+}
+",,external_unseen,hypothesisworks/hypothesis,Measure transfer on a fixture extracted from hypothesisworks/hypothesis issue metadata.,External transfer succeeds when the loop patches a query API for external_patch_signals extracted from hypothesisworks/hypothesis issue metadata.
+external_hypothesis_issue_transfer_repo,Actual Hypothesis issue-title fixture extracted from public GitHub issue metadata.,external_hypothesis_patch_signals_query,agent_coding_loop,baseline_agent_coding_loop,Baseline: single-pass automated coding loop with validation but without persistent recursive depth.,0,815f3a4b3f28,0,2.922,1,0,1.0,0,,False,1,2.922,2,C:\Users\starg\AppData\Local\Temp\rsi_experiments_2zgnhmnh\external_hypothesis_issue_transfer_repo__external_hypothesis_patch_signals_query__agent_coding_loop__r0\.omega_rsi_runs\closed_rsi_summary.json,"{
+  ""accepted_this_run"": [
+    {
+      ""accepted"": true,
+      ""error"": """",
+      ""extra_paths"": [],
+      ""finished_at"": ""2026-05-26T22:26:09Z"",
+      ""gates"": [
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""py_compile"",
+            ""shared\\local_corpus.py"",
+            ""tests\\test_autonomous_local_corpus_definitions_query_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_hypothesis_issue_transfer_repo__external_hypothesis_patch_signals_query__agent_coding_loop__r0"",
+          ""elapsed_s"": 0.125,
+          ""exit_code"": 0,
+          ""label"": ""autonomous_local_corpus_definitions_query_v1_compile"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": """",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=5"",
+            ""--disable-warnings"",
+            ""tests/test_autonomous_local_corpus_definitions_query_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_hypothesis_issue_transfer_repo__external_hypothesis_patch_signals_query__agent_coding_loop__r0"",
+          ""elapsed_s"": 1.375,
+          ""exit_code"": 0,
+          ""label"": ""autonomous_local_corpus_definitions_query_v1_focused"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": "".                                                                        [100%]\n1 passed in 0.02s\n"",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=20"",
+            ""--disable-warnings"",
+            ""tests""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_hypothesis_issue_transfer_repo__external_hypothesis_patch_signals_query__agent_coding_loop__r0"",
+          ""elapsed_s"": 1.297,
+          ""exit_code"": 0,
+          ""label"": ""autonomous_local_corpus_definitions_query_v1_root_broad"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": ""...                                                                      [100%]\n3 passed in 0.04s\n"",
+          ""timed_out"": false
+        }
+      ],
+      ""generation"": 1,
+      ""goal"": {
+        ""metric"": ""planner score 11.999 plus generated regression test"",
+        ""name"": ""autonomously_query_local_corpus_definitions"",
+        ""rationale"": ""The planner found a tuple-valued definitions field without a matching query API on LocalCorpusIndex. Evidence: field:definitions, method:records_with_definition, strategy:tuple_membership, canonical_strategy_bonus."",
+        ""target"": ""shared.local_corpus.LocalCorpusIndex""
+      },
+      ""name"": ""autonomous_local_corpus_definitions_query_v1"",
+      ""started_at"": ""2026-05-26T22:26:06Z"",
+      ""target_path"": ""shared\\local_corpus.py"",
+      ""test_path"": ""tests\\test_autonomous_local_corpus_definitions_query_v1.py""
+    }
+  ],
+  ""active_base"": ""autonomous_local_corpus_definitions_query_v1"",
+  ""active_generation"": 1,
+  ""broad_gate"": true,
+  ""dry_run"": false,
+  ""persistence"": false,
+  ""rejected_this_run"": [],
+  ""rollback"": true,
+  ""state_path"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_hypothesis_issue_transfer_repo__external_hypothesis_patch_signals_query__agent_coding_loop__r0\\.omega_rsi_runs\\closed_rsi_state.json"",
+  ""thdse_core_gate"": true,
+  ""total_accepted"": 1,
+  ""total_rejected"": 0
+}
+",,external_unseen,hypothesisworks/hypothesis,Measure transfer on a fixture extracted from hypothesisworks/hypothesis issue metadata.,External transfer succeeds when the loop patches a query API for external_patch_signals extracted from hypothesisworks/hypothesis issue metadata.
+external_hypothesis_issue_transfer_repo,Actual Hypothesis issue-title fixture extracted from public GitHub issue metadata.,external_hypothesis_patch_signals_query,ci_only_validation,baseline_ci_only,Baseline: run validation without candidate generation or code patching.,0,ae16ba10e99e,0,1.407,0,0,0.0,0,,False,0,1.407,0,C:\Users\starg\AppData\Local\Temp\rsi_experiments_2zgnhmnh\external_hypothesis_issue_transfer_repo__external_hypothesis_patch_signals_query__ci_only_validation__r0\.omega_rsi_runs\closed_rsi_summary.json,"..                                                                       [100%]
+2 passed in 0.05s
+",,external_unseen,hypothesisworks/hypothesis,Measure transfer on a fixture extracted from hypothesisworks/hypothesis issue metadata.,External transfer succeeds when the loop patches a query API for external_patch_signals extracted from hypothesisworks/hypothesis issue metadata.
+external_hypothesis_issue_transfer_repo,Actual Hypothesis issue-title fixture extracted from public GitHub issue metadata.,external_hypothesis_patch_signals_query,verified_closed_loop,proposed,"Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",1,d4c0a52401b3,0,8.609,3,0,1.0,0,,True,3,8.609,4,C:\Users\starg\AppData\Local\Temp\rsi_experiments_2zgnhmnh\external_hypothesis_issue_transfer_repo__external_hypothesis_patch_signals_query__verified_closed_loop__r1\.omega_rsi_runs\closed_rsi_summary.json,"""started_at"": ""2026-05-26T22:26:13Z"",
+      ""target_path"": ""shared\\local_corpus.py"",
+      ""test_path"": ""tests\\test_autonomous_local_corpus_external_patch_signals_query_v1.py""
+    },
+    {
+      ""accepted"": true,
+      ""error"": """",
+      ""extra_paths"": [],
+      ""finished_at"": ""2026-05-26T22:26:19Z"",
+      ""gates"": [
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""py_compile"",
+            ""shared\\local_corpus.py"",
+            ""tests\\test_emergent_local_corpus_definitions_membership_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_hypothesis_issue_transfer_repo__external_hypothesis_patch_signals_query__verified_closed_loop__r1"",
+          ""elapsed_s"": 0.11,
+          ""exit_code"": 0,
+          ""label"": ""emergent_local_corpus_definitions_membership_v1_compile"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": """",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=5"",
+            ""--disable-warnings"",
+            ""tests/test_emergent_local_corpus_definitions_membership_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_hypothesis_issue_transfer_repo__external_hypothesis_patch_signals_query__verified_closed_loop__r1"",
+          ""elapsed_s"": 1.39,
+          ""exit_code"": 0,
+          ""label"": ""emergent_local_corpus_definitions_membership_v1_focused"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": "".                                                                        [100%]\n1 passed in 0.02s\n"",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=20"",
+            ""--disable-warnings"",
+            ""tests""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_hypothesis_issue_transfer_repo__external_hypothesis_patch_signals_query__verified_closed_loop__r1"",
+          ""elapsed_s"": 1.485,
+          ""exit_code"": 0,
+          ""label"": ""emergent_local_corpus_definitions_membership_v1_root_broad"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": "".....                                                                    [100%]\n5 passed in 0.03s\n"",
+          ""timed_out"": false
+        }
+      ],
+      ""generation"": 3,
+      ""goal"": {
+        ""metric"": ""planner score 9.999 plus generated regression test"",
+        ""name"": ""emergently_query_local_corpus_definitions"",
+        ""rationale"": ""The bounded emergent planner generated an alternate membership query hypothesis for definitions. Evidence: field:definitions, method:records_matching_definitions, strategy:alternate_tuple_membership."",
+        ""target"": ""shared.local_corpus.LocalCorpusIndex""
+      },
+      ""name"": ""emergent_local_corpus_definitions_membership_v1"",
+      ""started_at"": ""2026-05-26T22:26:16Z"",
+      ""target_path"": ""shared\\local_corpus.py"",
+      ""test_path"": ""tests\\test_emergent_local_corpus_definitions_membership_v1.py""
+    }
+  ],
+  ""active_base"": ""emergent_local_corpus_definitions_membership_v1"",
+  ""active_generation"": 3,
+  ""broad_gate"": true,
+  ""dry_run"": false,
+  ""persistence"": true,
+  ""rejected_this_run"": [],
+  ""rollback"": true,
+  ""state_path"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_hypothesis_issue_transfer_repo__external_hypothesis_patch_signals_query__verified_closed_loop__r1\\.omega_rsi_runs\\closed_rsi_state.json"",
+  ""thdse_core_gate"": true,
+  ""total_accepted"": 3,
+  ""total_rejected"": 0
+}
+",,external_unseen,hypothesisworks/hypothesis,Measure transfer on a fixture extracted from hypothesisworks/hypothesis issue metadata.,External transfer succeeds when the loop patches a query API for external_patch_signals extracted from hypothesisworks/hypothesis issue metadata.
+external_hypothesis_issue_transfer_repo,Actual Hypothesis issue-title fixture extracted from public GitHub issue metadata.,external_hypothesis_patch_signals_query,agent_coding_loop,baseline_agent_coding_loop,Baseline: single-pass automated coding loop with validation but without persistent recursive depth.,1,f8980a2aac5e,0,2.906,1,0,1.0,0,,False,1,2.906,2,C:\Users\starg\AppData\Local\Temp\rsi_experiments_2zgnhmnh\external_hypothesis_issue_transfer_repo__external_hypothesis_patch_signals_query__agent_coding_loop__r1\.omega_rsi_runs\closed_rsi_summary.json,"{
+  ""accepted_this_run"": [
+    {
+      ""accepted"": true,
+      ""error"": """",
+      ""extra_paths"": [],
+      ""finished_at"": ""2026-05-26T22:26:22Z"",
+      ""gates"": [
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""py_compile"",
+            ""shared\\local_corpus.py"",
+            ""tests\\test_autonomous_local_corpus_definitions_query_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_hypothesis_issue_transfer_repo__external_hypothesis_patch_signals_query__agent_coding_loop__r1"",
+          ""elapsed_s"": 0.109,
+          ""exit_code"": 0,
+          ""label"": ""autonomous_local_corpus_definitions_query_v1_compile"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": """",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=5"",
+            ""--disable-warnings"",
+            ""tests/test_autonomous_local_corpus_definitions_query_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_hypothesis_issue_transfer_repo__external_hypothesis_patch_signals_query__agent_coding_loop__r1"",
+          ""elapsed_s"": 1.328,
+          ""exit_code"": 0,
+          ""label"": ""autonomous_local_corpus_definitions_query_v1_focused"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": "".                                                                        [100%]\n1 passed in 0.02s\n"",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=20"",
+            ""--disable-warnings"",
+            ""tests""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_hypothesis_issue_transfer_repo__external_hypothesis_patch_signals_query__agent_coding_loop__r1"",
+          ""elapsed_s"": 1.328,
+          ""exit_code"": 0,
+          ""label"": ""autonomous_local_corpus_definitions_query_v1_root_broad"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": ""...                                                                      [100%]\n3 passed in 0.05s\n"",
+          ""timed_out"": false
+        }
+      ],
+      ""generation"": 1,
+      ""goal"": {
+        ""metric"": ""planner score 11.999 plus generated regression test"",
+        ""name"": ""autonomously_query_local_corpus_definitions"",
+        ""rationale"": ""The planner found a tuple-valued definitions field without a matching query API on LocalCorpusIndex. Evidence: field:definitions, method:records_with_definition, strategy:tuple_membership, canonical_strategy_bonus."",
+        ""target"": ""shared.local_corpus.LocalCorpusIndex""
+      },
+      ""name"": ""autonomous_local_corpus_definitions_query_v1"",
+      ""started_at"": ""2026-05-26T22:26:19Z"",
+      ""target_path"": ""shared\\local_corpus.py"",
+      ""test_path"": ""tests\\test_autonomous_local_corpus_definitions_query_v1.py""
+    }
+  ],
+  ""active_base"": ""autonomous_local_corpus_definitions_query_v1"",
+  ""active_generation"": 1,
+  ""broad_gate"": true,
+  ""dry_run"": false,
+  ""persistence"": false,
+  ""rejected_this_run"": [],
+  ""rollback"": true,
+  ""state_path"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_hypothesis_issue_transfer_repo__external_hypothesis_patch_signals_query__agent_coding_loop__r1\\.omega_rsi_runs\\closed_rsi_state.json"",
+  ""thdse_core_gate"": true,
+  ""total_accepted"": 1,
+  ""total_rejected"": 0
+}
+",,external_unseen,hypothesisworks/hypothesis,Measure transfer on a fixture extracted from hypothesisworks/hypothesis issue metadata.,External transfer succeeds when the loop patches a query API for external_patch_signals extracted from hypothesisworks/hypothesis issue metadata.
+external_hypothesis_issue_transfer_repo,Actual Hypothesis issue-title fixture extracted from public GitHub issue metadata.,external_hypothesis_patch_signals_query,ci_only_validation,baseline_ci_only,Baseline: run validation without candidate generation or code patching.,1,b9d6d8f40bb7,0,1.453,0,0,0.0,0,,False,0,1.453,0,C:\Users\starg\AppData\Local\Temp\rsi_experiments_2zgnhmnh\external_hypothesis_issue_transfer_repo__external_hypothesis_patch_signals_query__ci_only_validation__r1\.omega_rsi_runs\closed_rsi_summary.json,"..                                                                       [100%]
+2 passed in 0.05s
+",,external_unseen,hypothesisworks/hypothesis,Measure transfer on a fixture extracted from hypothesisworks/hypothesis issue metadata.,External transfer succeeds when the loop patches a query API for external_patch_signals extracted from hypothesisworks/hypothesis issue metadata.
+external_pandas_issue_transfer_repo,Actual pandas issue-title fixture extracted from public GitHub issue metadata.,external_pandas_failure_terms_query,verified_closed_loop,proposed,"Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",0,838c742d9fed,0,9.375,3,0,1.0,0,,True,3,9.375,4,C:\Users\starg\AppData\Local\Temp\rsi_experiments_2zgnhmnh\external_pandas_issue_transfer_repo__external_pandas_failure_terms_query__verified_closed_loop__r0\.omega_rsi_runs\closed_rsi_summary.json,"ailure_terms_query_v1"",
+      ""started_at"": ""2026-05-26T22:26:26Z"",
+      ""target_path"": ""shared\\local_corpus.py"",
+      ""test_path"": ""tests\\test_autonomous_local_corpus_external_failure_terms_query_v1.py""
+    },
+    {
+      ""accepted"": true,
+      ""error"": """",
+      ""extra_paths"": [],
+      ""finished_at"": ""2026-05-26T22:26:33Z"",
+      ""gates"": [
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""py_compile"",
+            ""shared\\local_corpus.py"",
+            ""tests\\test_emergent_local_corpus_definitions_membership_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_pandas_issue_transfer_repo__external_pandas_failure_terms_query__verified_closed_loop__r0"",
+          ""elapsed_s"": 0.125,
+          ""exit_code"": 0,
+          ""label"": ""emergent_local_corpus_definitions_membership_v1_compile"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": """",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=5"",
+            ""--disable-warnings"",
+            ""tests/test_emergent_local_corpus_definitions_membership_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_pandas_issue_transfer_repo__external_pandas_failure_terms_query__verified_closed_loop__r0"",
+          ""elapsed_s"": 1.359,
+          ""exit_code"": 0,
+          ""label"": ""emergent_local_corpus_definitions_membership_v1_focused"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": "".                                                                        [100%]\n1 passed in 0.02s\n"",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=20"",
+            ""--disable-warnings"",
+            ""tests""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_pandas_issue_transfer_repo__external_pandas_failure_terms_query__verified_closed_loop__r0"",
+          ""elapsed_s"": 1.407,
+          ""exit_code"": 0,
+          ""label"": ""emergent_local_corpus_definitions_membership_v1_root_broad"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": "".....                                                                    [100%]\n5 passed in 0.04s\n"",
+          ""timed_out"": false
+        }
+      ],
+      ""generation"": 3,
+      ""goal"": {
+        ""metric"": ""planner score 9.999 plus generated regression test"",
+        ""name"": ""emergently_query_local_corpus_definitions"",
+        ""rationale"": ""The bounded emergent planner generated an alternate membership query hypothesis for definitions. Evidence: field:definitions, method:records_matching_definitions, strategy:alternate_tuple_membership."",
+        ""target"": ""shared.local_corpus.LocalCorpusIndex""
+      },
+      ""name"": ""emergent_local_corpus_definitions_membership_v1"",
+      ""started_at"": ""2026-05-26T22:26:30Z"",
+      ""target_path"": ""shared\\local_corpus.py"",
+      ""test_path"": ""tests\\test_emergent_local_corpus_definitions_membership_v1.py""
+    }
+  ],
+  ""active_base"": ""emergent_local_corpus_definitions_membership_v1"",
+  ""active_generation"": 3,
+  ""broad_gate"": true,
+  ""dry_run"": false,
+  ""persistence"": true,
+  ""rejected_this_run"": [],
+  ""rollback"": true,
+  ""state_path"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_pandas_issue_transfer_repo__external_pandas_failure_terms_query__verified_closed_loop__r0\\.omega_rsi_runs\\closed_rsi_state.json"",
+  ""thdse_core_gate"": true,
+  ""total_accepted"": 3,
+  ""total_rejected"": 0
+}
+",,external_unseen,pandas-dev/pandas,Measure transfer on a fixture extracted from pandas-dev/pandas issue metadata.,External transfer succeeds when the loop patches a query API for external_failure_terms extracted from pandas-dev/pandas issue metadata.
+external_pandas_issue_transfer_repo,Actual pandas issue-title fixture extracted from public GitHub issue metadata.,external_pandas_failure_terms_query,agent_coding_loop,baseline_agent_coding_loop,Baseline: single-pass automated coding loop with validation but without persistent recursive depth.,0,b1f76d545fd6,0,3.047,1,0,1.0,0,,False,1,3.047,2,C:\Users\starg\AppData\Local\Temp\rsi_experiments_2zgnhmnh\external_pandas_issue_transfer_repo__external_pandas_failure_terms_query__agent_coding_loop__r0\.omega_rsi_runs\closed_rsi_summary.json,"{
+  ""accepted_this_run"": [
+    {
+      ""accepted"": true,
+      ""error"": """",
+      ""extra_paths"": [],
+      ""finished_at"": ""2026-05-26T22:26:36Z"",
+      ""gates"": [
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""py_compile"",
+            ""shared\\local_corpus.py"",
+            ""tests\\test_autonomous_local_corpus_definitions_query_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_pandas_issue_transfer_repo__external_pandas_failure_terms_query__agent_coding_loop__r0"",
+          ""elapsed_s"": 0.125,
+          ""exit_code"": 0,
+          ""label"": ""autonomous_local_corpus_definitions_query_v1_compile"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": """",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=5"",
+            ""--disable-warnings"",
+            ""tests/test_autonomous_local_corpus_definitions_query_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_pandas_issue_transfer_repo__external_pandas_failure_terms_query__agent_coding_loop__r0"",
+          ""elapsed_s"": 1.453,
+          ""exit_code"": 0,
+          ""label"": ""autonomous_local_corpus_definitions_query_v1_focused"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": "".                                                                        [100%]\n1 passed in 0.04s\n"",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=20"",
+            ""--disable-warnings"",
+            ""tests""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_pandas_issue_transfer_repo__external_pandas_failure_terms_query__agent_coding_loop__r0"",
+          ""elapsed_s"": 1.329,
+          ""exit_code"": 0,
+          ""label"": ""autonomous_local_corpus_definitions_query_v1_root_broad"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": ""...                                                                      [100%]\n3 passed in 0.04s\n"",
+          ""timed_out"": false
+        }
+      ],
+      ""generation"": 1,
+      ""goal"": {
+        ""metric"": ""planner score 11.999 plus generated regression test"",
+        ""name"": ""autonomously_query_local_corpus_definitions"",
+        ""rationale"": ""The planner found a tuple-valued definitions field without a matching query API on LocalCorpusIndex. Evidence: field:definitions, method:records_with_definition, strategy:tuple_membership, canonical_strategy_bonus."",
+        ""target"": ""shared.local_corpus.LocalCorpusIndex""
+      },
+      ""name"": ""autonomous_local_corpus_definitions_query_v1"",
+      ""started_at"": ""2026-05-26T22:26:33Z"",
+      ""target_path"": ""shared\\local_corpus.py"",
+      ""test_path"": ""tests\\test_autonomous_local_corpus_definitions_query_v1.py""
+    }
+  ],
+  ""active_base"": ""autonomous_local_corpus_definitions_query_v1"",
+  ""active_generation"": 1,
+  ""broad_gate"": true,
+  ""dry_run"": false,
+  ""persistence"": false,
+  ""rejected_this_run"": [],
+  ""rollback"": true,
+  ""state_path"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_pandas_issue_transfer_repo__external_pandas_failure_terms_query__agent_coding_loop__r0\\.omega_rsi_runs\\closed_rsi_state.json"",
+  ""thdse_core_gate"": true,
+  ""total_accepted"": 1,
+  ""total_rejected"": 0
+}
+",,external_unseen,pandas-dev/pandas,Measure transfer on a fixture extracted from pandas-dev/pandas issue metadata.,External transfer succeeds when the loop patches a query API for external_failure_terms extracted from pandas-dev/pandas issue metadata.
+external_pandas_issue_transfer_repo,Actual pandas issue-title fixture extracted from public GitHub issue metadata.,external_pandas_failure_terms_query,ci_only_validation,baseline_ci_only,Baseline: run validation without candidate generation or code patching.,0,58cdf52c98d9,0,1.313,0,0,0.0,0,,False,0,1.313,0,C:\Users\starg\AppData\Local\Temp\rsi_experiments_2zgnhmnh\external_pandas_issue_transfer_repo__external_pandas_failure_terms_query__ci_only_validation__r0\.omega_rsi_runs\closed_rsi_summary.json,"..                                                                       [100%]
+2 passed in 0.05s
+",,external_unseen,pandas-dev/pandas,Measure transfer on a fixture extracted from pandas-dev/pandas issue metadata.,External transfer succeeds when the loop patches a query API for external_failure_terms extracted from pandas-dev/pandas issue metadata.
+external_pandas_issue_transfer_repo,Actual pandas issue-title fixture extracted from public GitHub issue metadata.,external_pandas_failure_terms_query,verified_closed_loop,proposed,"Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",1,1e3233ab8384,0,8.672,3,0,1.0,0,,True,3,8.672,4,C:\Users\starg\AppData\Local\Temp\rsi_experiments_2zgnhmnh\external_pandas_issue_transfer_repo__external_pandas_failure_terms_query__verified_closed_loop__r1\.omega_rsi_runs\closed_rsi_summary.json,"failure_terms_query_v1"",
+      ""started_at"": ""2026-05-26T22:26:40Z"",
+      ""target_path"": ""shared\\local_corpus.py"",
+      ""test_path"": ""tests\\test_autonomous_local_corpus_external_failure_terms_query_v1.py""
+    },
+    {
+      ""accepted"": true,
+      ""error"": """",
+      ""extra_paths"": [],
+      ""finished_at"": ""2026-05-26T22:26:46Z"",
+      ""gates"": [
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""py_compile"",
+            ""shared\\local_corpus.py"",
+            ""tests\\test_emergent_local_corpus_definitions_membership_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_pandas_issue_transfer_repo__external_pandas_failure_terms_query__verified_closed_loop__r1"",
+          ""elapsed_s"": 0.11,
+          ""exit_code"": 0,
+          ""label"": ""emergent_local_corpus_definitions_membership_v1_compile"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": """",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=5"",
+            ""--disable-warnings"",
+            ""tests/test_emergent_local_corpus_definitions_membership_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_pandas_issue_transfer_repo__external_pandas_failure_terms_query__verified_closed_loop__r1"",
+          ""elapsed_s"": 1.265,
+          ""exit_code"": 0,
+          ""label"": ""emergent_local_corpus_definitions_membership_v1_focused"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": "".                                                                        [100%]\n1 passed in 0.02s\n"",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=20"",
+            ""--disable-warnings"",
+            ""tests""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_pandas_issue_transfer_repo__external_pandas_failure_terms_query__verified_closed_loop__r1"",
+          ""elapsed_s"": 1.282,
+          ""exit_code"": 0,
+          ""label"": ""emergent_local_corpus_definitions_membership_v1_root_broad"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": "".....                                                                    [100%]\n5 passed in 0.04s\n"",
+          ""timed_out"": false
+        }
+      ],
+      ""generation"": 3,
+      ""goal"": {
+        ""metric"": ""planner score 9.999 plus generated regression test"",
+        ""name"": ""emergently_query_local_corpus_definitions"",
+        ""rationale"": ""The bounded emergent planner generated an alternate membership query hypothesis for definitions. Evidence: field:definitions, method:records_matching_definitions, strategy:alternate_tuple_membership."",
+        ""target"": ""shared.local_corpus.LocalCorpusIndex""
+      },
+      ""name"": ""emergent_local_corpus_definitions_membership_v1"",
+      ""started_at"": ""2026-05-26T22:26:43Z"",
+      ""target_path"": ""shared\\local_corpus.py"",
+      ""test_path"": ""tests\\test_emergent_local_corpus_definitions_membership_v1.py""
+    }
+  ],
+  ""active_base"": ""emergent_local_corpus_definitions_membership_v1"",
+  ""active_generation"": 3,
+  ""broad_gate"": true,
+  ""dry_run"": false,
+  ""persistence"": true,
+  ""rejected_this_run"": [],
+  ""rollback"": true,
+  ""state_path"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_pandas_issue_transfer_repo__external_pandas_failure_terms_query__verified_closed_loop__r1\\.omega_rsi_runs\\closed_rsi_state.json"",
+  ""thdse_core_gate"": true,
+  ""total_accepted"": 3,
+  ""total_rejected"": 0
+}
+",,external_unseen,pandas-dev/pandas,Measure transfer on a fixture extracted from pandas-dev/pandas issue metadata.,External transfer succeeds when the loop patches a query API for external_failure_terms extracted from pandas-dev/pandas issue metadata.
+external_pandas_issue_transfer_repo,Actual pandas issue-title fixture extracted from public GitHub issue metadata.,external_pandas_failure_terms_query,agent_coding_loop,baseline_agent_coding_loop,Baseline: single-pass automated coding loop with validation but without persistent recursive depth.,1,4cb019d262e5,0,2.985,1,0,1.0,0,,False,1,2.985,2,C:\Users\starg\AppData\Local\Temp\rsi_experiments_2zgnhmnh\external_pandas_issue_transfer_repo__external_pandas_failure_terms_query__agent_coding_loop__r1\.omega_rsi_runs\closed_rsi_summary.json,"{
+  ""accepted_this_run"": [
+    {
+      ""accepted"": true,
+      ""error"": """",
+      ""extra_paths"": [],
+      ""finished_at"": ""2026-05-26T22:26:49Z"",
+      ""gates"": [
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""py_compile"",
+            ""shared\\local_corpus.py"",
+            ""tests\\test_autonomous_local_corpus_definitions_query_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_pandas_issue_transfer_repo__external_pandas_failure_terms_query__agent_coding_loop__r1"",
+          ""elapsed_s"": 0.11,
+          ""exit_code"": 0,
+          ""label"": ""autonomous_local_corpus_definitions_query_v1_compile"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": """",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=5"",
+            ""--disable-warnings"",
+            ""tests/test_autonomous_local_corpus_definitions_query_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_pandas_issue_transfer_repo__external_pandas_failure_terms_query__agent_coding_loop__r1"",
+          ""elapsed_s"": 1.343,
+          ""exit_code"": 0,
+          ""label"": ""autonomous_local_corpus_definitions_query_v1_focused"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": "".                                                                        [100%]\n1 passed in 0.02s\n"",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=20"",
+            ""--disable-warnings"",
+            ""tests""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_pandas_issue_transfer_repo__external_pandas_failure_terms_query__agent_coding_loop__r1"",
+          ""elapsed_s"": 1.391,
+          ""exit_code"": 0,
+          ""label"": ""autonomous_local_corpus_definitions_query_v1_root_broad"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": ""...                                                                      [100%]\n3 passed in 0.04s\n"",
+          ""timed_out"": false
+        }
+      ],
+      ""generation"": 1,
+      ""goal"": {
+        ""metric"": ""planner score 11.999 plus generated regression test"",
+        ""name"": ""autonomously_query_local_corpus_definitions"",
+        ""rationale"": ""The planner found a tuple-valued definitions field without a matching query API on LocalCorpusIndex. Evidence: field:definitions, method:records_with_definition, strategy:tuple_membership, canonical_strategy_bonus."",
+        ""target"": ""shared.local_corpus.LocalCorpusIndex""
+      },
+      ""name"": ""autonomous_local_corpus_definitions_query_v1"",
+      ""started_at"": ""2026-05-26T22:26:46Z"",
+      ""target_path"": ""shared\\local_corpus.py"",
+      ""test_path"": ""tests\\test_autonomous_local_corpus_definitions_query_v1.py""
+    }
+  ],
+  ""active_base"": ""autonomous_local_corpus_definitions_query_v1"",
+  ""active_generation"": 1,
+  ""broad_gate"": true,
+  ""dry_run"": false,
+  ""persistence"": false,
+  ""rejected_this_run"": [],
+  ""rollback"": true,
+  ""state_path"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_pandas_issue_transfer_repo__external_pandas_failure_terms_query__agent_coding_loop__r1\\.omega_rsi_runs\\closed_rsi_state.json"",
+  ""thdse_core_gate"": true,
+  ""total_accepted"": 1,
+  ""total_rejected"": 0
+}
+",,external_unseen,pandas-dev/pandas,Measure transfer on a fixture extracted from pandas-dev/pandas issue metadata.,External transfer succeeds when the loop patches a query API for external_failure_terms extracted from pandas-dev/pandas issue metadata.
+external_pandas_issue_transfer_repo,Actual pandas issue-title fixture extracted from public GitHub issue metadata.,external_pandas_failure_terms_query,ci_only_validation,baseline_ci_only,Baseline: run validation without candidate generation or code patching.,1,2b5d716d52e2,0,1.437,0,0,0.0,0,,False,0,1.437,0,C:\Users\starg\AppData\Local\Temp\rsi_experiments_2zgnhmnh\external_pandas_issue_transfer_repo__external_pandas_failure_terms_query__ci_only_validation__r1\.omega_rsi_runs\closed_rsi_summary.json,"..                                                                       [100%]
+2 passed in 0.05s
+",,external_unseen,pandas-dev/pandas,Measure transfer on a fixture extracted from pandas-dev/pandas issue metadata.,External transfer succeeds when the loop patches a query API for external_failure_terms extracted from pandas-dev/pandas issue metadata.
+external_dask_issue_transfer_repo,Actual dask issue-label fixture extracted from public GitHub issue metadata.,external_dask_array_labels_query,verified_closed_loop,proposed,"Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",0,df06a1783622,0,8.688,3,0,1.0,0,,True,3,8.688,4,C:\Users\starg\AppData\Local\Temp\rsi_experiments_2zgnhmnh\external_dask_issue_transfer_repo__external_dask_array_labels_query__verified_closed_loop__r0\.omega_rsi_runs\closed_rsi_summary.json,"ocal_corpus_external_array_labels_query_v1"",
+      ""started_at"": ""2026-05-26T22:26:54Z"",
+      ""target_path"": ""shared\\local_corpus.py"",
+      ""test_path"": ""tests\\test_autonomous_local_corpus_external_array_labels_query_v1.py""
+    },
+    {
+      ""accepted"": true,
+      ""error"": """",
+      ""extra_paths"": [],
+      ""finished_at"": ""2026-05-26T22:26:59Z"",
+      ""gates"": [
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""py_compile"",
+            ""shared\\local_corpus.py"",
+            ""tests\\test_emergent_local_corpus_definitions_membership_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_dask_issue_transfer_repo__external_dask_array_labels_query__verified_closed_loop__r0"",
+          ""elapsed_s"": 0.109,
+          ""exit_code"": 0,
+          ""label"": ""emergent_local_corpus_definitions_membership_v1_compile"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": """",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=5"",
+            ""--disable-warnings"",
+            ""tests/test_emergent_local_corpus_definitions_membership_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_dask_issue_transfer_repo__external_dask_array_labels_query__verified_closed_loop__r0"",
+          ""elapsed_s"": 1.359,
+          ""exit_code"": 0,
+          ""label"": ""emergent_local_corpus_definitions_membership_v1_focused"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": "".                                                                        [100%]\n1 passed in 0.02s\n"",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=20"",
+            ""--disable-warnings"",
+            ""tests""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_dask_issue_transfer_repo__external_dask_array_labels_query__verified_closed_loop__r0"",
+          ""elapsed_s"": 1.297,
+          ""exit_code"": 0,
+          ""label"": ""emergent_local_corpus_definitions_membership_v1_root_broad"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": "".....                                                                    [100%]\n5 passed in 0.04s\n"",
+          ""timed_out"": false
+        }
+      ],
+      ""generation"": 3,
+      ""goal"": {
+        ""metric"": ""planner score 9.999 plus generated regression test"",
+        ""name"": ""emergently_query_local_corpus_definitions"",
+        ""rationale"": ""The bounded emergent planner generated an alternate membership query hypothesis for definitions. Evidence: field:definitions, method:records_matching_definitions, strategy:alternate_tuple_membership."",
+        ""target"": ""shared.local_corpus.LocalCorpusIndex""
+      },
+      ""name"": ""emergent_local_corpus_definitions_membership_v1"",
+      ""started_at"": ""2026-05-26T22:26:56Z"",
+      ""target_path"": ""shared\\local_corpus.py"",
+      ""test_path"": ""tests\\test_emergent_local_corpus_definitions_membership_v1.py""
+    }
+  ],
+  ""active_base"": ""emergent_local_corpus_definitions_membership_v1"",
+  ""active_generation"": 3,
+  ""broad_gate"": true,
+  ""dry_run"": false,
+  ""persistence"": true,
+  ""rejected_this_run"": [],
+  ""rollback"": true,
+  ""state_path"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_dask_issue_transfer_repo__external_dask_array_labels_query__verified_closed_loop__r0\\.omega_rsi_runs\\closed_rsi_state.json"",
+  ""thdse_core_gate"": true,
+  ""total_accepted"": 3,
+  ""total_rejected"": 0
+}
+",,external_unseen,dask/dask,Measure transfer on a fixture extracted from dask/dask issue metadata.,External transfer succeeds when the loop patches a query API for external_array_labels extracted from dask/dask issue metadata.
+external_dask_issue_transfer_repo,Actual dask issue-label fixture extracted from public GitHub issue metadata.,external_dask_array_labels_query,agent_coding_loop,baseline_agent_coding_loop,Baseline: single-pass automated coding loop with validation but without persistent recursive depth.,0,51019d40583c,0,2.891,1,0,1.0,0,,False,1,2.891,2,C:\Users\starg\AppData\Local\Temp\rsi_experiments_2zgnhmnh\external_dask_issue_transfer_repo__external_dask_array_labels_query__agent_coding_loop__r0\.omega_rsi_runs\closed_rsi_summary.json,"{
+  ""accepted_this_run"": [
+    {
+      ""accepted"": true,
+      ""error"": """",
+      ""extra_paths"": [],
+      ""finished_at"": ""2026-05-26T22:27:02Z"",
+      ""gates"": [
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""py_compile"",
+            ""shared\\local_corpus.py"",
+            ""tests\\test_autonomous_local_corpus_definitions_query_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_dask_issue_transfer_repo__external_dask_array_labels_query__agent_coding_loop__r0"",
+          ""elapsed_s"": 0.125,
+          ""exit_code"": 0,
+          ""label"": ""autonomous_local_corpus_definitions_query_v1_compile"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": """",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=5"",
+            ""--disable-warnings"",
+            ""tests/test_autonomous_local_corpus_definitions_query_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_dask_issue_transfer_repo__external_dask_array_labels_query__agent_coding_loop__r0"",
+          ""elapsed_s"": 1.329,
+          ""exit_code"": 0,
+          ""label"": ""autonomous_local_corpus_definitions_query_v1_focused"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": "".                                                                        [100%]\n1 passed in 0.02s\n"",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=20"",
+            ""--disable-warnings"",
+            ""tests""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_dask_issue_transfer_repo__external_dask_array_labels_query__agent_coding_loop__r0"",
+          ""elapsed_s"": 1.296,
+          ""exit_code"": 0,
+          ""label"": ""autonomous_local_corpus_definitions_query_v1_root_broad"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": ""...                                                                      [100%]\n3 passed in 0.04s\n"",
+          ""timed_out"": false
+        }
+      ],
+      ""generation"": 1,
+      ""goal"": {
+        ""metric"": ""planner score 11.999 plus generated regression test"",
+        ""name"": ""autonomously_query_local_corpus_definitions"",
+        ""rationale"": ""The planner found a tuple-valued definitions field without a matching query API on LocalCorpusIndex. Evidence: field:definitions, method:records_with_definition, strategy:tuple_membership, canonical_strategy_bonus."",
+        ""target"": ""shared.local_corpus.LocalCorpusIndex""
+      },
+      ""name"": ""autonomous_local_corpus_definitions_query_v1"",
+      ""started_at"": ""2026-05-26T22:26:59Z"",
+      ""target_path"": ""shared\\local_corpus.py"",
+      ""test_path"": ""tests\\test_autonomous_local_corpus_definitions_query_v1.py""
+    }
+  ],
+  ""active_base"": ""autonomous_local_corpus_definitions_query_v1"",
+  ""active_generation"": 1,
+  ""broad_gate"": true,
+  ""dry_run"": false,
+  ""persistence"": false,
+  ""rejected_this_run"": [],
+  ""rollback"": true,
+  ""state_path"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_dask_issue_transfer_repo__external_dask_array_labels_query__agent_coding_loop__r0\\.omega_rsi_runs\\closed_rsi_state.json"",
+  ""thdse_core_gate"": true,
+  ""total_accepted"": 1,
+  ""total_rejected"": 0
+}
+",,external_unseen,dask/dask,Measure transfer on a fixture extracted from dask/dask issue metadata.,External transfer succeeds when the loop patches a query API for external_array_labels extracted from dask/dask issue metadata.
+external_dask_issue_transfer_repo,Actual dask issue-label fixture extracted from public GitHub issue metadata.,external_dask_array_labels_query,ci_only_validation,baseline_ci_only,Baseline: run validation without candidate generation or code patching.,0,f4033efc8bcd,0,1.546,0,0,0.0,0,,False,0,1.546,0,C:\Users\starg\AppData\Local\Temp\rsi_experiments_2zgnhmnh\external_dask_issue_transfer_repo__external_dask_array_labels_query__ci_only_validation__r0\.omega_rsi_runs\closed_rsi_summary.json,"..                                                                       [100%]
+2 passed in 0.05s
+",,external_unseen,dask/dask,Measure transfer on a fixture extracted from dask/dask issue metadata.,External transfer succeeds when the loop patches a query API for external_array_labels extracted from dask/dask issue metadata.
+external_dask_issue_transfer_repo,Actual dask issue-label fixture extracted from public GitHub issue metadata.,external_dask_array_labels_query,verified_closed_loop,proposed,"Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",1,55ada38fd7dd,0,8.625,3,0,1.0,0,,True,3,8.625,4,C:\Users\starg\AppData\Local\Temp\rsi_experiments_2zgnhmnh\external_dask_issue_transfer_repo__external_dask_array_labels_query__verified_closed_loop__r1\.omega_rsi_runs\closed_rsi_summary.json,"local_corpus_external_array_labels_query_v1"",
+      ""started_at"": ""2026-05-26T22:27:07Z"",
+      ""target_path"": ""shared\\local_corpus.py"",
+      ""test_path"": ""tests\\test_autonomous_local_corpus_external_array_labels_query_v1.py""
+    },
+    {
+      ""accepted"": true,
+      ""error"": """",
+      ""extra_paths"": [],
+      ""finished_at"": ""2026-05-26T22:27:12Z"",
+      ""gates"": [
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""py_compile"",
+            ""shared\\local_corpus.py"",
+            ""tests\\test_emergent_local_corpus_definitions_membership_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_dask_issue_transfer_repo__external_dask_array_labels_query__verified_closed_loop__r1"",
+          ""elapsed_s"": 0.11,
+          ""exit_code"": 0,
+          ""label"": ""emergent_local_corpus_definitions_membership_v1_compile"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": """",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=5"",
+            ""--disable-warnings"",
+            ""tests/test_emergent_local_corpus_definitions_membership_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_dask_issue_transfer_repo__external_dask_array_labels_query__verified_closed_loop__r1"",
+          ""elapsed_s"": 1.281,
+          ""exit_code"": 0,
+          ""label"": ""emergent_local_corpus_definitions_membership_v1_focused"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": "".                                                                        [100%]\n1 passed in 0.02s\n"",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=20"",
+            ""--disable-warnings"",
+            ""tests""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_dask_issue_transfer_repo__external_dask_array_labels_query__verified_closed_loop__r1"",
+          ""elapsed_s"": 1.297,
+          ""exit_code"": 0,
+          ""label"": ""emergent_local_corpus_definitions_membership_v1_root_broad"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": "".....                                                                    [100%]\n5 passed in 0.04s\n"",
+          ""timed_out"": false
+        }
+      ],
+      ""generation"": 3,
+      ""goal"": {
+        ""metric"": ""planner score 9.999 plus generated regression test"",
+        ""name"": ""emergently_query_local_corpus_definitions"",
+        ""rationale"": ""The bounded emergent planner generated an alternate membership query hypothesis for definitions. Evidence: field:definitions, method:records_matching_definitions, strategy:alternate_tuple_membership."",
+        ""target"": ""shared.local_corpus.LocalCorpusIndex""
+      },
+      ""name"": ""emergent_local_corpus_definitions_membership_v1"",
+      ""started_at"": ""2026-05-26T22:27:10Z"",
+      ""target_path"": ""shared\\local_corpus.py"",
+      ""test_path"": ""tests\\test_emergent_local_corpus_definitions_membership_v1.py""
+    }
+  ],
+  ""active_base"": ""emergent_local_corpus_definitions_membership_v1"",
+  ""active_generation"": 3,
+  ""broad_gate"": true,
+  ""dry_run"": false,
+  ""persistence"": true,
+  ""rejected_this_run"": [],
+  ""rollback"": true,
+  ""state_path"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_dask_issue_transfer_repo__external_dask_array_labels_query__verified_closed_loop__r1\\.omega_rsi_runs\\closed_rsi_state.json"",
+  ""thdse_core_gate"": true,
+  ""total_accepted"": 3,
+  ""total_rejected"": 0
+}
+",,external_unseen,dask/dask,Measure transfer on a fixture extracted from dask/dask issue metadata.,External transfer succeeds when the loop patches a query API for external_array_labels extracted from dask/dask issue metadata.
+external_dask_issue_transfer_repo,Actual dask issue-label fixture extracted from public GitHub issue metadata.,external_dask_array_labels_query,agent_coding_loop,baseline_agent_coding_loop,Baseline: single-pass automated coding loop with validation but without persistent recursive depth.,1,1f7dff71d383,0,3.0,1,0,1.0,0,,False,1,3.0,2,C:\Users\starg\AppData\Local\Temp\rsi_experiments_2zgnhmnh\external_dask_issue_transfer_repo__external_dask_array_labels_query__agent_coding_loop__r1\.omega_rsi_runs\closed_rsi_summary.json,"{
+  ""accepted_this_run"": [
+    {
+      ""accepted"": true,
+      ""error"": """",
+      ""extra_paths"": [],
+      ""finished_at"": ""2026-05-26T22:27:16Z"",
+      ""gates"": [
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""py_compile"",
+            ""shared\\local_corpus.py"",
+            ""tests\\test_autonomous_local_corpus_definitions_query_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_dask_issue_transfer_repo__external_dask_array_labels_query__agent_coding_loop__r1"",
+          ""elapsed_s"": 0.109,
+          ""exit_code"": 0,
+          ""label"": ""autonomous_local_corpus_definitions_query_v1_compile"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": """",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=5"",
+            ""--disable-warnings"",
+            ""tests/test_autonomous_local_corpus_definitions_query_v1.py""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_dask_issue_transfer_repo__external_dask_array_labels_query__agent_coding_loop__r1"",
+          ""elapsed_s"": 1.454,
+          ""exit_code"": 0,
+          ""label"": ""autonomous_local_corpus_definitions_query_v1_focused"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": "".                                                                        [100%]\n1 passed in 0.02s\n"",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""C:\\Users\\starg\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=20"",
+            ""--disable-warnings"",
+            ""tests""
+          ],
+          ""cwd"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_dask_issue_transfer_repo__external_dask_array_labels_query__agent_coding_loop__r1"",
+          ""elapsed_s"": 1.296,
+          ""exit_code"": 0,
+          ""label"": ""autonomous_local_corpus_definitions_query_v1_root_broad"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": ""...                                                                      [100%]\n3 passed in 0.04s\n"",
+          ""timed_out"": false
+        }
+      ],
+      ""generation"": 1,
+      ""goal"": {
+        ""metric"": ""planner score 11.999 plus generated regression test"",
+        ""name"": ""autonomously_query_local_corpus_definitions"",
+        ""rationale"": ""The planner found a tuple-valued definitions field without a matching query API on LocalCorpusIndex. Evidence: field:definitions, method:records_with_definition, strategy:tuple_membership, canonical_strategy_bonus."",
+        ""target"": ""shared.local_corpus.LocalCorpusIndex""
+      },
+      ""name"": ""autonomous_local_corpus_definitions_query_v1"",
+      ""started_at"": ""2026-05-26T22:27:13Z"",
+      ""target_path"": ""shared\\local_corpus.py"",
+      ""test_path"": ""tests\\test_autonomous_local_corpus_definitions_query_v1.py""
+    }
+  ],
+  ""active_base"": ""autonomous_local_corpus_definitions_query_v1"",
+  ""active_generation"": 1,
+  ""broad_gate"": true,
+  ""dry_run"": false,
+  ""persistence"": false,
+  ""rejected_this_run"": [],
+  ""rollback"": true,
+  ""state_path"": ""C:\\Users\\starg\\AppData\\Local\\Temp\\rsi_experiments_2zgnhmnh\\external_dask_issue_transfer_repo__external_dask_array_labels_query__agent_coding_loop__r1\\.omega_rsi_runs\\closed_rsi_state.json"",
+  ""thdse_core_gate"": true,
+  ""total_accepted"": 1,
+  ""total_rejected"": 0
+}
+",,external_unseen,dask/dask,Measure transfer on a fixture extracted from dask/dask issue metadata.,External transfer succeeds when the loop patches a query API for external_array_labels extracted from dask/dask issue metadata.
+external_dask_issue_transfer_repo,Actual dask issue-label fixture extracted from public GitHub issue metadata.,external_dask_array_labels_query,ci_only_validation,baseline_ci_only,Baseline: run validation without candidate generation or code patching.,1,6d051b2ef036,0,1.359,0,0,0.0,0,,False,0,1.359,0,C:\Users\starg\AppData\Local\Temp\rsi_experiments_2zgnhmnh\external_dask_issue_transfer_repo__external_dask_array_labels_query__ci_only_validation__r1\.omega_rsi_runs\closed_rsi_summary.json,"..                                                                       [100%]
+2 passed in 0.05s
+",,external_unseen,dask/dask,Measure transfer on a fixture extracted from dask/dask issue metadata.,External transfer succeeds when the loop patches a query API for external_array_labels extracted from dask/dask issue metadata.

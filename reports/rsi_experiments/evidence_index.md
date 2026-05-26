@@ -68,6 +68,36 @@ Observed aggregate result:
 - Scorecard outcome: `unseen_transfer_success` on all four unseen tasks
 - Rejected candidates or command failures: none observed
 
+## Actual External Issue Transfer Evidence
+
+- Path: `reports/rsi_experiments/external_transfer/latest/`
+- External grounding path:
+  `reports/external_grounding/external_transfer/latest/`
+- Trial count: 24
+- Repository split: `external_unseen`
+- Actual source repositories:
+  - `psf/requests`
+  - `hypothesisworks/hypothesis`
+  - `pandas-dev/pandas`
+  - `dask/dask`
+- Extracted signals:
+  - issue labels
+  - issue title terms
+  - source URLs
+  - task kinds
+- Repeats: 2 per repository/task/variant cell
+- Variants: proposed loop, single-pass agent loop baseline, CI-only baseline
+
+Observed aggregate result:
+
+- Proposed loop accepted rate mean: 1.00 on all four external issue fixtures
+- Proposed loop improvement depth mean: 3.00 on all four external issue fixtures
+- Single-pass agent accepted rate mean: 1.00 on all four external issue fixtures
+- Single-pass agent improvement depth mean: 1.00 on all four external issue fixtures
+- CI-only accepted rate mean: 0.00 on all four external issue fixtures
+- Scorecard outcome: `external_transfer_success` on all four external issue fixtures
+- Rejected candidates or command failures: none observed
+
 ## Workflow Recovery Evidence
 
 - Path: `reports/rsi_experiments/recovery/latest/`
@@ -112,11 +142,12 @@ baseline. The strongest evidence is narrower:
 - It repeatedly patches and validates code in disposable repositories.
 - It reaches deeper accepted improvement chains than a single-pass agent loop on
   four held-out schema-transfer fixtures.
+- It now reaches deeper accepted improvement chains on four fixtures extracted
+  from actual external GitHub issue metadata.
 - It preserves rollback behavior on forced broad-gate rejection tasks.
 - It records enough per-trial provenance for baseline, ablation, transfer, and
   failure-analysis tables.
 
-The main remaining research gap is broader external validity beyond synthetic
-compact fixtures: more externally sourced repositories, more task families, and
-stronger baselines are still required before making a NeurIPS main-track
-strength claim.
+The main remaining research gap is external validity beyond issue-metadata
+fixtures: more real repository code surfaces, more task families, and stronger
+baselines are still required before making a NeurIPS main-track strength claim.
