@@ -102,7 +102,9 @@ jobs:
             echo "No experiment report changes to commit."
           else
             git commit -m "Record RSI research experiment results"
-            git push
+            if ! git push; then
+              echo "::warning::Experiment report push failed; uploaded artifacts remain available for manual recovery."
+            fi
           fi
 
       - name: Upload experiment artifacts
