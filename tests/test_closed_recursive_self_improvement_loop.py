@@ -3,9 +3,11 @@ from pathlib import Path
 from scripts.closed_recursive_self_improvement_loop import (
     ClosedRecursiveSelfImprovementLoop,
     LOCAL_CORPUS_QUERY_SPECS,
+    add_autonomous_record_query,
     add_records_importing,
     add_records_with_feature,
     candidates_from_specs,
+    discover_local_corpus_query_blueprints,
 )
 
 
@@ -20,6 +22,7 @@ class LocalPythonFileRecord:
     path: str
     feature_flags: Tuple[str, ...] = ()
     imports: Tuple[str, ...] = ()
+    definitions: Tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -59,8 +62,9 @@ def test_loop_discovers_real_source_candidates_in_temp_tree(tmp_path):
     candidates = loop.invent_candidates(generation=1)
 
     assert [candidate.name for candidate in candidates] == [
-        "local_corpus_feature_query_v1",
-        "local_corpus_import_query_v1",
+        "autonomous_local_corpus_feature_flags_query_v1",
+        "autonomous_local_corpus_imports_query_v1",
+        "autonomous_local_corpus_definitions_query_v1",
     ]
 
 
@@ -79,6 +83,29 @@ def test_declarative_candidate_specs_generate_missing_capabilities(tmp_path):
     }
 
 
+def test_autonomous_planner_infers_query_blueprints_from_schema():
+    blueprints = discover_local_corpus_query_blueprints(LOCAL_CORPUS_STUB)
+
+    assert {blueprint.method_name for blueprint in blueprints} == {
+        "records_importing",
+        "records_with_definition",
+        "records_with_feature",
+    }
+
+
+def test_autonomous_planner_transform_adds_generated_method():
+    blueprint = next(
+        item
+        for item in discover_local_corpus_query_blueprints(LOCAL_CORPUS_STUB)
+        if item.method_name == "records_with_definition"
+    )
+
+    rewritten = add_autonomous_record_query(LOCAL_CORPUS_STUB, blueprint)
+
+    assert "def records_with_definition(" in rewritten
+    assert "record.definitions" in rewritten
+
+
 def test_history_aware_ranking_deprioritizes_rejected_candidates(tmp_path):
     repo = tmp_path / "repo"
     shared = repo / "shared"
@@ -91,10 +118,11 @@ def test_history_aware_ranking_deprioritizes_rejected_candidates(tmp_path):
     candidates = loop.invent_candidates(generation=1)
     ranked = loop.rank_candidates(
         candidates,
-        {"accepted": [], "rejected": [{"name": "local_corpus_feature_query_v1"}]},
+        {"accepted": [], "rejected": [{"name": "autonomous_local_corpus_feature_flags_query_v1"}]},
     )
 
     assert [candidate.name for candidate in ranked] == [
-        "local_corpus_import_query_v1",
-        "local_corpus_feature_query_v1",
+        "autonomous_local_corpus_definitions_query_v1",
+        "autonomous_local_corpus_imports_query_v1",
+        "autonomous_local_corpus_feature_flags_query_v1",
     ]

@@ -264,8 +264,12 @@ def remove_local_corpus_query_methods(repo: Path) -> None:
     text = path.read_text(encoding="utf-8")
     text = strip_method(text, "records_with_feature")
     text = strip_method(text, "records_importing")
+    text = strip_method(text, "records_with_definition")
     path.write_text(text, encoding="utf-8")
     for test_name in (
+        "test_autonomous_local_corpus_definitions_query_v1.py",
+        "test_autonomous_local_corpus_feature_flags_query_v1.py",
+        "test_autonomous_local_corpus_imports_query_v1.py",
         "test_local_corpus_feature_query_rewrite.py",
         "test_local_corpus_import_query_rewrite.py",
     ):
@@ -603,6 +607,7 @@ def write_markdown_reports(output_dir: Path, results: List[ExperimentResult]) ->
         "",
         "- The proposed loop can patch real repository code and persist accepted/rejected provenance.",
         "- The matrix includes CI-only, single-pass agent coding, and evolutionary repair baselines.",
+        "- The generator includes schema-driven candidate synthesis instead of only fixed candidate names.",
         "- Broad gates reduce regression risk relative to focused-only ablations.",
         "- Rollback behavior is measurable on forced broad-gate rejection tasks.",
         "- Persistence can be ablated to show that resume depth depends on durable state.",

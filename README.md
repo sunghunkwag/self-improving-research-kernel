@@ -8,14 +8,16 @@ and testable:
 
 1. Inspect the current source tree.
 2. Invent measurable improvement goals from missing project capabilities.
-3. Generate real source patches and matching regression tests.
-4. Apply one candidate at a time.
-5. Verify candidates with compile checks, pytest, and Z3-backed gates where
+3. Infer candidate blueprints from source schema and persisted rejection
+   history.
+4. Generate real source patches and matching regression tests.
+5. Apply one candidate at a time.
+6. Verify candidates with compile checks, pytest, and Z3-backed gates where
    the test suite requires Z3.
-6. Keep only accepted candidates in the working tree.
-7. Roll back rejected candidates.
-8. Persist accepted and rejected JSON records.
-9. Resume the next run from the latest committed accepted state.
+7. Keep only accepted candidates in the working tree.
+8. Roll back rejected candidates.
+9. Persist accepted and rejected JSON records.
+10. Resume the next run from the latest committed accepted state.
 
 ## Core Loop
 
@@ -30,6 +32,19 @@ The loop writes persistent state under `.omega_rsi_runs/`:
 - `closed_rsi_state.json`: accepted and rejected candidate history
 - `closed_rsi_summary.json`: summary for the latest run
 - `STOP_CLOSED_RSI`: optional kill-switch file
+
+## Autonomous Generator Surface
+
+The generator is not an unbounded code-writing agent. It is a bounded planner
+that now combines:
+
+- schema-driven candidate synthesis from `LocalPythonFileRecord` tuple fields
+- generated regression tests for inferred query APIs
+- history-aware candidate ranking from accepted/rejected provenance
+- existing broad gates, rollback, and kill-switch controls
+
+This makes candidate discovery less dependent on hand-coded candidate names
+while keeping every patch deterministic, reviewable, and gate-verified.
 
 ## GitHub Actions
 

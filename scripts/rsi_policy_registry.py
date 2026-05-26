@@ -38,6 +38,12 @@ def default_policy_capabilities() -> Tuple[PolicyCapability, ...]:
             risk_control="previously rejected candidate names are retried only after fresher options",
         ),
         PolicyCapability(
+            name="schema_driven_candidate_synthesis",
+            category="generator",
+            evidence="the planner infers missing query APIs from dataclass fields and generates tests",
+            risk_control="generated candidates remain deterministic and must pass validation gates",
+        ),
+        PolicyCapability(
             name="compile_focused_broad_validation",
             category="validator",
             evidence="candidates must pass py_compile, focused pytest, root pytest, and THDSE core gates",

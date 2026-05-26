@@ -20,6 +20,7 @@ a kill-switch file, and rollback semantics.
 from __future__ import annotations
 
 import argparse
+import ast
 import json
 import os
 import subprocess
@@ -106,6 +107,19 @@ class CandidateFactorySpec:
     focused_tests: Tuple[str, ...]
 
 
+@dataclass(frozen=True)
+class AutonomousQueryBlueprint:
+    """Planner-inferred query API candidate for a record tuple field."""
+
+    field_name: str
+    method_name: str
+    parameter_name: str
+    sample_value: str
+    candidate_name: str
+    goal_name: str
+    rationale: str
+
+
 def utc_now() -> str:
     return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
 
@@ -164,6 +178,175 @@ def add_records_importing(text: str) -> str:
 
 '''
     return insert_before(text, marker, insertion, "local_corpus_import_query_v1")
+
+
+def singularize_identifier(name: str) -> str:
+    """Derive a conservative singular parameter name from a record field."""
+
+    if name.endswith("_flags"):
+        return name[:-6]
+    if name.endswith("ies"):
+        return f"{name[:-3]}y"
+    if name.endswith("s") and len(name) > 1:
+        return name[:-1]
+    return name
+
+
+def query_blueprint_for_field(field_name: str) -> AutonomousQueryBlueprint:
+    """Create a query candidate blueprint from a tuple-valued record field."""
+
+    if field_name == "imports":
+        return AutonomousQueryBlueprint(
+            field_name=field_name,
+            method_name="records_importing",
+            parameter_name="module_name",
+            sample_value="json",
+            candidate_name="autonomous_local_corpus_imports_query_v1",
+            goal_name="autonomously_query_local_corpus_imports",
+            rationale="The planner found a tuple-valued imports field without a matching query API.",
+        )
+    element_name = singularize_identifier(field_name)
+    sample_values = {
+        "definition": "function:scan_file",
+        "feature": "self_improvement",
+    }
+    return AutonomousQueryBlueprint(
+        field_name=field_name,
+        method_name=f"records_with_{element_name}",
+        parameter_name=element_name,
+        sample_value=sample_values.get(element_name, f"sample_{element_name}"),
+        candidate_name=f"autonomous_local_corpus_{field_name}_query_v1",
+        goal_name=f"autonomously_query_local_corpus_{field_name}",
+        rationale=(
+            f"The planner found a tuple-valued {field_name} field without a matching "
+            "query API on LocalCorpusIndex."
+        ),
+    )
+
+
+def ast_annotation_mentions_tuple_of_strings(annotation: ast.AST) -> bool:
+    """Return whether an annotation looks like a tuple of strings."""
+
+    try:
+        rendered = ast.unparse(annotation)
+    except Exception:
+        return False
+    normalized = rendered.replace("typing.", "")
+    return "Tuple" in normalized and "str" in normalized
+
+
+def discover_local_corpus_query_blueprints(text: str) -> Tuple[AutonomousQueryBlueprint, ...]:
+    """Infer missing LocalCorpusIndex query APIs from LocalPythonFileRecord fields."""
+
+    try:
+        tree = ast.parse(text)
+    except SyntaxError:
+        return ()
+    record_fields: List[str] = []
+    for node in tree.body if isinstance(tree, ast.Module) else []:
+        if not isinstance(node, ast.ClassDef) or node.name != "LocalPythonFileRecord":
+            continue
+        for item in node.body:
+            if isinstance(item, ast.AnnAssign) and isinstance(item.target, ast.Name):
+                if ast_annotation_mentions_tuple_of_strings(item.annotation):
+                    record_fields.append(item.target.id)
+        break
+    blueprints: List[AutonomousQueryBlueprint] = []
+    for field_name in record_fields:
+        blueprint = query_blueprint_for_field(field_name)
+        if f"def {blueprint.method_name}(" not in text:
+            blueprints.append(blueprint)
+    return tuple(blueprints)
+
+
+def add_autonomous_record_query(text: str, blueprint: AutonomousQueryBlueprint) -> str:
+    """Insert a planner-inferred LocalCorpusIndex query method."""
+
+    if f"def {blueprint.method_name}(" in text:
+        return text
+    marker = "    def write_json(self, path: Path) -> None:\n"
+    insertion = f'''    def {blueprint.method_name}(self, {blueprint.parameter_name}: str) -> Tuple[LocalPythonFileRecord, ...]:
+        """Return records whose ``{blueprint.field_name}`` contain ``{blueprint.parameter_name}``."""
+
+        if not isinstance({blueprint.parameter_name}, str) or not {blueprint.parameter_name}:
+            raise ValueError("{blueprint.parameter_name} must be a non-empty string")
+        return tuple(record for record in self.records if {blueprint.parameter_name} in record.{blueprint.field_name})
+
+'''
+    return insert_before(text, marker, insertion, blueprint.candidate_name)
+
+
+def build_autonomous_query_test(blueprint: AutonomousQueryBlueprint) -> str:
+    """Build a regression test for a planner-inferred LocalCorpusIndex query."""
+
+    return f'''from shared.local_corpus import LocalCorpusIndex, LocalCorpusSummary, LocalPythonFileRecord
+
+
+def test_{blueprint.method_name}_filters_{blueprint.field_name}():
+    records = (
+        LocalPythonFileRecord(
+            path="a.py",
+            sha256="a",
+            size_bytes=1,
+            line_count=1,
+            syntax_ok=True,
+            {blueprint.field_name}=("{blueprint.sample_value}",),
+        ),
+        LocalPythonFileRecord(
+            path="b.py",
+            sha256="b",
+            size_bytes=1,
+            line_count=1,
+            syntax_ok=True,
+            {blueprint.field_name}=("other_value",),
+        ),
+    )
+    index = LocalCorpusIndex(
+        summary=LocalCorpusSummary(
+            file_count=2,
+            syntax_ok_count=2,
+            syntax_error_count=0,
+            unique_sha256_count=2,
+            duplicate_file_instances=0,
+            feature_counts={{}},
+            import_edge_count=0,
+            definition_count=0,
+        ),
+        records=records,
+        import_edges=(),
+    )
+
+    assert tuple(record.path for record in index.{blueprint.method_name}("{blueprint.sample_value}")) == ("a.py",)
+'''
+
+
+def autonomous_local_corpus_candidates(repo_root: Path, generation: int) -> List[CandidatePatch]:
+    """Plan LocalCorpusIndex candidates from source schema instead of fixed candidate names."""
+
+    local_corpus = repo_root / "shared" / "local_corpus.py"
+    if not local_corpus.exists():
+        return []
+    text = local_corpus.read_text(encoding="utf-8")
+    candidates: List[CandidatePatch] = []
+    for blueprint in discover_local_corpus_query_blueprints(text):
+        candidates.append(
+            CandidatePatch(
+                name=blueprint.candidate_name,
+                generation=generation,
+                goal=Goal(
+                    name=blueprint.goal_name,
+                    target="shared.local_corpus.LocalCorpusIndex",
+                    metric="planner-inferred query API plus generated regression test",
+                    rationale=blueprint.rationale,
+                ),
+                target_path=local_corpus,
+                test_path=repo_root / "tests" / f"test_{blueprint.candidate_name}.py",
+                transform=lambda source, plan=blueprint: add_autonomous_record_query(source, plan),
+                test_source=build_autonomous_query_test(blueprint),
+                focused_tests=(f"tests/test_{blueprint.candidate_name}.py",),
+            )
+        )
+    return candidates
 
 
 POLICY_REGISTRY_ACTIVE_MARKER = "POLICY_REGISTRY_" + "ACTIVE = True"
@@ -405,6 +588,12 @@ def default_policy_capabilities() -> Tuple[PolicyCapability, ...]:
             risk_control="previously rejected candidate names are retried only after fresher options",
         ),
         PolicyCapability(
+            name="schema_driven_candidate_synthesis",
+            category="generator",
+            evidence="the planner infers missing query APIs from dataclass fields and generates tests",
+            risk_control="generated candidates remain deterministic and must pass validation gates",
+        ),
+        PolicyCapability(
             name="compile_focused_broad_validation",
             category="validator",
             evidence="candidates must pass py_compile, focused pytest, root pytest, and THDSE core gates",
@@ -552,14 +741,9 @@ class ClosedRecursiveSelfImprovementLoop:
     def invent_candidates(self, generation: int) -> List[CandidatePatch]:
         """Invent candidates from missing source capabilities."""
 
-        local_corpus = self.repo_root / "shared" / "local_corpus.py"
         loop_script = self.repo_root / "scripts" / "closed_recursive_self_improvement_loop.py"
         loop_text = loop_script.read_text(encoding="utf-8") if loop_script.exists() else ""
-        candidates = candidates_from_specs(
-            self.repo_root,
-            generation,
-            LOCAL_CORPUS_QUERY_SPECS if local_corpus.exists() else (),
-        )
+        candidates = autonomous_local_corpus_candidates(self.repo_root, generation)
 
         if loop_script.exists() and POLICY_REGISTRY_ACTIVE_MARKER not in loop_text:
             goal = Goal(
