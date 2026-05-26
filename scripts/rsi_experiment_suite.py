@@ -165,7 +165,7 @@ def copy_repo(src: Path, dst: Path) -> None:
 
 
 def strip_method(text: str, method_name: str) -> str:
-    pattern = rf"\n    def {re.escape(method_name)}\(.*?)(?=\n    def |\n\n[A-Za-z_@]|\Z)"
+    pattern = rf"\n    def {re.escape(method_name)}\(.*?(?=\n    def |\n\n[A-Za-z_@]|\Z)"
     return re.sub(pattern, "\n", text, count=1, flags=re.DOTALL)
 
 
