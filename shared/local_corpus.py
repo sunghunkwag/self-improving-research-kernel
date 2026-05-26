@@ -111,6 +111,20 @@ class LocalCorpusIndex:
             "duplicate_groups": [list(group) for group in self.duplicate_groups],
         }
 
+    def records_with_feature(self, feature: str) -> Tuple[LocalPythonFileRecord, ...]:
+        """Return records carrying a static feature flag."""
+
+        if not isinstance(feature, str) or not feature:
+            raise ValueError("feature must be a non-empty string")
+        return tuple(record for record in self.records if feature in record.feature_flags)
+
+    def records_importing(self, module_name: str) -> Tuple[LocalPythonFileRecord, ...]:
+        """Return records that statically import ``module_name``."""
+
+        if not isinstance(module_name, str) or not module_name:
+            raise ValueError("module_name must be a non-empty string")
+        return tuple(record for record in self.records if module_name in record.imports)
+
     def write_json(self, path: Path) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(self.to_dict(), indent=2, ensure_ascii=False), encoding="utf-8")
