@@ -44,6 +44,12 @@ def default_policy_capabilities() -> Tuple[PolicyCapability, ...]:
             risk_control="generated candidates remain deterministic and must pass validation gates",
         ),
         PolicyCapability(
+            name="bounded_emergent_hypothesis_search",
+            category="generator",
+            evidence="the planner creates competing canonical and alternate hypotheses and scores them with rejection history",
+            risk_control="hypothesis count is capped and every selected hypothesis still passes the same gates",
+        ),
+        PolicyCapability(
             name="compile_focused_broad_validation",
             category="validator",
             evidence="candidates must pass py_compile, focused pytest, root pytest, and THDSE core gates",

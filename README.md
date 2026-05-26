@@ -39,6 +39,8 @@ The generator is not an unbounded code-writing agent. It is a bounded planner
 that now combines:
 
 - schema-driven candidate synthesis from `LocalPythonFileRecord` tuple fields
+- bounded emergent hypothesis search over canonical and alternate query
+  strategies
 - generated regression tests for inferred query APIs
 - history-aware candidate ranking from accepted/rejected provenance
 - existing broad gates, rollback, and kill-switch controls

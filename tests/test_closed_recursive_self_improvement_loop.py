@@ -8,6 +8,7 @@ from scripts.closed_recursive_self_improvement_loop import (
     add_records_with_feature,
     candidates_from_specs,
     discover_local_corpus_query_blueprints,
+    score_query_blueprints,
 )
 
 
@@ -106,6 +107,45 @@ def test_autonomous_planner_transform_adds_generated_method():
     assert "record.definitions" in rewritten
 
 
+def test_emergent_hypothesis_search_uses_rejection_history():
+    blueprints = discover_local_corpus_query_blueprints(
+        LOCAL_CORPUS_STUB,
+        state={
+            "accepted": [],
+            "rejected": [{"name": "autonomous_local_corpus_feature_flags_query_v1"}],
+        },
+    )
+
+    assert "emergent_local_corpus_feature_flags_membership_v1" in {
+        blueprint.candidate_name for blueprint in blueprints
+    }
+    assert all(blueprint.planner_score > 0 for blueprint in blueprints)
+
+
+def test_blueprint_scoring_penalizes_rejected_candidates():
+    blueprints = discover_local_corpus_query_blueprints(LOCAL_CORPUS_STUB, max_hypotheses=6)
+    scored = score_query_blueprints(
+        blueprints,
+        state={
+            "accepted": [],
+            "rejected": [{"name": "autonomous_local_corpus_feature_flags_query_v1"}],
+        },
+    )
+
+    rejected = next(
+        blueprint
+        for blueprint in scored
+        if blueprint.candidate_name == "autonomous_local_corpus_feature_flags_query_v1"
+    )
+    alternate = next(
+        blueprint
+        for blueprint in scored
+        if blueprint.candidate_name == "emergent_local_corpus_feature_flags_membership_v1"
+    )
+
+    assert alternate.planner_score > rejected.planner_score
+
+
 def test_history_aware_ranking_deprioritizes_rejected_candidates(tmp_path):
     repo = tmp_path / "repo"
     shared = repo / "shared"
@@ -115,14 +155,15 @@ def test_history_aware_ranking_deprioritizes_rejected_candidates(tmp_path):
     (shared / "local_corpus.py").write_text(LOCAL_CORPUS_STUB, encoding="utf-8")
 
     loop = ClosedRecursiveSelfImprovementLoop(repo, state_dir=tmp_path / "state")
-    candidates = loop.invent_candidates(generation=1)
+    state = {"accepted": [], "rejected": [{"name": "autonomous_local_corpus_feature_flags_query_v1"}]}
+    candidates = loop.invent_candidates(generation=1, state=state)
     ranked = loop.rank_candidates(
         candidates,
-        {"accepted": [], "rejected": [{"name": "autonomous_local_corpus_feature_flags_query_v1"}]},
+        state,
     )
 
     assert [candidate.name for candidate in ranked] == [
         "autonomous_local_corpus_definitions_query_v1",
         "autonomous_local_corpus_imports_query_v1",
-        "autonomous_local_corpus_feature_flags_query_v1",
+        "emergent_local_corpus_feature_flags_membership_v1",
     ]

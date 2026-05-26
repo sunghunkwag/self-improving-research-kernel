@@ -608,6 +608,7 @@ def write_markdown_reports(output_dir: Path, results: List[ExperimentResult]) ->
         "- The proposed loop can patch real repository code and persist accepted/rejected provenance.",
         "- The matrix includes CI-only, single-pass agent coding, and evolutionary repair baselines.",
         "- The generator includes schema-driven candidate synthesis instead of only fixed candidate names.",
+        "- The generator scores bounded competing hypotheses with rejection history before patching.",
         "- Broad gates reduce regression risk relative to focused-only ablations.",
         "- Rollback behavior is measurable on forced broad-gate rejection tasks.",
         "- Persistence can be ablated to show that resume depth depends on durable state.",

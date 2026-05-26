@@ -26,7 +26,7 @@ import os
 import subprocess
 import sys
 import time
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, replace
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Sequence, Tuple
 
@@ -118,6 +118,9 @@ class AutonomousQueryBlueprint:
     candidate_name: str
     goal_name: str
     rationale: str
+    strategy: str = "tuple_membership"
+    planner_score: float = 0.0
+    evidence: Tuple[str, ...] = ()
 
 
 def utc_now() -> str:
@@ -192,9 +195,31 @@ def singularize_identifier(name: str) -> str:
     return name
 
 
-def query_blueprint_for_field(field_name: str) -> AutonomousQueryBlueprint:
+def query_blueprint_for_field(field_name: str, *, style: str = "canonical") -> AutonomousQueryBlueprint:
     """Create a query candidate blueprint from a tuple-valued record field."""
 
+    element_name = singularize_identifier(field_name)
+    sample_values = {
+        "definition": "function:scan_file",
+        "feature": "self_improvement",
+    }
+    if style == "alternate":
+        method_name = f"records_matching_{field_name}"
+        if field_name == "imports":
+            method_name = "records_with_import"
+        return AutonomousQueryBlueprint(
+            field_name=field_name,
+            method_name=method_name,
+            parameter_name=element_name if field_name != "imports" else "module_name",
+            sample_value=sample_values.get(element_name, "json" if field_name == "imports" else f"sample_{element_name}"),
+            candidate_name=f"emergent_local_corpus_{field_name}_membership_v1",
+            goal_name=f"emergently_query_local_corpus_{field_name}",
+            rationale=(
+                f"The bounded emergent planner generated an alternate membership "
+                f"query hypothesis for {field_name}."
+            ),
+            strategy="alternate_tuple_membership",
+        )
     if field_name == "imports":
         return AutonomousQueryBlueprint(
             field_name=field_name,
@@ -205,11 +230,6 @@ def query_blueprint_for_field(field_name: str) -> AutonomousQueryBlueprint:
             goal_name="autonomously_query_local_corpus_imports",
             rationale="The planner found a tuple-valued imports field without a matching query API.",
         )
-    element_name = singularize_identifier(field_name)
-    sample_values = {
-        "definition": "function:scan_file",
-        "feature": "self_improvement",
-    }
     return AutonomousQueryBlueprint(
         field_name=field_name,
         method_name=f"records_with_{element_name}",
@@ -224,6 +244,15 @@ def query_blueprint_for_field(field_name: str) -> AutonomousQueryBlueprint:
     )
 
 
+def query_blueprint_hypotheses_for_field(field_name: str) -> Tuple[AutonomousQueryBlueprint, ...]:
+    """Generate bounded competing query hypotheses for one record field."""
+
+    return (
+        query_blueprint_for_field(field_name, style="canonical"),
+        query_blueprint_for_field(field_name, style="alternate"),
+    )
+
+
 def ast_annotation_mentions_tuple_of_strings(annotation: ast.AST) -> bool:
     """Return whether an annotation looks like a tuple of strings."""
 
@@ -235,7 +264,66 @@ def ast_annotation_mentions_tuple_of_strings(annotation: ast.AST) -> bool:
     return "Tuple" in normalized and "str" in normalized
 
 
-def discover_local_corpus_query_blueprints(text: str) -> Tuple[AutonomousQueryBlueprint, ...]:
+def names_from_state(state: Optional[dict], bucket: str) -> Tuple[str, ...]:
+    """Return candidate names from persisted state records."""
+
+    if not isinstance(state, dict):
+        return ()
+    names: List[str] = []
+    for record in state.get(bucket, []):
+        if isinstance(record, dict) and isinstance(record.get("name"), str):
+            names.append(str(record["name"]))
+    return tuple(names)
+
+
+def score_query_blueprints(
+    blueprints: Sequence[AutonomousQueryBlueprint],
+    *,
+    state: Optional[dict] = None,
+) -> Tuple[AutonomousQueryBlueprint, ...]:
+    """Score bounded planner hypotheses against accepted/rejected provenance."""
+
+    accepted_names = set(names_from_state(state, "accepted"))
+    rejected_names = set(names_from_state(state, "rejected"))
+    scored: List[AutonomousQueryBlueprint] = []
+    for index, blueprint in enumerate(blueprints):
+        score = 10.0
+        evidence = [
+            f"field:{blueprint.field_name}",
+            f"method:{blueprint.method_name}",
+            f"strategy:{blueprint.strategy}",
+        ]
+        if blueprint.strategy == "tuple_membership":
+            score += 2.0
+            evidence.append("canonical_strategy_bonus")
+        if blueprint.candidate_name in rejected_names:
+            score -= 8.0
+            evidence.append("rejected_history_penalty")
+        if blueprint.candidate_name in accepted_names:
+            score -= 4.0
+            evidence.append("accepted_history_penalty")
+        score -= index * 0.001
+        scored.append(
+            replace(
+                blueprint,
+                planner_score=round(score, 3),
+                evidence=tuple(evidence),
+            )
+        )
+    return tuple(
+        sorted(
+            scored,
+            key=lambda item: (-item.planner_score, item.field_name, item.method_name),
+        )
+    )
+
+
+def discover_local_corpus_query_blueprints(
+    text: str,
+    *,
+    state: Optional[dict] = None,
+    max_hypotheses: int = 3,
+) -> Tuple[AutonomousQueryBlueprint, ...]:
     """Infer missing LocalCorpusIndex query APIs from LocalPythonFileRecord fields."""
 
     try:
@@ -253,10 +341,10 @@ def discover_local_corpus_query_blueprints(text: str) -> Tuple[AutonomousQueryBl
         break
     blueprints: List[AutonomousQueryBlueprint] = []
     for field_name in record_fields:
-        blueprint = query_blueprint_for_field(field_name)
-        if f"def {blueprint.method_name}(" not in text:
-            blueprints.append(blueprint)
-    return tuple(blueprints)
+        for blueprint in query_blueprint_hypotheses_for_field(field_name):
+            if f"def {blueprint.method_name}(" not in text:
+                blueprints.append(blueprint)
+    return score_query_blueprints(blueprints, state=state)[:max_hypotheses]
 
 
 def add_autonomous_record_query(text: str, blueprint: AutonomousQueryBlueprint) -> str:
@@ -320,7 +408,12 @@ def test_{blueprint.method_name}_filters_{blueprint.field_name}():
 '''
 
 
-def autonomous_local_corpus_candidates(repo_root: Path, generation: int) -> List[CandidatePatch]:
+def autonomous_local_corpus_candidates(
+    repo_root: Path,
+    generation: int,
+    *,
+    state: Optional[dict] = None,
+) -> List[CandidatePatch]:
     """Plan LocalCorpusIndex candidates from source schema instead of fixed candidate names."""
 
     local_corpus = repo_root / "shared" / "local_corpus.py"
@@ -328,7 +421,7 @@ def autonomous_local_corpus_candidates(repo_root: Path, generation: int) -> List
         return []
     text = local_corpus.read_text(encoding="utf-8")
     candidates: List[CandidatePatch] = []
-    for blueprint in discover_local_corpus_query_blueprints(text):
+    for blueprint in discover_local_corpus_query_blueprints(text, state=state):
         candidates.append(
             CandidatePatch(
                 name=blueprint.candidate_name,
@@ -336,8 +429,8 @@ def autonomous_local_corpus_candidates(repo_root: Path, generation: int) -> List
                 goal=Goal(
                     name=blueprint.goal_name,
                     target="shared.local_corpus.LocalCorpusIndex",
-                    metric="planner-inferred query API plus generated regression test",
-                    rationale=blueprint.rationale,
+                    metric=f"planner score {blueprint.planner_score} plus generated regression test",
+                    rationale=f"{blueprint.rationale} Evidence: {', '.join(blueprint.evidence)}.",
                 ),
                 target_path=local_corpus,
                 test_path=repo_root / "tests" / f"test_{blueprint.candidate_name}.py",
@@ -594,6 +687,12 @@ def default_policy_capabilities() -> Tuple[PolicyCapability, ...]:
             risk_control="generated candidates remain deterministic and must pass validation gates",
         ),
         PolicyCapability(
+            name="bounded_emergent_hypothesis_search",
+            category="generator",
+            evidence="the planner creates competing canonical and alternate hypotheses and scores them with rejection history",
+            risk_control="hypothesis count is capped and every selected hypothesis still passes the same gates",
+        ),
+        PolicyCapability(
             name="compile_focused_broad_validation",
             category="validator",
             evidence="candidates must pass py_compile, focused pytest, root pytest, and THDSE core gates",
@@ -738,12 +837,12 @@ class ClosedRecursiveSelfImprovementLoop:
             return
         write_json(self.state_path, state)
 
-    def invent_candidates(self, generation: int) -> List[CandidatePatch]:
+    def invent_candidates(self, generation: int, state: Optional[dict] = None) -> List[CandidatePatch]:
         """Invent candidates from missing source capabilities."""
 
         loop_script = self.repo_root / "scripts" / "closed_recursive_self_improvement_loop.py"
         loop_text = loop_script.read_text(encoding="utf-8") if loop_script.exists() else ""
-        candidates = autonomous_local_corpus_candidates(self.repo_root, generation)
+        candidates = autonomous_local_corpus_candidates(self.repo_root, generation, state=state)
 
         if loop_script.exists() and POLICY_REGISTRY_ACTIVE_MARKER not in loop_text:
             goal = Goal(
@@ -977,7 +1076,7 @@ class ClosedRecursiveSelfImprovementLoop:
             if time.monotonic() - started > wall_seconds:
                 break
             generation = int(state.get("active_generation", 0)) + 1
-            candidates = self.rank_candidates(self.invent_candidates(generation), state)
+            candidates = self.rank_candidates(self.invent_candidates(generation, state), state)
             if not candidates:
                 break
 
