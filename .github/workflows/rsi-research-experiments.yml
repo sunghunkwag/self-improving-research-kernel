@@ -34,13 +34,25 @@ on:
         description: Repeated trials per repository/task/variant.
         required: true
         default: "2"
+      repository:
+        description: Repository fixture to run, or all.
+        required: true
+        default: "all"
+      task:
+        description: Experiment task to run, or all.
+        required: true
+        default: "all"
+      variant:
+        description: Experiment variant to run, or all.
+        required: true
+        default: "all"
 
 permissions:
   contents: write
   actions: read
 
 concurrency:
-  group: rsi-research-experiments-${{ github.ref }}
+  group: rsi-research-experiments-${{ github.ref }}-${{ github.run_id }}
   cancel-in-progress: false
 
 jobs:
@@ -87,6 +99,19 @@ jobs:
 
       - name: Run research experiment matrix
         run: |
+          EXTRA_ARGS=()
+          REPOSITORY_INPUT="${{ inputs.repository || 'all' }}"
+          TASK_INPUT="${{ inputs.task || 'all' }}"
+          VARIANT_INPUT="${{ inputs.variant || 'all' }}"
+          if [ "$REPOSITORY_INPUT" != "all" ]; then
+            EXTRA_ARGS+=(--repository "$REPOSITORY_INPUT")
+          fi
+          if [ "$TASK_INPUT" != "all" ]; then
+            EXTRA_ARGS+=(--task "$TASK_INPUT")
+          fi
+          if [ "$VARIANT_INPUT" != "all" ]; then
+            EXTRA_ARGS+=(--variant "$VARIANT_INPUT")
+          fi
           python scripts/rsi_experiment_suite.py \
             --repo-root "$GITHUB_WORKSPACE" \
             --output-dir "$GITHUB_WORKSPACE/reports/rsi_experiments/latest" \
@@ -94,7 +119,8 @@ jobs:
             --max-candidates "${{ inputs.max_candidates || '4' }}" \
             --wall-seconds "${{ inputs.wall_seconds || '1800' }}" \
             --timeout-seconds "${{ inputs.timeout_seconds || '420' }}" \
-            --repeats "${{ inputs.repeats || '1' }}"
+            --repeats "${{ inputs.repeats || '1' }}" \
+            "${EXTRA_ARGS[@]}"
 
       - name: Show experiment summary
         if: always()
