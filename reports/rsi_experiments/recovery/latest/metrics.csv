@@ -1,0 +1,90 @@
+repository,repository_description,task,variant,family,description,repeat_index,seed,exit_code,elapsed_s,accepted_count,rejected_count,accepted_rate,regression_gate_failures,rollback_correct,persistence_file_exists,improvement_depth,cost_proxy_seconds,changed_files_count,summary_path,stdout_tail,stderr_tail,repository_split,transfer_origin,task_description,task_claim
+unseen_schema_transfer_repo,Held-out compact fixture with an unseen tuple-valued record field that tests schema transfer beyond the original task distribution.,unseen_static_roles_query,verified_closed_loop,proposed,"Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",0,7f03b5b3d253,0,0.519,1,0,1.0,0,,True,1,0.519,2,/tmp/rsi_experiments_35t4u02v/unseen_schema_transfer_repo__unseen_static_roles_query__verified_closed_loop__r0/.omega_rsi_runs/closed_rsi_summary.json,"{
+  ""accepted_this_run"": [
+    {
+      ""accepted"": true,
+      ""error"": """",
+      ""extra_paths"": [],
+      ""finished_at"": ""2026-05-26T22:01:35Z"",
+      ""gates"": [
+        {
+          ""args"": [
+            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
+            ""-m"",
+            ""py_compile"",
+            ""shared/local_corpus.py"",
+            ""tests/test_autonomous_local_corpus_definitions_query_v1.py""
+          ],
+          ""cwd"": ""/tmp/rsi_experiments_35t4u02v/unseen_schema_transfer_repo__unseen_static_roles_query__verified_closed_loop__r0"",
+          ""elapsed_s"": 0.035,
+          ""exit_code"": 0,
+          ""label"": ""autonomous_local_corpus_definitions_query_v1_compile"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": """",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=5"",
+            ""--disable-warnings"",
+            ""tests/test_autonomous_local_corpus_definitions_query_v1.py""
+          ],
+          ""cwd"": ""/tmp/rsi_experiments_35t4u02v/unseen_schema_transfer_repo__unseen_static_roles_query__verified_closed_loop__r0"",
+          ""elapsed_s"": 0.199,
+          ""exit_code"": 0,
+          ""label"": ""autonomous_local_corpus_definitions_query_v1_focused"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": "".                                                                        [100%]\n1 passed in 0.01s\n"",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=20"",
+            ""--disable-warnings"",
+            ""tests""
+          ],
+          ""cwd"": ""/tmp/rsi_experiments_35t4u02v/unseen_schema_transfer_repo__unseen_static_roles_query__verified_closed_loop__r0"",
+          ""elapsed_s"": 0.217,
+          ""exit_code"": 0,
+          ""label"": ""autonomous_local_corpus_definitions_query_v1_root_broad"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": ""...                                                                      [100%]\n3 passed in 0.03s\n"",
+          ""timed_out"": false
+        }
+      ],
+      ""generation"": 1,
+      ""goal"": {
+        ""metric"": ""planner score 11.999 plus generated regression test"",
+        ""name"": ""autonomously_query_local_corpus_definitions"",
+        ""rationale"": ""The planner found a tuple-valued definitions field without a matching query API on LocalCorpusIndex. Evidence: field:definitions, method:records_with_definition, strategy:tuple_membership, canonical_strategy_bonus."",
+        ""target"": ""shared.local_corpus.LocalCorpusIndex""
+      },
+      ""name"": ""autonomous_local_corpus_definitions_query_v1"",
+      ""started_at"": ""2026-05-26T22:01:34Z"",
+      ""target_path"": ""shared/local_corpus.py"",
+      ""test_path"": ""tests/test_autonomous_local_corpus_definitions_query_v1.py""
+    }
+  ],
+  ""active_base"": ""autonomous_local_corpus_definitions_query_v1"",
+  ""active_generation"": 1,
+  ""broad_gate"": true,
+  ""dry_run"": false,
+  ""persistence"": true,
+  ""rejected_this_run"": [],
+  ""rollback"": true,
+  ""state_path"": ""/tmp/rsi_experiments_35t4u02v/unseen_schema_transfer_repo__unseen_static_roles_query__verified_closed_loop__r0/.omega_rsi_runs/closed_rsi_state.json"",
+  ""thdse_core_gate"": true,
+  ""total_accepted"": 1,
+  ""total_rejected"": 0
+}
+",,unseen,compact_kernel_repo,Measure whether schema-driven generation transfers to a held-out tuple-valued LocalPythonFileRecord field.,Unseen transfer succeeds when the loop patches a query API for a field absent from the original benchmark repositories.

@@ -40,6 +40,20 @@ Observed aggregate result:
 - CI-only accepted rate mean: 0.00
 - Scorecard outcome: `unseen_transfer_success`
 
+## Workflow Recovery Evidence
+
+- Path: `reports/rsi_experiments/recovery/latest/`
+- Purpose: fast Actions health check after stale queue recovery
+- Run type: narrowed `workflow_dispatch`
+- Repository: `unseen_schema_transfer_repo`
+- Task: `unseen_static_roles_query`
+- Variant: `verified_closed_loop`
+- Repeats: 1
+
+Recovery runs should use `output_subdir=recovery/latest` so they do not
+overwrite the broader repeated experiment matrix under
+`reports/rsi_experiments/latest/`.
+
 ## Baseline Comparison Evidence
 
 - Path: `reports/rsi_experiments/unseen_transfer/latest/baseline_comparison.md`

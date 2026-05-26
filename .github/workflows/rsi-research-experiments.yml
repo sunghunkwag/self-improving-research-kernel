@@ -46,6 +46,10 @@ on:
         description: Experiment variant to run, or all.
         required: true
         default: "all"
+      output_subdir:
+        description: Subdirectory under reports/rsi_experiments for this run.
+        required: true
+        default: "latest"
 
 permissions:
   contents: write
@@ -114,7 +118,7 @@ jobs:
           fi
           python scripts/rsi_experiment_suite.py \
             --repo-root "$GITHUB_WORKSPACE" \
-            --output-dir "$GITHUB_WORKSPACE/reports/rsi_experiments/latest" \
+            --output-dir "$GITHUB_WORKSPACE/reports/rsi_experiments/${{ inputs.output_subdir || 'latest' }}" \
             --max-generations "${{ inputs.max_generations || '4' }}" \
             --max-candidates "${{ inputs.max_candidates || '4' }}" \
             --wall-seconds "${{ inputs.wall_seconds || '1800' }}" \
@@ -125,16 +129,18 @@ jobs:
       - name: Show experiment summary
         if: always()
         run: |
-          if [ -f reports/rsi_experiments/latest/summary.json ]; then
-            cat reports/rsi_experiments/latest/summary.json
+          OUTPUT_DIR="reports/rsi_experiments/${{ inputs.output_subdir || 'latest' }}"
+          if [ -f "$OUTPUT_DIR/summary.json" ]; then
+            cat "$OUTPUT_DIR/summary.json"
           else
             echo "No RSI experiment summary was produced."
           fi
 
       - name: Commit experiment reports
         run: |
+          OUTPUT_DIR="reports/rsi_experiments/${{ inputs.output_subdir || 'latest' }}"
           git status --short
-          git add reports/rsi_experiments/latest
+          git add "$OUTPUT_DIR"
           if git diff --cached --quiet; then
             echo "No experiment report changes to commit."
           else

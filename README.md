@@ -158,6 +158,8 @@ Additional evidence artifacts:
   baseline, ablation, and failure-analysis evidence
 - `reports/rsi_experiments/unseen_transfer/latest/`: held-out schema-transfer
   smoke matrix with three repeated trials per variant
+- `reports/rsi_experiments/recovery/latest/`: narrow Actions recovery runs
+  used to verify workflow health without overwriting the full matrix
 
 The held-out transfer fixture `unseen_schema_transfer_repo` adds a tuple-valued
 record field absent from the original benchmark repositories. The proposed loop
