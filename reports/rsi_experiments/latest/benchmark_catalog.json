@@ -1,0 +1,125 @@
+{
+  "repeats": 2,
+  "repositories": [
+    {
+      "description": "Full OMEGA-THDSE checkout with root tests and THDSE core gates available.",
+      "name": "omega_full_repo"
+    },
+    {
+      "description": "Minimal repository fixture containing only the closed loop, policy registry, local corpus module, and smoke tests.",
+      "name": "compact_kernel_repo"
+    }
+  ],
+  "tasks": [
+    {
+      "description": "Remove accepted local corpus query APIs and measure whether the loop recovers them.",
+      "name": "local_corpus_queries_clean"
+    },
+    {
+      "description": "Remove the explicit policy registry surface and measure whether the loop patches its own policy interface.",
+      "name": "policy_registry_self_patch"
+    },
+    {
+      "description": "Inject a failing broad-gate test to measure rollback and no-broad-gate regression risk.",
+      "name": "forced_broad_regression"
+    }
+  ],
+  "variants": [
+    {
+      "broad_gate": true,
+      "description": "Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",
+      "family": "proposed",
+      "max_candidates_override": null,
+      "max_generations_override": null,
+      "name": "verified_closed_loop",
+      "persistence": true,
+      "rollback": true,
+      "run_loop": true,
+      "thdse_core_gate": true
+    },
+    {
+      "broad_gate": true,
+      "description": "Baseline: single-pass automated coding loop with validation but without persistent recursive depth.",
+      "family": "baseline_agent_coding_loop",
+      "max_candidates_override": 1,
+      "max_generations_override": 1,
+      "name": "agent_coding_loop",
+      "persistence": false,
+      "rollback": true,
+      "run_loop": true,
+      "thdse_core_gate": true
+    },
+    {
+      "broad_gate": false,
+      "description": "Baseline: retry candidate repair loop using focused validation without broad gates or persistent self-policy depth.",
+      "family": "baseline_evolutionary_repair_loop",
+      "max_candidates_override": 3,
+      "max_generations_override": 3,
+      "name": "evolutionary_repair_loop",
+      "persistence": false,
+      "rollback": true,
+      "run_loop": true,
+      "thdse_core_gate": false
+    },
+    {
+      "broad_gate": false,
+      "description": "Ablation: focused tests only, no broad regression gate.",
+      "family": "ablation_no_broad_gate",
+      "max_candidates_override": null,
+      "max_generations_override": null,
+      "name": "focused_only_loop",
+      "persistence": true,
+      "rollback": true,
+      "run_loop": true,
+      "thdse_core_gate": false
+    },
+    {
+      "broad_gate": true,
+      "description": "Ablation: root broad gate enabled but THDSE/Z3-focused core gate skipped.",
+      "family": "ablation_no_z3_thdse_gate",
+      "max_candidates_override": null,
+      "max_generations_override": null,
+      "name": "no_thdse_core_gate",
+      "persistence": true,
+      "rollback": true,
+      "run_loop": true,
+      "thdse_core_gate": false
+    },
+    {
+      "broad_gate": true,
+      "description": "Ablation: state is not persisted, so future runs cannot resume from accepted history.",
+      "family": "ablation_no_persistence",
+      "max_candidates_override": null,
+      "max_generations_override": null,
+      "name": "no_persistence",
+      "persistence": false,
+      "rollback": true,
+      "run_loop": true,
+      "thdse_core_gate": true
+    },
+    {
+      "broad_gate": true,
+      "description": "Ablation: rejected candidates are intentionally left in disposable copies.",
+      "family": "ablation_no_rollback",
+      "max_candidates_override": null,
+      "max_generations_override": null,
+      "name": "no_rollback",
+      "persistence": true,
+      "rollback": false,
+      "run_loop": true,
+      "thdse_core_gate": true
+    },
+    {
+      "broad_gate": true,
+      "description": "Baseline: run validation without candidate generation or code patching.",
+      "family": "baseline_ci_only",
+      "max_candidates_override": null,
+      "max_generations_override": null,
+      "name": "ci_only_validation",
+      "persistence": true,
+      "rollback": true,
+      "run_loop": false,
+      "thdse_core_gate": true
+    }
+  ]
+}
