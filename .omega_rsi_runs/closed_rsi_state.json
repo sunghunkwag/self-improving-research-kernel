@@ -1,0 +1,197 @@
+{
+  "accepted": [],
+  "active_base": "initial",
+  "active_generation": 0,
+  "rejected": [
+    {
+      "accepted": false,
+      "error": "RuntimeError: one or more validation gates failed",
+      "finished_at": "2026-05-26T06:56:29Z",
+      "gates": [
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "py_compile",
+            "shared/local_corpus.py",
+            "tests/test_local_corpus_feature_query_rewrite.py"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
+          "elapsed_s": 0.033,
+          "exit_code": 0,
+          "label": "local_corpus_feature_query_v1_compile",
+          "stderr_tail": "",
+          "stdout_tail": "",
+          "timed_out": false
+        },
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "pytest",
+            "-q",
+            "--import-mode=importlib",
+            "--maxfail=5",
+            "--disable-warnings",
+            "tests/test_local_corpus_feature_query_rewrite.py"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
+          "elapsed_s": 0.495,
+          "exit_code": 0,
+          "label": "local_corpus_feature_query_v1_focused",
+          "stderr_tail": "",
+          "stdout_tail": ".                                                                        [100%]\n1 passed in 0.02s\n",
+          "timed_out": false
+        },
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "pytest",
+            "-q",
+            "--import-mode=importlib",
+            "--maxfail=20",
+            "--disable-warnings",
+            "tests"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
+          "elapsed_s": 18.733,
+          "exit_code": 0,
+          "label": "local_corpus_feature_query_v1_root_broad",
+          "stderr_tail": "",
+          "stdout_tail": "........................................................................ [ 16%]\n........................................................................ [ 33%]\n........................................................................ [ 50%]\n......................................................s................. [ 66%]\n........................................................................ [ 83%]\n.......................................................s..............   [100%]\n428 passed, 4 skipped in 18.26s\n",
+          "timed_out": false
+        },
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "pytest",
+            "-q",
+            "--import-mode=importlib",
+            "--maxfail=20",
+            "--disable-warnings",
+            "tests/test_execution_sandbox.py",
+            "tests/test_adaptive_threshold.py",
+            "tests/test_direct_io_scoring.py",
+            "tests/test_structural_diff.py",
+            "tests/test_batch_correlation.py"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel/thdse",
+          "elapsed_s": 5.645,
+          "exit_code": 1,
+          "label": "local_corpus_feature_query_v1_thdse_core",
+          "stderr_tail": "",
+          "stdout_tail": "test_two_handles(self, arena_dim):\n        \"\"\"correlate_matrix([h0, h1]) returns Vec of length 1.\"\"\"\n        arena, dim = arena_dim\n        h0 = arena.allocate()\n        arena.inject_phases(h0, _deterministic_phases(50, dim))\n        h1 = arena.allocate()\n        arena.inject_phases(h1, _deterministic_phases(51, dim))\n        result = arena.correlate_matrix([h0, h1])\n>       assert len(result) == 1\nE       assert 2 == 1\nE        +  where 2 = len([[1.0, 0.050866557381853604], [0.050866557381853604, 1.0]])\n\ntests/test_batch_correlation.py:241: AssertionError\n____________ TestCorrelateMatrixEdgeCases.test_subset_empty_queries ____________\n\nself = <tests.test_batch_correlation.TestCorrelateMatrixEdgeCases object at 0x7fa89c326b50>\narena_dim = (<src.utils.arena_factory._PyFhrrArenaExtended object at 0x7fa89bf37a50>, 128)\n\n    def test_subset_empty_queries(self, arena_dim):\n        \"\"\"correlate_matrix_subset([], targets) returns empty.\"\"\"\n        arena, dim = arena_dim\n        h = arena.allocate()\n        arena.inject_phases(h, _deterministic_phases(60, dim))\n>       assert arena.correlate_matrix_subset([], [h]) == []\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       AttributeError: '_PyFhrrArenaExtended' object has no attribute 'correlate_matrix_subset'\n\ntests/test_batch_correlation.py:250: AttributeError\n____________ TestCorrelateMatrixEdgeCases.test_subset_empty_targets ____________\n\nself = <tests.test_batch_correlation.TestCorrelateMatrixEdgeCases object at 0x7fa89c327650>\narena_dim = (<src.utils.arena_factory._PyFhrrArenaExtended object at 0x7fa89b949650>, 128)\n\n    def test_subset_empty_targets(self, arena_dim):\n        \"\"\"correlate_matrix_subset(queries, []) returns empty.\"\"\"\n        arena, dim = arena_dim\n        h = arena.allocate()\n        arena.inject_phases(h, _deterministic_phases(70, dim))\n>       assert arena.correlate_matrix_subset([h], []) == []\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       AttributeError: '_PyFhrrArenaExtended' object has no attribute 'correlate_matrix_subset'\n\ntests/test_batch_correlation.py:257: AttributeError\n=========================== short test summary info ============================\nFAILED tests/test_batch_correlation.py::TestCorrelateMatrixCorrectness::test_10_vectors - AssertionError: Expected 45 pairs, got 10\nassert 10 == ((10 * (10 - 1)) // 2)\n +  where 10 = len([[1.0, 0.05086655722743922, 0.0013300406936442239, 0.0903177695332613, -0.07693036993174056, 0.047814475092793934, ......814475092793934, -0.07693036999111802, 0.09031776969451019, 0.0013300406689302786, 0.05086655720613288, 1.0, ...], ...])\nFAILED tests/test_batch_correlation.py::TestCorrelateMatrixSubsetCorrectness::test_5_queries_8_targets - AttributeError: '_PyFhrrArenaExtended' object has no attribute 'correlate_matrix_subset'\nFAILED tests/test_batch_correlation.py::TestResonanceMatrixEquivalence::test_20_functions - AssertionError: Resonance mismatch for (proj/file_0.py, proj/file_1.py): batch=0.500000, individual=1.000000\nassert 0.5 < 1e-05\n +  where 0.5 = abs((0.5 - 1.0))\nFAILED tests/test_batch_correlation.py::TestRefactoringDetectorEquivalence::test_identical_results - TypeError: bad operand type for abs(): 'list'\nFAILED tests/test_batch_correlation.py::TestCorrelateMatrixEdgeCases::test_single_handle - assert [[1.0]] == []\n  \n  Left contains one more item: [1.0]\n  \n  Full diff:\n  - []\n  + [\n  +     [\n  +         1.0,\n  +     ],\n  + ]\nFAILED tests/test_batch_correlation.py::TestCorrelateMatrixEdgeCases::test_two_handles - assert 2 == 1\n +  where 2 = len([[1.0, 0.050866557381853604], [0.050866557381853604, 1.0]])\nFAILED tests/test_batch_correlation.py::TestCorrelateMatrixEdgeCases::test_subset_empty_queries - AttributeError: '_PyFhrrArenaExtended' object has no attribute 'correlate_matrix_subset'\nFAILED tests/test_batch_correlation.py::TestCorrelateMatrixEdgeCases::test_subset_empty_targets - AttributeError: '_PyFhrrArenaExtended' object has no attribute 'correlate_matrix_subset'\n8 failed, 28 passed in 5.36s\n",
+          "timed_out": false
+        }
+      ],
+      "generation": 1,
+      "goal": {
+        "metric": "new query API plus focused regression test",
+        "name": "make_local_corpus_queryable_by_feature",
+        "rationale": "The corpus index already extracts feature flags but lacks a stable query API.",
+        "target": "shared.local_corpus.LocalCorpusIndex"
+      },
+      "name": "local_corpus_feature_query_v1",
+      "started_at": "2026-05-26T06:56:04Z",
+      "target_path": "shared/local_corpus.py",
+      "test_path": "tests/test_local_corpus_feature_query_rewrite.py"
+    },
+    {
+      "accepted": false,
+      "error": "RuntimeError: one or more validation gates failed",
+      "finished_at": "2026-05-26T06:56:52Z",
+      "gates": [
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "py_compile",
+            "shared/local_corpus.py",
+            "tests/test_local_corpus_import_query_rewrite.py"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
+          "elapsed_s": 0.034,
+          "exit_code": 0,
+          "label": "local_corpus_import_query_v1_compile",
+          "stderr_tail": "",
+          "stdout_tail": "",
+          "timed_out": false
+        },
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "pytest",
+            "-q",
+            "--import-mode=importlib",
+            "--maxfail=5",
+            "--disable-warnings",
+            "tests/test_local_corpus_import_query_rewrite.py"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
+          "elapsed_s": 0.199,
+          "exit_code": 0,
+          "label": "local_corpus_import_query_v1_focused",
+          "stderr_tail": "",
+          "stdout_tail": ".                                                                        [100%]\n1 passed in 0.02s\n",
+          "timed_out": false
+        },
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "pytest",
+            "-q",
+            "--import-mode=importlib",
+            "--maxfail=20",
+            "--disable-warnings",
+            "tests"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
+          "elapsed_s": 17.559,
+          "exit_code": 0,
+          "label": "local_corpus_import_query_v1_root_broad",
+          "stderr_tail": "",
+          "stdout_tail": "........................................................................ [ 16%]\n........................................................................ [ 33%]\n........................................................................ [ 50%]\n......................................................s................. [ 66%]\n........................................................................ [ 83%]\n.......................................................s..............   [100%]\n428 passed, 4 skipped in 17.11s\n",
+          "timed_out": false
+        },
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "pytest",
+            "-q",
+            "--import-mode=importlib",
+            "--maxfail=20",
+            "--disable-warnings",
+            "tests/test_execution_sandbox.py",
+            "tests/test_adaptive_threshold.py",
+            "tests/test_direct_io_scoring.py",
+            "tests/test_structural_diff.py",
+            "tests/test_batch_correlation.py"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel/thdse",
+          "elapsed_s": 5.593,
+          "exit_code": 1,
+          "label": "local_corpus_import_query_v1_thdse_core",
+          "stderr_tail": "",
+          "stdout_tail": "test_two_handles(self, arena_dim):\n        \"\"\"correlate_matrix([h0, h1]) returns Vec of length 1.\"\"\"\n        arena, dim = arena_dim\n        h0 = arena.allocate()\n        arena.inject_phases(h0, _deterministic_phases(50, dim))\n        h1 = arena.allocate()\n        arena.inject_phases(h1, _deterministic_phases(51, dim))\n        result = arena.correlate_matrix([h0, h1])\n>       assert len(result) == 1\nE       assert 2 == 1\nE        +  where 2 = len([[1.0, 0.050866557381853604], [0.050866557381853604, 1.0]])\n\ntests/test_batch_correlation.py:241: AssertionError\n____________ TestCorrelateMatrixEdgeCases.test_subset_empty_queries ____________\n\nself = <tests.test_batch_correlation.TestCorrelateMatrixEdgeCases object at 0x7f3fee660310>\narena_dim = (<src.utils.arena_factory._PyFhrrArenaExtended object at 0x7f3fee7270d0>, 128)\n\n    def test_subset_empty_queries(self, arena_dim):\n        \"\"\"correlate_matrix_subset([], targets) returns empty.\"\"\"\n        arena, dim = arena_dim\n        h = arena.allocate()\n        arena.inject_phases(h, _deterministic_phases(60, dim))\n>       assert arena.correlate_matrix_subset([], [h]) == []\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       AttributeError: '_PyFhrrArenaExtended' object has no attribute 'correlate_matrix_subset'\n\ntests/test_batch_correlation.py:250: AttributeError\n____________ TestCorrelateMatrixEdgeCases.test_subset_empty_targets ____________\n\nself = <tests.test_batch_correlation.TestCorrelateMatrixEdgeCases object at 0x7f3fee660690>\narena_dim = (<src.utils.arena_factory._PyFhrrArenaExtended object at 0x7f3fee68f290>, 128)\n\n    def test_subset_empty_targets(self, arena_dim):\n        \"\"\"correlate_matrix_subset(queries, []) returns empty.\"\"\"\n        arena, dim = arena_dim\n        h = arena.allocate()\n        arena.inject_phases(h, _deterministic_phases(70, dim))\n>       assert arena.correlate_matrix_subset([h], []) == []\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       AttributeError: '_PyFhrrArenaExtended' object has no attribute 'correlate_matrix_subset'\n\ntests/test_batch_correlation.py:257: AttributeError\n=========================== short test summary info ============================\nFAILED tests/test_batch_correlation.py::TestCorrelateMatrixCorrectness::test_10_vectors - AssertionError: Expected 45 pairs, got 10\nassert 10 == ((10 * (10 - 1)) // 2)\n +  where 10 = len([[1.0, 0.05086655722743922, 0.0013300406936442239, 0.0903177695332613, -0.07693036993174056, 0.047814475092793934, ......814475092793934, -0.07693036999111802, 0.09031776969451019, 0.0013300406689302786, 0.05086655720613288, 1.0, ...], ...])\nFAILED tests/test_batch_correlation.py::TestCorrelateMatrixSubsetCorrectness::test_5_queries_8_targets - AttributeError: '_PyFhrrArenaExtended' object has no attribute 'correlate_matrix_subset'\nFAILED tests/test_batch_correlation.py::TestResonanceMatrixEquivalence::test_20_functions - AssertionError: Resonance mismatch for (proj/file_0.py, proj/file_1.py): batch=0.500000, individual=1.000000\nassert 0.5 < 1e-05\n +  where 0.5 = abs((0.5 - 1.0))\nFAILED tests/test_batch_correlation.py::TestRefactoringDetectorEquivalence::test_identical_results - TypeError: bad operand type for abs(): 'list'\nFAILED tests/test_batch_correlation.py::TestCorrelateMatrixEdgeCases::test_single_handle - assert [[1.0]] == []\n  \n  Left contains one more item: [1.0]\n  \n  Full diff:\n  - []\n  + [\n  +     [\n  +         1.0,\n  +     ],\n  + ]\nFAILED tests/test_batch_correlation.py::TestCorrelateMatrixEdgeCases::test_two_handles - assert 2 == 1\n +  where 2 = len([[1.0, 0.050866557381853604], [0.050866557381853604, 1.0]])\nFAILED tests/test_batch_correlation.py::TestCorrelateMatrixEdgeCases::test_subset_empty_queries - AttributeError: '_PyFhrrArenaExtended' object has no attribute 'correlate_matrix_subset'\nFAILED tests/test_batch_correlation.py::TestCorrelateMatrixEdgeCases::test_subset_empty_targets - AttributeError: '_PyFhrrArenaExtended' object has no attribute 'correlate_matrix_subset'\n8 failed, 28 passed in 5.31s\n",
+          "timed_out": false
+        }
+      ],
+      "generation": 1,
+      "goal": {
+        "metric": "new import query API plus focused regression test",
+        "name": "make_local_corpus_queryable_by_import",
+        "rationale": "The corpus index stores static imports but lacks a direct import lookup API.",
+        "target": "shared.local_corpus.LocalCorpusIndex"
+      },
+      "name": "local_corpus_import_query_v1",
+      "started_at": "2026-05-26T06:56:29Z",
+      "target_path": "shared/local_corpus.py",
+      "test_path": "tests/test_local_corpus_import_query_rewrite.py"
+    }
+  ]
+}
