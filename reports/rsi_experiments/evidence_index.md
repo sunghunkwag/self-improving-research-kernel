@@ -103,6 +103,7 @@ Observed aggregate result:
 - Fixture path: `reports/external_code_fixtures/latest/`
 - Transfer workflow output path:
   `reports/rsi_experiments/external_code_transfer/latest/`
+- Trial count: 24
 - Repository split: `external_code_unseen`
 - Actual source repositories:
   - `psf/requests`
@@ -119,6 +120,18 @@ Observed aggregate result:
   - no external package installation
   - no external code import or execution
   - downstream trials execute only disposable local sandbox fixtures
+- Repeats: 2 per repository/task/variant cell
+- Variants: proposed loop, single-pass agent loop baseline, CI-only baseline
+
+Observed aggregate result:
+
+- Proposed loop accepted rate mean: 1.00 on all four external code fixtures
+- Proposed loop improvement depth mean: 3.00 on all four external code fixtures
+- Single-pass agent accepted rate mean: 1.00 on all four external code fixtures
+- Single-pass agent improvement depth mean: 1.00 on all four external code fixtures
+- CI-only accepted rate mean: 0.00 on all four external code fixtures
+- Scorecard outcome: `external_code_transfer_success` on all four fixtures
+- Rejected candidates or command failures: none observed
 
 The workflow `External Code Sandbox Experiments` refreshes issue metadata,
 rebuilds these code/failure fixtures, and runs the external-code transfer
