@@ -1,18 +1,12 @@
 {
-  "accepted_this_run": [],
-  "active_base": "local_corpus_import_query_v1",
-  "active_generation": 2,
-  "broad_gate": true,
-  "dry_run": false,
-  "persistence": true,
-  "rejected_this_run": [
+  "accepted_this_run": [
     {
-      "accepted": false,
-      "error": "RuntimeError: one or more validation gates failed",
+      "accepted": true,
+      "error": "",
       "extra_paths": [
         "scripts/rsi_policy_registry.py"
       ],
-      "finished_at": "2026-05-26T07:22:39Z",
+      "finished_at": "2026-05-26T07:25:36Z",
       "gates": [
         {
           "args": [
@@ -24,7 +18,7 @@
             "scripts/rsi_policy_registry.py"
           ],
           "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
-          "elapsed_s": 0.035,
+          "elapsed_s": 0.038,
           "exit_code": 0,
           "label": "loop_policy_registry_v1_compile",
           "stderr_tail": "",
@@ -43,7 +37,7 @@
             "tests/test_rsi_policy_registry_rewrite.py"
           ],
           "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
-          "elapsed_s": 0.474,
+          "elapsed_s": 0.299,
           "exit_code": 0,
           "label": "loop_policy_registry_v1_focused",
           "stderr_tail": "",
@@ -62,11 +56,11 @@
             "tests"
           ],
           "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
-          "elapsed_s": 13.43,
-          "exit_code": 1,
+          "elapsed_s": 12.738,
+          "exit_code": 0,
           "label": "loop_policy_registry_v1_root_broad",
           "stderr_tail": "",
-          "stdout_tail": "........................................................................ [ 16%]\n........................................................................ [ 32%]\n........................................................................ [ 49%]\n.......................................................s................ [ 65%]\n....F................................................................... [ 82%]\n..............................................................s......... [ 98%]\n.....                                                                    [100%]\n=================================== FAILURES ===================================\n_________________ test_strip_method_removes_only_named_method __________________\n\n    def test_strip_method_removes_only_named_method():\n        source = '''\n    class Example:\n        def keep(self):\n            return 1\n    \n        def remove_me(self):\n            return 2\n    \n        def keep_too(self):\n            return 3\n    '''\n    \n>       rewritten = strip_method(source, \"remove_me\")\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/test_rsi_experiment_suite.py:22: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \nscripts/rsi_experiment_suite.py:169: in strip_method\n    return re.sub(pattern, \"\\n\", text, count=1, flags=re.DOTALL)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/re/__init__.py:185: in sub\n    return _compile(pattern, flags).sub(repl, string, count)\n           ^^^^^^^^^^^^^^^^^^^^^^^^\n/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/re/__init__.py:294: in _compile\n    p = _compiler.compile(pattern, flags)\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/re/_compiler.py:745: in compile\n    p = _parser.parse(p, flags)\n        ^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nstr = '\\\\n    def remove_me\\\\(.*?)(?=\\\\n    def |\\\\n\\\\n[A-Za-z_@]|\\\\Z)'\nflags = 16, state = <re._parser.State object at 0x7f2c55e91ad0>\n\n    def parse(str, flags=0, state=None):\n        # parse 're' pattern into list of (opcode, argument) tuples\n    \n        source = Tokenizer(str)\n    \n        if state is None:\n            state = State()\n        state.flags = flags\n        state.str = str\n    \n        p = _parse_sub(source, state, flags & SRE_FLAG_VERBOSE, 0)\n        p.state.flags = fix_flags(str, p.state.flags)\n    \n        if source.next is not None:\n            assert source.next == \")\"\n>           raise source.error(\"unbalanced parenthesis\")\nE           re.error: unbalanced parenthesis at position 24\n\n/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/re/_parser.py:994: error\n=========================== short test summary info ============================\nFAILED tests/test_rsi_experiment_suite.py::test_strip_method_removes_only_named_method - re.error: unbalanced parenthesis at position 24\n1 failed, 434 passed, 4 skipped in 13.00s\n",
+          "stdout_tail": "........................................................................ [ 16%]\n........................................................................ [ 32%]\n........................................................................ [ 49%]\n.......................................................s................ [ 65%]\n........................................................................ [ 82%]\n..............................................................s......... [ 98%]\n.....                                                                    [100%]\n435 passed, 4 skipped in 12.28s\n",
           "timed_out": false
         },
         {
@@ -85,11 +79,11 @@
             "tests/test_batch_correlation.py"
           ],
           "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel/thdse",
-          "elapsed_s": 5.566,
+          "elapsed_s": 5.511,
           "exit_code": 0,
           "label": "loop_policy_registry_v1_thdse_core",
           "stderr_tail": "",
-          "stdout_tail": "....................................                                     [100%]\n36 passed in 5.33s\n",
+          "stdout_tail": "....................................                                     [100%]\n36 passed in 5.26s\n",
           "timed_out": false
         }
       ],
@@ -101,14 +95,20 @@
         "target": "scripts.closed_recursive_self_improvement_loop"
       },
       "name": "loop_policy_registry_v1",
-      "started_at": "2026-05-26T07:22:19Z",
+      "started_at": "2026-05-26T07:25:18Z",
       "target_path": "scripts/closed_recursive_self_improvement_loop.py",
       "test_path": "tests/test_rsi_policy_registry_rewrite.py"
     }
   ],
+  "active_base": "loop_policy_registry_v1",
+  "active_generation": 3,
+  "broad_gate": true,
+  "dry_run": false,
+  "persistence": true,
+  "rejected_this_run": [],
   "rollback": true,
   "state_path": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel/.omega_rsi_runs/closed_rsi_state.json",
   "thdse_core_gate": true,
-  "total_accepted": 2,
+  "total_accepted": 3,
   "total_rejected": 5
 }

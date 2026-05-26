@@ -379,6 +379,31 @@ def test_closed_loop_exposes_policy_surface():
 '''
 
 
+POLICY_REGISTRY_ACTIVE = True
+
+
+def load_policy_registry(repo_root: Path) -> Dict[str, object]:
+    """Return metadata for the active candidate policy registry."""
+
+    registry_path = repo_root / "scripts" / "rsi_policy_registry.py"
+    if not registry_path.exists():
+        return {
+            "available": False,
+            "path": str(registry_path.relative_to(repo_root)),
+            "capabilities": [],
+        }
+    return {
+        "available": True,
+        "path": str(registry_path.relative_to(repo_root)),
+        "capabilities": [
+            "generator_policy",
+            "validator_policy",
+            "patch_policy",
+            "safety_policy",
+        ],
+    }
+
+
 class ClosedRecursiveSelfImprovementLoop:
     """Persistent patch-test-promote loop over the real source tree."""
 
@@ -415,6 +440,11 @@ class ClosedRecursiveSelfImprovementLoop:
         self.persistence = bool(persistence)
         self.env = os.environ.copy()
         self.env["PYTHONPATH"] = str(self.repo_root)
+
+    def policy_surface(self) -> Dict[str, object]:
+        """Expose the active generator, validator, patch, and safety policy surface."""
+
+        return load_policy_registry(self.repo_root)
 
     def load_state(self) -> dict:
         state = read_json(self.state_path, {})

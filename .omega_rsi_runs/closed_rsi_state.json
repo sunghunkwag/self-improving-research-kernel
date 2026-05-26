@@ -189,10 +189,109 @@
       "started_at": "2026-05-26T07:04:32Z",
       "target_path": "shared/local_corpus.py",
       "test_path": "tests/test_local_corpus_import_query_rewrite.py"
+    },
+    {
+      "accepted": true,
+      "error": "",
+      "extra_paths": [
+        "scripts/rsi_policy_registry.py"
+      ],
+      "finished_at": "2026-05-26T07:25:36Z",
+      "gates": [
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "py_compile",
+            "scripts/closed_recursive_self_improvement_loop.py",
+            "tests/test_rsi_policy_registry_rewrite.py",
+            "scripts/rsi_policy_registry.py"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
+          "elapsed_s": 0.038,
+          "exit_code": 0,
+          "label": "loop_policy_registry_v1_compile",
+          "stderr_tail": "",
+          "stdout_tail": "",
+          "timed_out": false
+        },
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "pytest",
+            "-q",
+            "--import-mode=importlib",
+            "--maxfail=5",
+            "--disable-warnings",
+            "tests/test_rsi_policy_registry_rewrite.py"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
+          "elapsed_s": 0.299,
+          "exit_code": 0,
+          "label": "loop_policy_registry_v1_focused",
+          "stderr_tail": "",
+          "stdout_tail": "..                                                                       [100%]\n2 passed in 0.02s\n",
+          "timed_out": false
+        },
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "pytest",
+            "-q",
+            "--import-mode=importlib",
+            "--maxfail=20",
+            "--disable-warnings",
+            "tests"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
+          "elapsed_s": 12.738,
+          "exit_code": 0,
+          "label": "loop_policy_registry_v1_root_broad",
+          "stderr_tail": "",
+          "stdout_tail": "........................................................................ [ 16%]\n........................................................................ [ 32%]\n........................................................................ [ 49%]\n.......................................................s................ [ 65%]\n........................................................................ [ 82%]\n..............................................................s......... [ 98%]\n.....                                                                    [100%]\n435 passed, 4 skipped in 12.28s\n",
+          "timed_out": false
+        },
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "pytest",
+            "-q",
+            "--import-mode=importlib",
+            "--maxfail=20",
+            "--disable-warnings",
+            "tests/test_execution_sandbox.py",
+            "tests/test_adaptive_threshold.py",
+            "tests/test_direct_io_scoring.py",
+            "tests/test_structural_diff.py",
+            "tests/test_batch_correlation.py"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel/thdse",
+          "elapsed_s": 5.511,
+          "exit_code": 0,
+          "label": "loop_policy_registry_v1_thdse_core",
+          "stderr_tail": "",
+          "stdout_tail": "....................................                                     [100%]\n36 passed in 5.26s\n",
+          "timed_out": false
+        }
+      ],
+      "generation": 3,
+      "goal": {
+        "metric": "self-patchable policy registry plus focused regression test",
+        "name": "make_generator_policy_surface_explicit",
+        "rationale": "The loop can promote source candidates, but it needs a measurable policy surface for generator, validator, patch, and safety ablations.",
+        "target": "scripts.closed_recursive_self_improvement_loop"
+      },
+      "name": "loop_policy_registry_v1",
+      "started_at": "2026-05-26T07:25:18Z",
+      "target_path": "scripts/closed_recursive_self_improvement_loop.py",
+      "test_path": "tests/test_rsi_policy_registry_rewrite.py"
     }
   ],
-  "active_base": "local_corpus_import_query_v1",
-  "active_generation": 2,
+  "active_base": "loop_policy_registry_v1",
+  "active_generation": 3,
   "rejected": [
     {
       "accepted": false,
