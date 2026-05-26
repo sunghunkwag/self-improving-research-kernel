@@ -161,19 +161,34 @@ class _PyFhrrArenaExtended:
         d = self._dimension
         return float(sum(math.cos(a[i] - b[i]) for i in range(d)) / d)
 
-    # The Rust arena exposes ``correlate_matrix`` for batched scoring.
-    def correlate_matrix(self, handles: Sequence[int]) -> List[List[float]]:
-        n = len(handles)
-        matrix = [[0.0] * n for _ in range(n)]
-        for i in range(n):
-            for j in range(n):
-                if i == j:
-                    matrix[i][j] = 1.0
-                else:
-                    matrix[i][j] = self.compute_correlation(
-                        handles[i], handles[j]
-                    )
-        return matrix
+    # The Rust arena exposes ``correlate_matrix`` as a flat upper triangle.
+    def correlate_matrix(self, handles: Sequence[int]) -> List[float]:
+        for handle in handles:
+            self._validate_handle(int(handle))
+        values: List[float] = []
+        for i in range(len(handles)):
+            for j in range(i + 1, len(handles)):
+                values.append(
+                    self.compute_correlation(int(handles[i]), int(handles[j]))
+                )
+        return values
+
+    def correlate_matrix_subset(
+        self,
+        query_handles: Sequence[int],
+        target_handles: Sequence[int],
+    ) -> List[float]:
+        """Return query-by-target correlations in row-major order."""
+
+        for handle in query_handles:
+            self._validate_handle(int(handle))
+        for handle in target_handles:
+            self._validate_handle(int(handle))
+        values: List[float] = []
+        for query in query_handles:
+            for target in target_handles:
+                values.append(self.compute_correlation(int(query), int(target)))
+        return values
 
     def bind_bundle_fusion(
         self,

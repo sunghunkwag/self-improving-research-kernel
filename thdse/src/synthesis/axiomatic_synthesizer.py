@@ -113,9 +113,8 @@ class ResonanceMatrix:
     def _behavioral_similarity(ax_a: "Axiom", ax_b: "Axiom") -> float:
         """Compute mean-cosine FHRR similarity on stored behavioral phases.
 
-        Returns 0.0 if either axiom has no behavioral profile so the
-        dual-axis blend degrades gracefully to a pure structural
-        score weighted by ``alpha``.
+        Returns 0.0 when behavioral data is present but orthogonal.
+        Missing or malformed behavioral data is handled by ``_blend``.
         """
         if ax_a.behavioral is None or ax_b.behavioral is None:
             return 0.0
@@ -130,6 +129,12 @@ class ResonanceMatrix:
         self, structural: float, ax_a: "Axiom", ax_b: "Axiom"
     ) -> float:
         """Blend structural and behavioral similarity per dual-axis rule."""
+        if ax_a.behavioral is None or ax_b.behavioral is None:
+            return float(structural)
+        a = getattr(ax_a.behavioral, "behavioral_phases", None)
+        b = getattr(ax_b.behavioral, "behavioral_phases", None)
+        if not a or not b or len(a) != len(b):
+            return float(structural)
         behavioral = self._behavioral_similarity(ax_a, ax_b)
         return self.alpha * float(structural) + (1.0 - self.alpha) * behavioral
 
