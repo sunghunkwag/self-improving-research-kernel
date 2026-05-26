@@ -1,5 +1,5 @@
 task,variant,family,description,exit_code,elapsed_s,accepted_count,rejected_count,accepted_rate,regression_gate_failures,rollback_correct,persistence_file_exists,improvement_depth,cost_proxy_seconds,changed_files_count,summary_path,stdout_tail,stderr_tail
-local_corpus_queries_clean,verified_closed_loop,proposed,"Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",0,36.544,2,0,1.0,0,,True,2,36.544,4,/tmp/rsi_experiments_3zd3n7b7/local_corpus_queries_clean__verified_closed_loop/.omega_rsi_runs/closed_rsi_summary.json,"   ""exit_code"": 0,
+local_corpus_queries_clean,verified_closed_loop,proposed,"Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",0,36.205,2,0,1.0,0,,True,2,36.205,3,/tmp/rsi_experiments_3p46hqsu/local_corpus_queries_clean__verified_closed_loop/.omega_rsi_runs/closed_rsi_summary.json,"   ""exit_code"": 0,
           ""label"": ""local_corpus_import_query_v1_compile"",
           ""stderr_tail"": """",
           ""stdout_tail"": """",
@@ -16,12 +16,12 @@ local_corpus_queries_clean,verified_closed_loop,proposed,"Full loop: candidate g
             ""--disable-warnings"",
             ""tests/test_local_corpus_import_query_rewrite.py""
           ],
-          ""cwd"": ""/tmp/rsi_experiments_3zd3n7b7/local_corpus_queries_clean__verified_closed_loop"",
-          ""elapsed_s"": 0.229,
+          ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/local_corpus_queries_clean__verified_closed_loop"",
+          ""elapsed_s"": 0.208,
           ""exit_code"": 0,
           ""label"": ""local_corpus_import_query_v1_focused"",
           ""stderr_tail"": """",
-          ""stdout_tail"": "".                                                                        [100%]\n1 passed in 0.04s\n"",
+          ""stdout_tail"": "".                                                                        [100%]\n1 passed in 0.02s\n"",
           ""timed_out"": false
         },
         {
@@ -35,12 +35,12 @@ local_corpus_queries_clean,verified_closed_loop,proposed,"Full loop: candidate g
             ""--disable-warnings"",
             ""tests""
           ],
-          ""cwd"": ""/tmp/rsi_experiments_3zd3n7b7/local_corpus_queries_clean__verified_closed_loop"",
-          ""elapsed_s"": 11.986,
+          ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/local_corpus_queries_clean__verified_closed_loop"",
+          ""elapsed_s"": 11.823,
           ""exit_code"": 0,
           ""label"": ""local_corpus_import_query_v1_root_broad"",
           ""stderr_tail"": """",
-          ""stdout_tail"": ""........................................................................ [ 16%]\n........................................................................ [ 32%]\n........................................................................ [ 49%]\n.......................................................s................ [ 65%]\n........................................................................ [ 82%]\n..............................................................s......... [ 98%]\n.....                                                                    [100%]\n435 passed, 4 skipped in 11.61s\n"",
+          ""stdout_tail"": ""........................................................................ [ 16%]\n........................................................................ [ 32%]\n........................................................................ [ 49%]\n.......................................................s................ [ 65%]\n........................................................................ [ 82%]\n...............................................................s........ [ 98%]\n......                                                                   [100%]\n436 passed, 4 skipped in 11.38s\n"",
           ""timed_out"": false
         },
         {
@@ -58,12 +58,12 @@ local_corpus_queries_clean,verified_closed_loop,proposed,"Full loop: candidate g
             ""tests/test_structural_diff.py"",
             ""tests/test_batch_correlation.py""
           ],
-          ""cwd"": ""/tmp/rsi_experiments_3zd3n7b7/local_corpus_queries_clean__verified_closed_loop/thdse"",
-          ""elapsed_s"": 5.426,
+          ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/local_corpus_queries_clean__verified_closed_loop/thdse"",
+          ""elapsed_s"": 5.427,
           ""exit_code"": 0,
           ""label"": ""local_corpus_import_query_v1_thdse_core"",
           ""stderr_tail"": """",
-          ""stdout_tail"": ""....................................                                     [100%]\n36 passed in 5.19s\n"",
+          ""stdout_tail"": ""....................................                                     [100%]\n36 passed in 5.16s\n"",
           ""timed_out"": false
         }
       ],
@@ -75,7 +75,7 @@ local_corpus_queries_clean,verified_closed_loop,proposed,"Full loop: candidate g
         ""target"": ""shared.local_corpus.LocalCorpusIndex""
       },
       ""name"": ""local_corpus_import_query_v1"",
-      ""started_at"": ""2026-05-26T07:27:46Z"",
+      ""started_at"": ""2026-05-26T07:42:50Z"",
       ""target_path"": ""shared/local_corpus.py"",
       ""test_path"": ""tests/test_local_corpus_import_query_rewrite.py""
     }
@@ -87,15 +87,15 @@ local_corpus_queries_clean,verified_closed_loop,proposed,"Full loop: candidate g
   ""persistence"": true,
   ""rejected_this_run"": [],
   ""rollback"": true,
-  ""state_path"": ""/tmp/rsi_experiments_3zd3n7b7/local_corpus_queries_clean__verified_closed_loop/.omega_rsi_runs/closed_rsi_state.json"",
+  ""state_path"": ""/tmp/rsi_experiments_3p46hqsu/local_corpus_queries_clean__verified_closed_loop/.omega_rsi_runs/closed_rsi_state.json"",
   ""thdse_core_gate"": true,
   ""total_accepted"": 2,
   ""total_rejected"": 0
 }
 ",
-local_corpus_queries_clean,focused_only_loop,ablation_no_broad_gate,"Ablation: focused tests only, no broad regression gate.",0,0.511,2,0,1.0,0,,True,2,0.511,3,/tmp/rsi_experiments_3zd3n7b7/local_corpus_queries_clean__focused_only_loop/.omega_rsi_runs/closed_rsi_summary.json,"    ],
-          ""cwd"": ""/tmp/rsi_experiments_3zd3n7b7/local_corpus_queries_clean__focused_only_loop"",
-          ""elapsed_s"": 0.033,
+local_corpus_queries_clean,focused_only_loop,ablation_no_broad_gate,"Ablation: focused tests only, no broad regression gate.",0,0.54,2,0,1.0,0,,True,2,0.54,3,/tmp/rsi_experiments_3p46hqsu/local_corpus_queries_clean__focused_only_loop/.omega_rsi_runs/closed_rsi_summary.json,"    ],
+          ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/local_corpus_queries_clean__focused_only_loop"",
+          ""elapsed_s"": 0.036,
           ""exit_code"": 0,
           ""label"": ""local_corpus_feature_query_v1_compile"",
           ""stderr_tail"": """",
@@ -113,8 +113,8 @@ local_corpus_queries_clean,focused_only_loop,ablation_no_broad_gate,"Ablation: f
             ""--disable-warnings"",
             ""tests/test_local_corpus_feature_query_rewrite.py""
           ],
-          ""cwd"": ""/tmp/rsi_experiments_3zd3n7b7/local_corpus_queries_clean__focused_only_loop"",
-          ""elapsed_s"": 0.194,
+          ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/local_corpus_queries_clean__focused_only_loop"",
+          ""elapsed_s"": 0.204,
           ""exit_code"": 0,
           ""label"": ""local_corpus_feature_query_v1_focused"",
           ""stderr_tail"": """",
@@ -130,7 +130,7 @@ local_corpus_queries_clean,focused_only_loop,ablation_no_broad_gate,"Ablation: f
         ""target"": ""shared.local_corpus.LocalCorpusIndex""
       },
       ""name"": ""local_corpus_feature_query_v1"",
-      ""started_at"": ""2026-05-26T07:28:04Z"",
+      ""started_at"": ""2026-05-26T07:43:07Z"",
       ""target_path"": ""shared/local_corpus.py"",
       ""test_path"": ""tests/test_local_corpus_feature_query_rewrite.py""
     },
@@ -138,7 +138,7 @@ local_corpus_queries_clean,focused_only_loop,ablation_no_broad_gate,"Ablation: f
       ""accepted"": true,
       ""error"": """",
       ""extra_paths"": [],
-      ""finished_at"": ""2026-05-26T07:28:04Z"",
+      ""finished_at"": ""2026-05-26T07:43:08Z"",
       ""gates"": [
         {
           ""args"": [
@@ -148,8 +148,8 @@ local_corpus_queries_clean,focused_only_loop,ablation_no_broad_gate,"Ablation: f
             ""shared/local_corpus.py"",
             ""tests/test_local_corpus_import_query_rewrite.py""
           ],
-          ""cwd"": ""/tmp/rsi_experiments_3zd3n7b7/local_corpus_queries_clean__focused_only_loop"",
-          ""elapsed_s"": 0.033,
+          ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/local_corpus_queries_clean__focused_only_loop"",
+          ""elapsed_s"": 0.036,
           ""exit_code"": 0,
           ""label"": ""local_corpus_import_query_v1_compile"",
           ""stderr_tail"": """",
@@ -167,8 +167,8 @@ local_corpus_queries_clean,focused_only_loop,ablation_no_broad_gate,"Ablation: f
             ""--disable-warnings"",
             ""tests/test_local_corpus_import_query_rewrite.py""
           ],
-          ""cwd"": ""/tmp/rsi_experiments_3zd3n7b7/local_corpus_queries_clean__focused_only_loop"",
-          ""elapsed_s"": 0.193,
+          ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/local_corpus_queries_clean__focused_only_loop"",
+          ""elapsed_s"": 0.202,
           ""exit_code"": 0,
           ""label"": ""local_corpus_import_query_v1_focused"",
           ""stderr_tail"": """",
@@ -184,7 +184,7 @@ local_corpus_queries_clean,focused_only_loop,ablation_no_broad_gate,"Ablation: f
         ""target"": ""shared.local_corpus.LocalCorpusIndex""
       },
       ""name"": ""local_corpus_import_query_v1"",
-      ""started_at"": ""2026-05-26T07:28:04Z"",
+      ""started_at"": ""2026-05-26T07:43:08Z"",
       ""target_path"": ""shared/local_corpus.py"",
       ""test_path"": ""tests/test_local_corpus_import_query_rewrite.py""
     }
@@ -196,18 +196,18 @@ local_corpus_queries_clean,focused_only_loop,ablation_no_broad_gate,"Ablation: f
   ""persistence"": true,
   ""rejected_this_run"": [],
   ""rollback"": true,
-  ""state_path"": ""/tmp/rsi_experiments_3zd3n7b7/local_corpus_queries_clean__focused_only_loop/.omega_rsi_runs/closed_rsi_state.json"",
+  ""state_path"": ""/tmp/rsi_experiments_3p46hqsu/local_corpus_queries_clean__focused_only_loop/.omega_rsi_runs/closed_rsi_state.json"",
   ""thdse_core_gate"": false,
   ""total_accepted"": 2,
   ""total_rejected"": 0
 }
 ",
-local_corpus_queries_clean,no_thdse_core_gate,ablation_no_z3_thdse_gate,Ablation: root broad gate enabled but THDSE/Z3-focused core gate skipped.,0,25.068,2,0,1.0,0,,True,2,25.068,4,/tmp/rsi_experiments_3zd3n7b7/local_corpus_queries_clean__no_thdse_core_gate/.omega_rsi_runs/closed_rsi_summary.json,"ueryable_by_feature"",
+local_corpus_queries_clean,no_thdse_core_gate,ablation_no_z3_thdse_gate,Ablation: root broad gate enabled but THDSE/Z3-focused core gate skipped.,0,25.164,2,0,1.0,0,,True,2,25.164,3,/tmp/rsi_experiments_3p46hqsu/local_corpus_queries_clean__no_thdse_core_gate/.omega_rsi_runs/closed_rsi_summary.json,"queryable_by_feature"",
         ""rationale"": ""The corpus index already extracts feature flags but lacks a stable query API."",
         ""target"": ""shared.local_corpus.LocalCorpusIndex""
       },
       ""name"": ""local_corpus_feature_query_v1"",
-      ""started_at"": ""2026-05-26T07:28:04Z"",
+      ""started_at"": ""2026-05-26T07:43:08Z"",
       ""target_path"": ""shared/local_corpus.py"",
       ""test_path"": ""tests/test_local_corpus_feature_query_rewrite.py""
     },
@@ -215,7 +215,7 @@ local_corpus_queries_clean,no_thdse_core_gate,ablation_no_z3_thdse_gate,Ablation
       ""accepted"": true,
       ""error"": """",
       ""extra_paths"": [],
-      ""finished_at"": ""2026-05-26T07:28:29Z"",
+      ""finished_at"": ""2026-05-26T07:43:33Z"",
       ""gates"": [
         {
           ""args"": [
@@ -225,8 +225,8 @@ local_corpus_queries_clean,no_thdse_core_gate,ablation_no_z3_thdse_gate,Ablation
             ""shared/local_corpus.py"",
             ""tests/test_local_corpus_import_query_rewrite.py""
           ],
-          ""cwd"": ""/tmp/rsi_experiments_3zd3n7b7/local_corpus_queries_clean__no_thdse_core_gate"",
-          ""elapsed_s"": 0.033,
+          ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/local_corpus_queries_clean__no_thdse_core_gate"",
+          ""elapsed_s"": 0.04,
           ""exit_code"": 0,
           ""label"": ""local_corpus_import_query_v1_compile"",
           ""stderr_tail"": """",
@@ -244,8 +244,8 @@ local_corpus_queries_clean,no_thdse_core_gate,ablation_no_z3_thdse_gate,Ablation
             ""--disable-warnings"",
             ""tests/test_local_corpus_import_query_rewrite.py""
           ],
-          ""cwd"": ""/tmp/rsi_experiments_3zd3n7b7/local_corpus_queries_clean__no_thdse_core_gate"",
-          ""elapsed_s"": 0.194,
+          ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/local_corpus_queries_clean__no_thdse_core_gate"",
+          ""elapsed_s"": 0.232,
           ""exit_code"": 0,
           ""label"": ""local_corpus_import_query_v1_focused"",
           ""stderr_tail"": """",
@@ -263,12 +263,12 @@ local_corpus_queries_clean,no_thdse_core_gate,ablation_no_z3_thdse_gate,Ablation
             ""--disable-warnings"",
             ""tests""
           ],
-          ""cwd"": ""/tmp/rsi_experiments_3zd3n7b7/local_corpus_queries_clean__no_thdse_core_gate"",
-          ""elapsed_s"": 11.978,
+          ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/local_corpus_queries_clean__no_thdse_core_gate"",
+          ""elapsed_s"": 11.851,
           ""exit_code"": 0,
           ""label"": ""local_corpus_import_query_v1_root_broad"",
           ""stderr_tail"": """",
-          ""stdout_tail"": ""........................................................................ [ 16%]\n........................................................................ [ 32%]\n........................................................................ [ 49%]\n.......................................................s................ [ 65%]\n........................................................................ [ 82%]\n..............................................................s......... [ 98%]\n.....                                                                    [100%]\n435 passed, 4 skipped in 11.60s\n"",
+          ""stdout_tail"": ""........................................................................ [ 16%]\n........................................................................ [ 32%]\n........................................................................ [ 49%]\n.......................................................s................ [ 65%]\n........................................................................ [ 82%]\n...............................................................s........ [ 98%]\n......                                                                   [100%]\n436 passed, 4 skipped in 11.39s\n"",
           ""timed_out"": false
         }
       ],
@@ -280,7 +280,7 @@ local_corpus_queries_clean,no_thdse_core_gate,ablation_no_z3_thdse_gate,Ablation
         ""target"": ""shared.local_corpus.LocalCorpusIndex""
       },
       ""name"": ""local_corpus_import_query_v1"",
-      ""started_at"": ""2026-05-26T07:28:17Z"",
+      ""started_at"": ""2026-05-26T07:43:21Z"",
       ""target_path"": ""shared/local_corpus.py"",
       ""test_path"": ""tests/test_local_corpus_import_query_rewrite.py""
     }
@@ -292,13 +292,13 @@ local_corpus_queries_clean,no_thdse_core_gate,ablation_no_z3_thdse_gate,Ablation
   ""persistence"": true,
   ""rejected_this_run"": [],
   ""rollback"": true,
-  ""state_path"": ""/tmp/rsi_experiments_3zd3n7b7/local_corpus_queries_clean__no_thdse_core_gate/.omega_rsi_runs/closed_rsi_state.json"",
+  ""state_path"": ""/tmp/rsi_experiments_3p46hqsu/local_corpus_queries_clean__no_thdse_core_gate/.omega_rsi_runs/closed_rsi_state.json"",
   ""thdse_core_gate"": false,
   ""total_accepted"": 2,
   ""total_rejected"": 0
 }
 ",
-local_corpus_queries_clean,no_persistence,ablation_no_persistence,"Ablation: state is not persisted, so future runs cannot resume from accepted history.",0,36.08,2,0,1.0,0,,False,2,36.08,4,/tmp/rsi_experiments_3zd3n7b7/local_corpus_queries_clean__no_persistence/.omega_rsi_runs/closed_rsi_summary.json,"psed_s"": 0.033,
+local_corpus_queries_clean,no_persistence,ablation_no_persistence,"Ablation: state is not persisted, so future runs cannot resume from accepted history.",0,35.921,2,0,1.0,0,,False,2,35.921,3,/tmp/rsi_experiments_3p46hqsu/local_corpus_queries_clean__no_persistence/.omega_rsi_runs/closed_rsi_summary.json,"psed_s"": 0.036,
           ""exit_code"": 0,
           ""label"": ""local_corpus_import_query_v1_compile"",
           ""stderr_tail"": """",
@@ -316,8 +316,8 @@ local_corpus_queries_clean,no_persistence,ablation_no_persistence,"Ablation: sta
             ""--disable-warnings"",
             ""tests/test_local_corpus_import_query_rewrite.py""
           ],
-          ""cwd"": ""/tmp/rsi_experiments_3zd3n7b7/local_corpus_queries_clean__no_persistence"",
-          ""elapsed_s"": 0.193,
+          ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/local_corpus_queries_clean__no_persistence"",
+          ""elapsed_s"": 0.205,
           ""exit_code"": 0,
           ""label"": ""local_corpus_import_query_v1_focused"",
           ""stderr_tail"": """",
@@ -335,12 +335,12 @@ local_corpus_queries_clean,no_persistence,ablation_no_persistence,"Ablation: sta
             ""--disable-warnings"",
             ""tests""
           ],
-          ""cwd"": ""/tmp/rsi_experiments_3zd3n7b7/local_corpus_queries_clean__no_persistence"",
-          ""elapsed_s"": 11.977,
+          ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/local_corpus_queries_clean__no_persistence"",
+          ""elapsed_s"": 11.798,
           ""exit_code"": 0,
           ""label"": ""local_corpus_import_query_v1_root_broad"",
           ""stderr_tail"": """",
-          ""stdout_tail"": ""........................................................................ [ 16%]\n........................................................................ [ 32%]\n........................................................................ [ 49%]\n.......................................................s................ [ 65%]\n........................................................................ [ 82%]\n..............................................................s......... [ 98%]\n.....                                                                    [100%]\n435 passed, 4 skipped in 11.61s\n"",
+          ""stdout_tail"": ""........................................................................ [ 16%]\n........................................................................ [ 32%]\n........................................................................ [ 49%]\n.......................................................s................ [ 65%]\n........................................................................ [ 82%]\n...............................................................s........ [ 98%]\n......                                                                   [100%]\n436 passed, 4 skipped in 11.31s\n"",
           ""timed_out"": false
         },
         {
@@ -358,12 +358,12 @@ local_corpus_queries_clean,no_persistence,ablation_no_persistence,"Ablation: sta
             ""tests/test_structural_diff.py"",
             ""tests/test_batch_correlation.py""
           ],
-          ""cwd"": ""/tmp/rsi_experiments_3zd3n7b7/local_corpus_queries_clean__no_persistence/thdse"",
-          ""elapsed_s"": 5.442,
+          ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/local_corpus_queries_clean__no_persistence/thdse"",
+          ""elapsed_s"": 5.402,
           ""exit_code"": 0,
           ""label"": ""local_corpus_import_query_v1_thdse_core"",
           ""stderr_tail"": """",
-          ""stdout_tail"": ""....................................                                     [100%]\n36 passed in 5.21s\n"",
+          ""stdout_tail"": ""....................................                                     [100%]\n36 passed in 5.15s\n"",
           ""timed_out"": false
         }
       ],
@@ -375,7 +375,7 @@ local_corpus_queries_clean,no_persistence,ablation_no_persistence,"Ablation: sta
         ""target"": ""shared.local_corpus.LocalCorpusIndex""
       },
       ""name"": ""local_corpus_import_query_v1"",
-      ""started_at"": ""2026-05-26T07:28:48Z"",
+      ""started_at"": ""2026-05-26T07:43:52Z"",
       ""target_path"": ""shared/local_corpus.py"",
       ""test_path"": ""tests/test_local_corpus_import_query_rewrite.py""
     }
@@ -387,13 +387,13 @@ local_corpus_queries_clean,no_persistence,ablation_no_persistence,"Ablation: sta
   ""persistence"": false,
   ""rejected_this_run"": [],
   ""rollback"": true,
-  ""state_path"": ""/tmp/rsi_experiments_3zd3n7b7/local_corpus_queries_clean__no_persistence/.omega_rsi_runs/closed_rsi_state.json"",
+  ""state_path"": ""/tmp/rsi_experiments_3p46hqsu/local_corpus_queries_clean__no_persistence/.omega_rsi_runs/closed_rsi_state.json"",
   ""thdse_core_gate"": true,
   ""total_accepted"": 2,
   ""total_rejected"": 0
 }
 ",
-local_corpus_queries_clean,no_rollback,ablation_no_rollback,Ablation: rejected candidates are intentionally left in disposable copies.,0,36.822,2,0,1.0,0,,True,2,36.822,4,/tmp/rsi_experiments_3zd3n7b7/local_corpus_queries_clean__no_rollback/.omega_rsi_runs/closed_rsi_summary.json,"        ""elapsed_s"": 0.033,
+local_corpus_queries_clean,no_rollback,ablation_no_rollback,Ablation: rejected candidates are intentionally left in disposable copies.,0,36.086,2,0,1.0,0,,True,2,36.086,3,/tmp/rsi_experiments_3p46hqsu/local_corpus_queries_clean__no_rollback/.omega_rsi_runs/closed_rsi_summary.json,"         ""elapsed_s"": 0.036,
           ""exit_code"": 0,
           ""label"": ""local_corpus_import_query_v1_compile"",
           ""stderr_tail"": """",
@@ -411,8 +411,8 @@ local_corpus_queries_clean,no_rollback,ablation_no_rollback,Ablation: rejected c
             ""--disable-warnings"",
             ""tests/test_local_corpus_import_query_rewrite.py""
           ],
-          ""cwd"": ""/tmp/rsi_experiments_3zd3n7b7/local_corpus_queries_clean__no_rollback"",
-          ""elapsed_s"": 0.198,
+          ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/local_corpus_queries_clean__no_rollback"",
+          ""elapsed_s"": 0.203,
           ""exit_code"": 0,
           ""label"": ""local_corpus_import_query_v1_focused"",
           ""stderr_tail"": """",
@@ -430,12 +430,12 @@ local_corpus_queries_clean,no_rollback,ablation_no_rollback,Ablation: rejected c
             ""--disable-warnings"",
             ""tests""
           ],
-          ""cwd"": ""/tmp/rsi_experiments_3zd3n7b7/local_corpus_queries_clean__no_rollback"",
-          ""elapsed_s"": 12.209,
+          ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/local_corpus_queries_clean__no_rollback"",
+          ""elapsed_s"": 11.971,
           ""exit_code"": 0,
           ""label"": ""local_corpus_import_query_v1_root_broad"",
           ""stderr_tail"": """",
-          ""stdout_tail"": ""........................................................................ [ 16%]\n........................................................................ [ 32%]\n........................................................................ [ 49%]\n.......................................................s................ [ 65%]\n........................................................................ [ 82%]\n..............................................................s......... [ 98%]\n.....                                                                    [100%]\n435 passed, 4 skipped in 11.77s\n"",
+          ""stdout_tail"": ""........................................................................ [ 16%]\n........................................................................ [ 32%]\n........................................................................ [ 49%]\n.......................................................s................ [ 65%]\n........................................................................ [ 82%]\n...............................................................s........ [ 98%]\n......                                                                   [100%]\n436 passed, 4 skipped in 11.43s\n"",
           ""timed_out"": false
         },
         {
@@ -453,12 +453,12 @@ local_corpus_queries_clean,no_rollback,ablation_no_rollback,Ablation: rejected c
             ""tests/test_structural_diff.py"",
             ""tests/test_batch_correlation.py""
           ],
-          ""cwd"": ""/tmp/rsi_experiments_3zd3n7b7/local_corpus_queries_clean__no_rollback/thdse"",
-          ""elapsed_s"": 5.531,
+          ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/local_corpus_queries_clean__no_rollback/thdse"",
+          ""elapsed_s"": 5.48,
           ""exit_code"": 0,
           ""label"": ""local_corpus_import_query_v1_thdse_core"",
           ""stderr_tail"": """",
-          ""stdout_tail"": ""....................................                                     [100%]\n36 passed in 5.25s\n"",
+          ""stdout_tail"": ""....................................                                     [100%]\n36 passed in 5.18s\n"",
           ""timed_out"": false
         }
       ],
@@ -470,7 +470,7 @@ local_corpus_queries_clean,no_rollback,ablation_no_rollback,Ablation: rejected c
         ""target"": ""shared.local_corpus.LocalCorpusIndex""
       },
       ""name"": ""local_corpus_import_query_v1"",
-      ""started_at"": ""2026-05-26T07:29:24Z"",
+      ""started_at"": ""2026-05-26T07:44:28Z"",
       ""target_path"": ""shared/local_corpus.py"",
       ""test_path"": ""tests/test_local_corpus_import_query_rewrite.py""
     }
@@ -482,75 +482,43 @@ local_corpus_queries_clean,no_rollback,ablation_no_rollback,Ablation: rejected c
   ""persistence"": true,
   ""rejected_this_run"": [],
   ""rollback"": false,
-  ""state_path"": ""/tmp/rsi_experiments_3zd3n7b7/local_corpus_queries_clean__no_rollback/.omega_rsi_runs/closed_rsi_state.json"",
+  ""state_path"": ""/tmp/rsi_experiments_3p46hqsu/local_corpus_queries_clean__no_rollback/.omega_rsi_runs/closed_rsi_state.json"",
   ""thdse_core_gate"": true,
   ""total_accepted"": 2,
   ""total_rejected"": 0
 }
 ",
-local_corpus_queries_clean,ci_only_validation,baseline_ci_only,Baseline: run validation without candidate generation or code patching.,0,13.032,0,0,0.0,0,,False,0,13.032,1,/tmp/rsi_experiments_3zd3n7b7/local_corpus_queries_clean__ci_only_validation/.omega_rsi_runs/closed_rsi_summary.json,"........................................................................ [ 16%]
+local_corpus_queries_clean,ci_only_validation,baseline_ci_only,Baseline: run validation without candidate generation or code patching.,0,12.699,0,0,0.0,0,,False,0,12.699,0,/tmp/rsi_experiments_3p46hqsu/local_corpus_queries_clean__ci_only_validation/.omega_rsi_runs/closed_rsi_summary.json,"........................................................................ [ 16%]
 ........................................................................ [ 33%]
 ........................................................................ [ 49%]
 .....................................................s.................. [ 66%]
 ........................................................................ [ 82%]
-............................................................s........... [ 99%]
-...                                                                      [100%]
-433 passed, 4 skipped in 12.63s
+.............................................................s.......... [ 99%]
+....                                                                     [100%]
+434 passed, 4 skipped in 12.19s
 ",
-policy_registry_self_patch,verified_closed_loop,proposed,"Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",1,0.012,0,0,0.0,0,,False,0,0.012,0,/tmp/rsi_experiments_3zd3n7b7/policy_registry_self_patch__verified_closed_loop/.omega_rsi_runs/closed_rsi_summary.json,,"  File ""/tmp/rsi_experiments_3zd3n7b7/policy_registry_self_patch__verified_closed_loop/scripts/closed_recursive_self_improvement_loop.py"", line 159
-    function_insertion = ""\n\n"" + POLICY_REGISTRY_ACTIVE_MARKER + '''
-                                                                  ^
-SyntaxError: unterminated triple-quoted string literal (detected at line 559)
-"
-policy_registry_self_patch,focused_only_loop,ablation_no_broad_gate,"Ablation: focused tests only, no broad regression gate.",1,0.012,0,0,0.0,0,,False,0,0.012,0,/tmp/rsi_experiments_3zd3n7b7/policy_registry_self_patch__focused_only_loop/.omega_rsi_runs/closed_rsi_summary.json,,"  File ""/tmp/rsi_experiments_3zd3n7b7/policy_registry_self_patch__focused_only_loop/scripts/closed_recursive_self_improvement_loop.py"", line 159
-    function_insertion = ""\n\n"" + POLICY_REGISTRY_ACTIVE_MARKER + '''
-                                                                  ^
-SyntaxError: unterminated triple-quoted string literal (detected at line 559)
-"
-policy_registry_self_patch,no_thdse_core_gate,ablation_no_z3_thdse_gate,Ablation: root broad gate enabled but THDSE/Z3-focused core gate skipped.,1,0.012,0,0,0.0,0,,False,0,0.012,0,/tmp/rsi_experiments_3zd3n7b7/policy_registry_self_patch__no_thdse_core_gate/.omega_rsi_runs/closed_rsi_summary.json,,"  File ""/tmp/rsi_experiments_3zd3n7b7/policy_registry_self_patch__no_thdse_core_gate/scripts/closed_recursive_self_improvement_loop.py"", line 159
-    function_insertion = ""\n\n"" + POLICY_REGISTRY_ACTIVE_MARKER + '''
-                                                                  ^
-SyntaxError: unterminated triple-quoted string literal (detected at line 559)
-"
-policy_registry_self_patch,no_persistence,ablation_no_persistence,"Ablation: state is not persisted, so future runs cannot resume from accepted history.",1,0.012,0,0,0.0,0,,False,0,0.012,0,/tmp/rsi_experiments_3zd3n7b7/policy_registry_self_patch__no_persistence/.omega_rsi_runs/closed_rsi_summary.json,,"  File ""/tmp/rsi_experiments_3zd3n7b7/policy_registry_self_patch__no_persistence/scripts/closed_recursive_self_improvement_loop.py"", line 159
-    function_insertion = ""\n\n"" + POLICY_REGISTRY_ACTIVE_MARKER + '''
-                                                                  ^
-SyntaxError: unterminated triple-quoted string literal (detected at line 559)
-"
-policy_registry_self_patch,no_rollback,ablation_no_rollback,Ablation: rejected candidates are intentionally left in disposable copies.,1,0.012,0,0,0.0,0,,False,0,0.012,0,/tmp/rsi_experiments_3zd3n7b7/policy_registry_self_patch__no_rollback/.omega_rsi_runs/closed_rsi_summary.json,,"  File ""/tmp/rsi_experiments_3zd3n7b7/policy_registry_self_patch__no_rollback/scripts/closed_recursive_self_improvement_loop.py"", line 159
-    function_insertion = ""\n\n"" + POLICY_REGISTRY_ACTIVE_MARKER + '''
-                                                                  ^
-SyntaxError: unterminated triple-quoted string literal (detected at line 559)
-"
-policy_registry_self_patch,ci_only_validation,baseline_ci_only,Baseline: run validation without candidate generation or code patching.,2,2.216,0,0,0.0,0,,False,0,2.216,0,/tmp/rsi_experiments_3zd3n7b7/policy_registry_self_patch__ci_only_validation/.omega_rsi_runs/closed_rsi_summary.json,"
-==================================== ERRORS ====================================
-____ ERROR collecting tests/test_closed_recursive_self_improvement_loop.py _____
-/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
-    mod = import_path(
-/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/_pytest/pathlib.py:549: in import_path
-    mod = _import_module_using_spec(
-/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/_pytest/pathlib.py:725: in _import_module_using_spec
-    spec.loader.exec_module(mod)  # type: ignore[union-attr]
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
-    exec(co, module.__dict__)
-tests/test_closed_recursive_self_improvement_loop.py:3: in <module>
-    from scripts.closed_recursive_self_improvement_loop import (
-E     File ""/tmp/rsi_experiments_3zd3n7b7/policy_registry_self_patch__ci_only_validation/scripts/closed_recursive_self_improvement_loop.py"", line 159
-E       function_insertion = ""\n\n"" + POLICY_REGISTRY_ACTIVE_MARKER + '''
-E                                                                     ^
-E   SyntaxError: unterminated triple-quoted string literal (detected at line 559)
-=========================== short test summary info ============================
-ERROR tests/test_closed_recursive_self_improvement_loop.py
-!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
-2 skipped, 1 error in 1.79s
-",
-forced_broad_regression,verified_closed_loop,proposed,"Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",0,36.698,0,2,0.0,2,False,True,0,36.698,1,/tmp/rsi_experiments_3zd3n7b7/forced_broad_regression__verified_closed_loop/.omega_rsi_runs/closed_rsi_summary.json,"zd3n7b7/forced_broad_regression__verified_closed_loop"",
-          ""elapsed_s"": 0.2,
-          ""exit_code"": 0,
-          ""label"": ""local_corpus_import_query_v1_focused"",
+policy_registry_self_patch,verified_closed_loop,proposed,"Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",0,18.696,1,0,1.0,0,,True,1,18.696,3,/tmp/rsi_experiments_3p46hqsu/policy_registry_self_patch__verified_closed_loop/.omega_rsi_runs/closed_rsi_summary.json,"mpile"",
           ""stderr_tail"": """",
-          ""stdout_tail"": "".                                                                        [100%]\n1 passed in 0.02s\n"",
+          ""stdout_tail"": """",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=5"",
+            ""--disable-warnings"",
+            ""tests/test_rsi_policy_registry_rewrite.py""
+          ],
+          ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/policy_registry_self_patch__verified_closed_loop"",
+          ""elapsed_s"": 0.216,
+          ""exit_code"": 0,
+          ""label"": ""loop_policy_registry_v1_focused"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": ""..                                                                       [100%]\n2 passed in 0.02s\n"",
           ""timed_out"": false
         },
         {
@@ -564,12 +532,12 @@ forced_broad_regression,verified_closed_loop,proposed,"Full loop: candidate gene
             ""--disable-warnings"",
             ""tests""
           ],
-          ""cwd"": ""/tmp/rsi_experiments_3zd3n7b7/forced_broad_regression__verified_closed_loop"",
-          ""elapsed_s"": 12.166,
-          ""exit_code"": 1,
-          ""label"": ""local_corpus_import_query_v1_root_broad"",
+          ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/policy_registry_self_patch__verified_closed_loop"",
+          ""elapsed_s"": 12.812,
+          ""exit_code"": 0,
+          ""label"": ""loop_policy_registry_v1_root_broad"",
           ""stderr_tail"": """",
-          ""stdout_tail"": ""........................................................................ [ 16%]\n........................................................................ [ 32%]\n..F..................................................................... [ 49%]\n.......................................................s................ [ 65%]\n........................................................................ [ 82%]\n..............................................................s......... [ 98%]\n.....                                                                    [100%]\n=================================== FAILURES ===================================\n______________________ test_forced_broad_regression_gate _______________________\n\n    def test_forced_broad_regression_gate():\n>       assert False, 'intentional broad-gate regression for rollback ablation'\nE       AssertionError: intentional broad-gate regression for rollback ablation\nE       assert False\n\ntests/test_forced_broad_regression_gate.py:2: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_forced_broad_regression_gate.py::test_forced_broad_regression_gate - AssertionError: intentional broad-gate regression for rollback ablation\nassert False\n1 failed, 434 passed, 4 skipped in 11.78s\n"",
+          ""stdout_tail"": ""........................................................................ [ 16%]\n........................................................................ [ 32%]\n........................................................................ [ 49%]\n.......................................................s................ [ 65%]\n........................................................................ [ 82%]\n...............................................................s........ [ 98%]\n......                                                                   [100%]\n436 passed, 4 skipped in 12.23s\n"",
           ""timed_out"": false
         },
         {
@@ -587,12 +555,449 @@ forced_broad_regression,verified_closed_loop,proposed,"Full loop: candidate gene
             ""tests/test_structural_diff.py"",
             ""tests/test_batch_correlation.py""
           ],
-          ""cwd"": ""/tmp/rsi_experiments_3zd3n7b7/forced_broad_regression__verified_closed_loop/thdse"",
-          ""elapsed_s"": 5.431,
+          ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/policy_registry_self_patch__verified_closed_loop/thdse"",
+          ""elapsed_s"": 5.568,
+          ""exit_code"": 0,
+          ""label"": ""loop_policy_registry_v1_thdse_core"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": ""....................................                                     [100%]\n36 passed in 5.26s\n"",
+          ""timed_out"": false
+        }
+      ],
+      ""generation"": 1,
+      ""goal"": {
+        ""metric"": ""self-patchable policy registry plus focused regression test"",
+        ""name"": ""make_generator_policy_surface_explicit"",
+        ""rationale"": ""The loop can promote source candidates, but it needs a measurable policy surface for generator, validator, patch, and safety ablations."",
+        ""target"": ""scripts.closed_recursive_self_improvement_loop""
+      },
+      ""name"": ""loop_policy_registry_v1"",
+      ""started_at"": ""2026-05-26T07:44:58Z"",
+      ""target_path"": ""scripts/closed_recursive_self_improvement_loop.py"",
+      ""test_path"": ""tests/test_rsi_policy_registry_rewrite.py""
+    }
+  ],
+  ""active_base"": ""loop_policy_registry_v1"",
+  ""active_generation"": 1,
+  ""broad_gate"": true,
+  ""dry_run"": false,
+  ""persistence"": true,
+  ""rejected_this_run"": [],
+  ""rollback"": true,
+  ""state_path"": ""/tmp/rsi_experiments_3p46hqsu/policy_registry_self_patch__verified_closed_loop/.omega_rsi_runs/closed_rsi_state.json"",
+  ""thdse_core_gate"": true,
+  ""total_accepted"": 1,
+  ""total_rejected"": 0
+}
+",
+policy_registry_self_patch,focused_only_loop,ablation_no_broad_gate,"Ablation: focused tests only, no broad regression gate.",0,0.316,1,0,1.0,0,,True,1,0.316,3,/tmp/rsi_experiments_3p46hqsu/policy_registry_self_patch__focused_only_loop/.omega_rsi_runs/closed_rsi_summary.json,"{
+  ""accepted_this_run"": [
+    {
+      ""accepted"": true,
+      ""error"": """",
+      ""extra_paths"": [
+        ""scripts/rsi_policy_registry.py""
+      ],
+      ""finished_at"": ""2026-05-26T07:45:17Z"",
+      ""gates"": [
+        {
+          ""args"": [
+            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
+            ""-m"",
+            ""py_compile"",
+            ""scripts/closed_recursive_self_improvement_loop.py"",
+            ""tests/test_rsi_policy_registry_rewrite.py"",
+            ""scripts/rsi_policy_registry.py""
+          ],
+          ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/policy_registry_self_patch__focused_only_loop"",
+          ""elapsed_s"": 0.039,
+          ""exit_code"": 0,
+          ""label"": ""loop_policy_registry_v1_compile"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": """",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=5"",
+            ""--disable-warnings"",
+            ""tests/test_rsi_policy_registry_rewrite.py""
+          ],
+          ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/policy_registry_self_patch__focused_only_loop"",
+          ""elapsed_s"": 0.214,
+          ""exit_code"": 0,
+          ""label"": ""loop_policy_registry_v1_focused"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": ""..                                                                       [100%]\n2 passed in 0.02s\n"",
+          ""timed_out"": false
+        }
+      ],
+      ""generation"": 1,
+      ""goal"": {
+        ""metric"": ""self-patchable policy registry plus focused regression test"",
+        ""name"": ""make_generator_policy_surface_explicit"",
+        ""rationale"": ""The loop can promote source candidates, but it needs a measurable policy surface for generator, validator, patch, and safety ablations."",
+        ""target"": ""scripts.closed_recursive_self_improvement_loop""
+      },
+      ""name"": ""loop_policy_registry_v1"",
+      ""started_at"": ""2026-05-26T07:45:17Z"",
+      ""target_path"": ""scripts/closed_recursive_self_improvement_loop.py"",
+      ""test_path"": ""tests/test_rsi_policy_registry_rewrite.py""
+    }
+  ],
+  ""active_base"": ""loop_policy_registry_v1"",
+  ""active_generation"": 1,
+  ""broad_gate"": false,
+  ""dry_run"": false,
+  ""persistence"": true,
+  ""rejected_this_run"": [],
+  ""rollback"": true,
+  ""state_path"": ""/tmp/rsi_experiments_3p46hqsu/policy_registry_self_patch__focused_only_loop/.omega_rsi_runs/closed_rsi_state.json"",
+  ""thdse_core_gate"": false,
+  ""total_accepted"": 1,
+  ""total_rejected"": 0
+}
+",
+policy_registry_self_patch,no_thdse_core_gate,ablation_no_z3_thdse_gate,Ablation: root broad gate enabled but THDSE/Z3-focused core gate skipped.,0,13.119,1,0,1.0,0,,True,1,13.119,3,/tmp/rsi_experiments_3p46hqsu/policy_registry_self_patch__no_thdse_core_gate/.omega_rsi_runs/closed_rsi_summary.json,"{
+  ""accepted_this_run"": [
+    {
+      ""accepted"": true,
+      ""error"": """",
+      ""extra_paths"": [
+        ""scripts/rsi_policy_registry.py""
+      ],
+      ""finished_at"": ""2026-05-26T07:45:30Z"",
+      ""gates"": [
+        {
+          ""args"": [
+            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
+            ""-m"",
+            ""py_compile"",
+            ""scripts/closed_recursive_self_improvement_loop.py"",
+            ""tests/test_rsi_policy_registry_rewrite.py"",
+            ""scripts/rsi_policy_registry.py""
+          ],
+          ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/policy_registry_self_patch__no_thdse_core_gate"",
+          ""elapsed_s"": 0.039,
+          ""exit_code"": 0,
+          ""label"": ""loop_policy_registry_v1_compile"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": """",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=5"",
+            ""--disable-warnings"",
+            ""tests/test_rsi_policy_registry_rewrite.py""
+          ],
+          ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/policy_registry_self_patch__no_thdse_core_gate"",
+          ""elapsed_s"": 0.21,
+          ""exit_code"": 0,
+          ""label"": ""loop_policy_registry_v1_focused"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": ""..                                                                       [100%]\n2 passed in 0.02s\n"",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=20"",
+            ""--disable-warnings"",
+            ""tests""
+          ],
+          ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/policy_registry_self_patch__no_thdse_core_gate"",
+          ""elapsed_s"": 12.806,
+          ""exit_code"": 0,
+          ""label"": ""loop_policy_registry_v1_root_broad"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": ""........................................................................ [ 16%]\n........................................................................ [ 32%]\n........................................................................ [ 49%]\n.......................................................s................ [ 65%]\n........................................................................ [ 82%]\n...............................................................s........ [ 98%]\n......                                                                   [100%]\n436 passed, 4 skipped in 12.18s\n"",
+          ""timed_out"": false
+        }
+      ],
+      ""generation"": 1,
+      ""goal"": {
+        ""metric"": ""self-patchable policy registry plus focused regression test"",
+        ""name"": ""make_generator_policy_surface_explicit"",
+        ""rationale"": ""The loop can promote source candidates, but it needs a measurable policy surface for generator, validator, patch, and safety ablations."",
+        ""target"": ""scripts.closed_recursive_self_improvement_loop""
+      },
+      ""name"": ""loop_policy_registry_v1"",
+      ""started_at"": ""2026-05-26T07:45:17Z"",
+      ""target_path"": ""scripts/closed_recursive_self_improvement_loop.py"",
+      ""test_path"": ""tests/test_rsi_policy_registry_rewrite.py""
+    }
+  ],
+  ""active_base"": ""loop_policy_registry_v1"",
+  ""active_generation"": 1,
+  ""broad_gate"": true,
+  ""dry_run"": false,
+  ""persistence"": true,
+  ""rejected_this_run"": [],
+  ""rollback"": true,
+  ""state_path"": ""/tmp/rsi_experiments_3p46hqsu/policy_registry_self_patch__no_thdse_core_gate/.omega_rsi_runs/closed_rsi_state.json"",
+  ""thdse_core_gate"": false,
+  ""total_accepted"": 1,
+  ""total_rejected"": 0
+}
+",
+policy_registry_self_patch,no_persistence,ablation_no_persistence,"Ablation: state is not persisted, so future runs cannot resume from accepted history.",0,18.584,1,0,1.0,0,,False,1,18.584,3,/tmp/rsi_experiments_3p46hqsu/policy_registry_self_patch__no_persistence/.omega_rsi_runs/closed_rsi_summary.json,"p_policy_registry_v1_compile"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": """",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=5"",
+            ""--disable-warnings"",
+            ""tests/test_rsi_policy_registry_rewrite.py""
+          ],
+          ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/policy_registry_self_patch__no_persistence"",
+          ""elapsed_s"": 0.214,
+          ""exit_code"": 0,
+          ""label"": ""loop_policy_registry_v1_focused"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": ""..                                                                       [100%]\n2 passed in 0.02s\n"",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=20"",
+            ""--disable-warnings"",
+            ""tests""
+          ],
+          ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/policy_registry_self_patch__no_persistence"",
+          ""elapsed_s"": 12.746,
+          ""exit_code"": 0,
+          ""label"": ""loop_policy_registry_v1_root_broad"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": ""........................................................................ [ 16%]\n........................................................................ [ 32%]\n........................................................................ [ 49%]\n.......................................................s................ [ 65%]\n........................................................................ [ 82%]\n...............................................................s........ [ 98%]\n......                                                                   [100%]\n436 passed, 4 skipped in 12.27s\n"",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=20"",
+            ""--disable-warnings"",
+            ""tests/test_execution_sandbox.py"",
+            ""tests/test_adaptive_threshold.py"",
+            ""tests/test_direct_io_scoring.py"",
+            ""tests/test_structural_diff.py"",
+            ""tests/test_batch_correlation.py""
+          ],
+          ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/policy_registry_self_patch__no_persistence/thdse"",
+          ""elapsed_s"": 5.525,
+          ""exit_code"": 0,
+          ""label"": ""loop_policy_registry_v1_thdse_core"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": ""....................................                                     [100%]\n36 passed in 5.26s\n"",
+          ""timed_out"": false
+        }
+      ],
+      ""generation"": 1,
+      ""goal"": {
+        ""metric"": ""self-patchable policy registry plus focused regression test"",
+        ""name"": ""make_generator_policy_surface_explicit"",
+        ""rationale"": ""The loop can promote source candidates, but it needs a measurable policy surface for generator, validator, patch, and safety ablations."",
+        ""target"": ""scripts.closed_recursive_self_improvement_loop""
+      },
+      ""name"": ""loop_policy_registry_v1"",
+      ""started_at"": ""2026-05-26T07:45:31Z"",
+      ""target_path"": ""scripts/closed_recursive_self_improvement_loop.py"",
+      ""test_path"": ""tests/test_rsi_policy_registry_rewrite.py""
+    }
+  ],
+  ""active_base"": ""loop_policy_registry_v1"",
+  ""active_generation"": 1,
+  ""broad_gate"": true,
+  ""dry_run"": false,
+  ""persistence"": false,
+  ""rejected_this_run"": [],
+  ""rollback"": true,
+  ""state_path"": ""/tmp/rsi_experiments_3p46hqsu/policy_registry_self_patch__no_persistence/.omega_rsi_runs/closed_rsi_state.json"",
+  ""thdse_core_gate"": true,
+  ""total_accepted"": 1,
+  ""total_rejected"": 0
+}
+",
+policy_registry_self_patch,no_rollback,ablation_no_rollback,Ablation: rejected candidates are intentionally left in disposable copies.,0,18.727,1,0,1.0,0,,True,1,18.727,3,/tmp/rsi_experiments_3p46hqsu/policy_registry_self_patch__no_rollback/.omega_rsi_runs/closed_rsi_summary.json,"label"": ""loop_policy_registry_v1_compile"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": """",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=5"",
+            ""--disable-warnings"",
+            ""tests/test_rsi_policy_registry_rewrite.py""
+          ],
+          ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/policy_registry_self_patch__no_rollback"",
+          ""elapsed_s"": 0.206,
+          ""exit_code"": 0,
+          ""label"": ""loop_policy_registry_v1_focused"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": ""..                                                                       [100%]\n2 passed in 0.02s\n"",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=20"",
+            ""--disable-warnings"",
+            ""tests""
+          ],
+          ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/policy_registry_self_patch__no_rollback"",
+          ""elapsed_s"": 12.884,
+          ""exit_code"": 0,
+          ""label"": ""loop_policy_registry_v1_root_broad"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": ""........................................................................ [ 16%]\n........................................................................ [ 32%]\n........................................................................ [ 49%]\n.......................................................s................ [ 65%]\n........................................................................ [ 82%]\n...............................................................s........ [ 98%]\n......                                                                   [100%]\n436 passed, 4 skipped in 12.15s\n"",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=20"",
+            ""--disable-warnings"",
+            ""tests/test_execution_sandbox.py"",
+            ""tests/test_adaptive_threshold.py"",
+            ""tests/test_direct_io_scoring.py"",
+            ""tests/test_structural_diff.py"",
+            ""tests/test_batch_correlation.py""
+          ],
+          ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/policy_registry_self_patch__no_rollback/thdse"",
+          ""elapsed_s"": 5.539,
+          ""exit_code"": 0,
+          ""label"": ""loop_policy_registry_v1_thdse_core"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": ""....................................                                     [100%]\n36 passed in 5.27s\n"",
+          ""timed_out"": false
+        }
+      ],
+      ""generation"": 1,
+      ""goal"": {
+        ""metric"": ""self-patchable policy registry plus focused regression test"",
+        ""name"": ""make_generator_policy_surface_explicit"",
+        ""rationale"": ""The loop can promote source candidates, but it needs a measurable policy surface for generator, validator, patch, and safety ablations."",
+        ""target"": ""scripts.closed_recursive_self_improvement_loop""
+      },
+      ""name"": ""loop_policy_registry_v1"",
+      ""started_at"": ""2026-05-26T07:45:49Z"",
+      ""target_path"": ""scripts/closed_recursive_self_improvement_loop.py"",
+      ""test_path"": ""tests/test_rsi_policy_registry_rewrite.py""
+    }
+  ],
+  ""active_base"": ""loop_policy_registry_v1"",
+  ""active_generation"": 1,
+  ""broad_gate"": true,
+  ""dry_run"": false,
+  ""persistence"": true,
+  ""rejected_this_run"": [],
+  ""rollback"": false,
+  ""state_path"": ""/tmp/rsi_experiments_3p46hqsu/policy_registry_self_patch__no_rollback/.omega_rsi_runs/closed_rsi_state.json"",
+  ""thdse_core_gate"": true,
+  ""total_accepted"": 1,
+  ""total_rejected"": 0
+}
+",
+policy_registry_self_patch,ci_only_validation,baseline_ci_only,Baseline: run validation without candidate generation or code patching.,0,12.981,0,0,0.0,0,,False,0,12.981,0,/tmp/rsi_experiments_3p46hqsu/policy_registry_self_patch__ci_only_validation/.omega_rsi_runs/closed_rsi_summary.json,"........................................................................ [ 16%]
+........................................................................ [ 33%]
+........................................................................ [ 49%]
+.......................................................s................ [ 66%]
+........................................................................ [ 82%]
+.............................................................s.......... [ 99%]
+....                                                                     [100%]
+434 passed, 4 skipped in 12.22s
+",
+forced_broad_regression,verified_closed_loop,proposed,"Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",0,36.937,0,2,0.0,2,True,True,0,36.937,0,/tmp/rsi_experiments_3p46hqsu/forced_broad_regression__verified_closed_loop/.omega_rsi_runs/closed_rsi_summary.json,"46hqsu/forced_broad_regression__verified_closed_loop"",
+          ""elapsed_s"": 0.202,
+          ""exit_code"": 0,
+          ""label"": ""local_corpus_import_query_v1_focused"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": "".                                                                        [100%]\n1 passed in 0.02s\n"",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=20"",
+            ""--disable-warnings"",
+            ""tests""
+          ],
+          ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/forced_broad_regression__verified_closed_loop"",
+          ""elapsed_s"": 12.334,
+          ""exit_code"": 1,
+          ""label"": ""local_corpus_import_query_v1_root_broad"",
+          ""stderr_tail"": """",
+          ""stdout_tail"": ""........................................................................ [ 16%]\n........................................................................ [ 32%]\n..F..................................................................... [ 49%]\n.......................................................s................ [ 65%]\n........................................................................ [ 82%]\n...............................................................s........ [ 98%]\n......                                                                   [100%]\n=================================== FAILURES ===================================\n______________________ test_forced_broad_regression_gate _______________________\n\n    def test_forced_broad_regression_gate():\n>       assert False, 'intentional broad-gate regression for rollback ablation'\nE       AssertionError: intentional broad-gate regression for rollback ablation\nE       assert False\n\ntests/test_forced_broad_regression_gate.py:2: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_forced_broad_regression_gate.py::test_forced_broad_regression_gate - AssertionError: intentional broad-gate regression for rollback ablation\nassert False\n1 failed, 435 passed, 4 skipped in 11.60s\n"",
+          ""timed_out"": false
+        },
+        {
+          ""args"": [
+            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
+            ""-m"",
+            ""pytest"",
+            ""-q"",
+            ""--import-mode=importlib"",
+            ""--maxfail=20"",
+            ""--disable-warnings"",
+            ""tests/test_execution_sandbox.py"",
+            ""tests/test_adaptive_threshold.py"",
+            ""tests/test_direct_io_scoring.py"",
+            ""tests/test_structural_diff.py"",
+            ""tests/test_batch_correlation.py""
+          ],
+          ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/forced_broad_regression__verified_closed_loop/thdse"",
+          ""elapsed_s"": 5.44,
           ""exit_code"": 0,
           ""label"": ""local_corpus_import_query_v1_thdse_core"",
           ""stderr_tail"": """",
-          ""stdout_tail"": ""....................................                                     [100%]\n36 passed in 5.20s\n"",
+          ""stdout_tail"": ""....................................                                     [100%]\n36 passed in 5.16s\n"",
           ""timed_out"": false
         }
       ],
@@ -604,22 +1009,22 @@ forced_broad_regression,verified_closed_loop,proposed,"Full loop: candidate gene
         ""target"": ""shared.local_corpus.LocalCorpusIndex""
       },
       ""name"": ""local_corpus_import_query_v1"",
-      ""started_at"": ""2026-05-26T07:30:17Z"",
+      ""started_at"": ""2026-05-26T07:46:40Z"",
       ""target_path"": ""shared/local_corpus.py"",
       ""test_path"": ""tests/test_local_corpus_import_query_rewrite.py""
     }
   ],
   ""rollback"": true,
-  ""state_path"": ""/tmp/rsi_experiments_3zd3n7b7/forced_broad_regression__verified_closed_loop/.omega_rsi_runs/closed_rsi_state.json"",
+  ""state_path"": ""/tmp/rsi_experiments_3p46hqsu/forced_broad_regression__verified_closed_loop/.omega_rsi_runs/closed_rsi_state.json"",
   ""thdse_core_gate"": true,
   ""total_accepted"": 0,
   ""total_rejected"": 2
 }
 ",
-forced_broad_regression,focused_only_loop,ablation_no_broad_gate,"Ablation: focused tests only, no broad regression gate.",0,0.519,2,0,1.0,0,,True,2,0.519,3,/tmp/rsi_experiments_3zd3n7b7/forced_broad_regression__focused_only_loop/.omega_rsi_runs/closed_rsi_summary.json,"rite.py""
+forced_broad_regression,focused_only_loop,ablation_no_broad_gate,"Ablation: focused tests only, no broad regression gate.",0,0.553,2,0,1.0,0,,True,2,0.553,3,/tmp/rsi_experiments_3p46hqsu/forced_broad_regression__focused_only_loop/.omega_rsi_runs/closed_rsi_summary.json,"rite.py""
           ],
-          ""cwd"": ""/tmp/rsi_experiments_3zd3n7b7/forced_broad_regression__focused_only_loop"",
-          ""elapsed_s"": 0.034,
+          ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/forced_broad_regression__focused_only_loop"",
+          ""elapsed_s"": 0.037,
           ""exit_code"": 0,
           ""label"": ""local_corpus_feature_query_v1_compile"",
           ""stderr_tail"": """",
@@ -637,8 +1042,8 @@ forced_broad_regression,focused_only_loop,ablation_no_broad_gate,"Ablation: focu
             ""--disable-warnings"",
             ""tests/test_local_corpus_feature_query_rewrite.py""
           ],
-          ""cwd"": ""/tmp/rsi_experiments_3zd3n7b7/forced_broad_regression__focused_only_loop"",
-          ""elapsed_s"": 0.199,
+          ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/forced_broad_regression__focused_only_loop"",
+          ""elapsed_s"": 0.211,
           ""exit_code"": 0,
           ""label"": ""local_corpus_feature_query_v1_focused"",
           ""stderr_tail"": """",
@@ -654,7 +1059,7 @@ forced_broad_regression,focused_only_loop,ablation_no_broad_gate,"Ablation: focu
         ""target"": ""shared.local_corpus.LocalCorpusIndex""
       },
       ""name"": ""local_corpus_feature_query_v1"",
-      ""started_at"": ""2026-05-26T07:30:35Z"",
+      ""started_at"": ""2026-05-26T07:46:58Z"",
       ""target_path"": ""shared/local_corpus.py"",
       ""test_path"": ""tests/test_local_corpus_feature_query_rewrite.py""
     },
@@ -662,7 +1067,7 @@ forced_broad_regression,focused_only_loop,ablation_no_broad_gate,"Ablation: focu
       ""accepted"": true,
       ""error"": """",
       ""extra_paths"": [],
-      ""finished_at"": ""2026-05-26T07:30:36Z"",
+      ""finished_at"": ""2026-05-26T07:46:59Z"",
       ""gates"": [
         {
           ""args"": [
@@ -672,8 +1077,8 @@ forced_broad_regression,focused_only_loop,ablation_no_broad_gate,"Ablation: focu
             ""shared/local_corpus.py"",
             ""tests/test_local_corpus_import_query_rewrite.py""
           ],
-          ""cwd"": ""/tmp/rsi_experiments_3zd3n7b7/forced_broad_regression__focused_only_loop"",
-          ""elapsed_s"": 0.033,
+          ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/forced_broad_regression__focused_only_loop"",
+          ""elapsed_s"": 0.037,
           ""exit_code"": 0,
           ""label"": ""local_corpus_import_query_v1_compile"",
           ""stderr_tail"": """",
@@ -691,8 +1096,8 @@ forced_broad_regression,focused_only_loop,ablation_no_broad_gate,"Ablation: focu
             ""--disable-warnings"",
             ""tests/test_local_corpus_import_query_rewrite.py""
           ],
-          ""cwd"": ""/tmp/rsi_experiments_3zd3n7b7/forced_broad_regression__focused_only_loop"",
-          ""elapsed_s"": 0.194,
+          ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/forced_broad_regression__focused_only_loop"",
+          ""elapsed_s"": 0.206,
           ""exit_code"": 0,
           ""label"": ""local_corpus_import_query_v1_focused"",
           ""stderr_tail"": """",
@@ -708,7 +1113,7 @@ forced_broad_regression,focused_only_loop,ablation_no_broad_gate,"Ablation: focu
         ""target"": ""shared.local_corpus.LocalCorpusIndex""
       },
       ""name"": ""local_corpus_import_query_v1"",
-      ""started_at"": ""2026-05-26T07:30:35Z"",
+      ""started_at"": ""2026-05-26T07:46:58Z"",
       ""target_path"": ""shared/local_corpus.py"",
       ""test_path"": ""tests/test_local_corpus_import_query_rewrite.py""
     }
@@ -720,13 +1125,13 @@ forced_broad_regression,focused_only_loop,ablation_no_broad_gate,"Ablation: focu
   ""persistence"": true,
   ""rejected_this_run"": [],
   ""rollback"": true,
-  ""state_path"": ""/tmp/rsi_experiments_3zd3n7b7/forced_broad_regression__focused_only_loop/.omega_rsi_runs/closed_rsi_state.json"",
+  ""state_path"": ""/tmp/rsi_experiments_3p46hqsu/forced_broad_regression__focused_only_loop/.omega_rsi_runs/closed_rsi_state.json"",
   ""thdse_core_gate"": false,
   ""total_accepted"": 2,
   ""total_rejected"": 0
 }
 ",
-forced_broad_regression,no_thdse_core_gate,ablation_no_z3_thdse_gate,Ablation: root broad gate enabled but THDSE/Z3-focused core gate skipped.,0,25.722,0,2,0.0,2,False,True,0,25.722,1,/tmp/rsi_experiments_3zd3n7b7/forced_broad_regression__no_thdse_core_gate/.omega_rsi_runs/closed_rsi_summary.json,"  {
+forced_broad_regression,no_thdse_core_gate,ablation_no_z3_thdse_gate,Ablation: root broad gate enabled but THDSE/Z3-focused core gate skipped.,0,25.524,0,2,0.0,2,True,True,0,25.524,0,/tmp/rsi_experiments_3p46hqsu/forced_broad_regression__no_thdse_core_gate/.omega_rsi_runs/closed_rsi_summary.json,"  {
           ""args"": [
             ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
             ""-m"",
@@ -734,8 +1139,8 @@ forced_broad_regression,no_thdse_core_gate,ablation_no_z3_thdse_gate,Ablation: r
             ""shared/local_corpus.py"",
             ""tests/test_local_corpus_import_query_rewrite.py""
           ],
-          ""cwd"": ""/tmp/rsi_experiments_3zd3n7b7/forced_broad_regression__no_thdse_core_gate"",
-          ""elapsed_s"": 0.034,
+          ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/forced_broad_regression__no_thdse_core_gate"",
+          ""elapsed_s"": 0.037,
           ""exit_code"": 0,
           ""label"": ""local_corpus_import_query_v1_compile"",
           ""stderr_tail"": """",
@@ -753,8 +1158,8 @@ forced_broad_regression,no_thdse_core_gate,ablation_no_z3_thdse_gate,Ablation: r
             ""--disable-warnings"",
             ""tests/test_local_corpus_import_query_rewrite.py""
           ],
-          ""cwd"": ""/tmp/rsi_experiments_3zd3n7b7/forced_broad_regression__no_thdse_core_gate"",
-          ""elapsed_s"": 0.199,
+          ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/forced_broad_regression__no_thdse_core_gate"",
+          ""elapsed_s"": 0.205,
           ""exit_code"": 0,
           ""label"": ""local_corpus_import_query_v1_focused"",
           ""stderr_tail"": """",
@@ -772,12 +1177,12 @@ forced_broad_regression,no_thdse_core_gate,ablation_no_z3_thdse_gate,Ablation: r
             ""--disable-warnings"",
             ""tests""
           ],
-          ""cwd"": ""/tmp/rsi_experiments_3zd3n7b7/forced_broad_regression__no_thdse_core_gate"",
-          ""elapsed_s"": 12.279,
+          ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/forced_broad_regression__no_thdse_core_gate"",
+          ""elapsed_s"": 11.977,
           ""exit_code"": 1,
           ""label"": ""local_corpus_import_query_v1_root_broad"",
           ""stderr_tail"": """",
-          ""stdout_tail"": ""........................................................................ [ 16%]\n........................................................................ [ 32%]\n..F..................................................................... [ 49%]\n.......................................................s................ [ 65%]\n........................................................................ [ 82%]\n..............................................................s......... [ 98%]\n.....                                                                    [100%]\n=================================== FAILURES ===================================\n______________________ test_forced_broad_regression_gate _______________________\n\n    def test_forced_broad_regression_gate():\n>       assert False, 'intentional broad-gate regression for rollback ablation'\nE       AssertionError: intentional broad-gate regression for rollback ablation\nE       assert False\n\ntests/test_forced_broad_regression_gate.py:2: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_forced_broad_regression_gate.py::test_forced_broad_regression_gate - AssertionError: intentional broad-gate regression for rollback ablation\nassert False\n1 failed, 434 passed, 4 skipped in 11.83s\n"",
+          ""stdout_tail"": ""........................................................................ [ 16%]\n........................................................................ [ 32%]\n..F..................................................................... [ 49%]\n.......................................................s................ [ 65%]\n........................................................................ [ 82%]\n...............................................................s........ [ 98%]\n......                                                                   [100%]\n=================================== FAILURES ===================================\n______________________ test_forced_broad_regression_gate _______________________\n\n    def test_forced_broad_regression_gate():\n>       assert False, 'intentional broad-gate regression for rollback ablation'\nE       AssertionError: intentional broad-gate regression for rollback ablation\nE       assert False\n\ntests/test_forced_broad_regression_gate.py:2: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_forced_broad_regression_gate.py::test_forced_broad_regression_gate - AssertionError: intentional broad-gate regression for rollback ablation\nassert False\n1 failed, 435 passed, 4 skipped in 11.51s\n"",
           ""timed_out"": false
         }
       ],
@@ -789,20 +1194,20 @@ forced_broad_regression,no_thdse_core_gate,ablation_no_z3_thdse_gate,Ablation: r
         ""target"": ""shared.local_corpus.LocalCorpusIndex""
       },
       ""name"": ""local_corpus_import_query_v1"",
-      ""started_at"": ""2026-05-26T07:30:49Z"",
+      ""started_at"": ""2026-05-26T07:47:12Z"",
       ""target_path"": ""shared/local_corpus.py"",
       ""test_path"": ""tests/test_local_corpus_import_query_rewrite.py""
     }
   ],
   ""rollback"": true,
-  ""state_path"": ""/tmp/rsi_experiments_3zd3n7b7/forced_broad_regression__no_thdse_core_gate/.omega_rsi_runs/closed_rsi_state.json"",
+  ""state_path"": ""/tmp/rsi_experiments_3p46hqsu/forced_broad_regression__no_thdse_core_gate/.omega_rsi_runs/closed_rsi_state.json"",
   ""thdse_core_gate"": false,
   ""total_accepted"": 0,
   ""total_rejected"": 2
 }
 ",
-forced_broad_regression,no_persistence,ablation_no_persistence,"Ablation: state is not persisted, so future runs cannot resume from accepted history.",0,36.883,0,2,0.0,2,False,False,0,36.883,1,/tmp/rsi_experiments_3zd3n7b7/forced_broad_regression__no_persistence/.omega_rsi_runs/closed_rsi_summary.json,"/tmp/rsi_experiments_3zd3n7b7/forced_broad_regression__no_persistence"",
-          ""elapsed_s"": 0.196,
+forced_broad_regression,no_persistence,ablation_no_persistence,"Ablation: state is not persisted, so future runs cannot resume from accepted history.",0,36.127,0,2,0.0,2,True,False,0,36.127,0,/tmp/rsi_experiments_3p46hqsu/forced_broad_regression__no_persistence/.omega_rsi_runs/closed_rsi_summary.json,"/tmp/rsi_experiments_3p46hqsu/forced_broad_regression__no_persistence"",
+          ""elapsed_s"": 0.202,
           ""exit_code"": 0,
           ""label"": ""local_corpus_import_query_v1_focused"",
           ""stderr_tail"": """",
@@ -820,12 +1225,12 @@ forced_broad_regression,no_persistence,ablation_no_persistence,"Ablation: state 
             ""--disable-warnings"",
             ""tests""
           ],
-          ""cwd"": ""/tmp/rsi_experiments_3zd3n7b7/forced_broad_regression__no_persistence"",
-          ""elapsed_s"": 12.304,
+          ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/forced_broad_regression__no_persistence"",
+          ""elapsed_s"": 12.071,
           ""exit_code"": 1,
           ""label"": ""local_corpus_import_query_v1_root_broad"",
           ""stderr_tail"": """",
-          ""stdout_tail"": ""........................................................................ [ 16%]\n........................................................................ [ 32%]\n..F..................................................................... [ 49%]\n.......................................................s................ [ 65%]\n........................................................................ [ 82%]\n..............................................................s......... [ 98%]\n.....                                                                    [100%]\n=================================== FAILURES ===================================\n______________________ test_forced_broad_regression_gate _______________________\n\n    def test_forced_broad_regression_gate():\n>       assert False, 'intentional broad-gate regression for rollback ablation'\nE       AssertionError: intentional broad-gate regression for rollback ablation\nE       assert False\n\ntests/test_forced_broad_regression_gate.py:2: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_forced_broad_regression_gate.py::test_forced_broad_regression_gate - AssertionError: intentional broad-gate regression for rollback ablation\nassert False\n1 failed, 434 passed, 4 skipped in 11.87s\n"",
+          ""stdout_tail"": ""........................................................................ [ 16%]\n........................................................................ [ 32%]\n..F..................................................................... [ 49%]\n.......................................................s................ [ 65%]\n........................................................................ [ 82%]\n...............................................................s........ [ 98%]\n......                                                                   [100%]\n=================================== FAILURES ===================================\n______________________ test_forced_broad_regression_gate _______________________\n\n    def test_forced_broad_regression_gate():\n>       assert False, 'intentional broad-gate regression for rollback ablation'\nE       AssertionError: intentional broad-gate regression for rollback ablation\nE       assert False\n\ntests/test_forced_broad_regression_gate.py:2: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_forced_broad_regression_gate.py::test_forced_broad_regression_gate - AssertionError: intentional broad-gate regression for rollback ablation\nassert False\n1 failed, 435 passed, 4 skipped in 11.58s\n"",
           ""timed_out"": false
         },
         {
@@ -843,12 +1248,12 @@ forced_broad_regression,no_persistence,ablation_no_persistence,"Ablation: state 
             ""tests/test_structural_diff.py"",
             ""tests/test_batch_correlation.py""
           ],
-          ""cwd"": ""/tmp/rsi_experiments_3zd3n7b7/forced_broad_regression__no_persistence/thdse"",
-          ""elapsed_s"": 5.467,
+          ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/forced_broad_regression__no_persistence/thdse"",
+          ""elapsed_s"": 5.401,
           ""exit_code"": 0,
           ""label"": ""local_corpus_import_query_v1_thdse_core"",
           ""stderr_tail"": """",
-          ""stdout_tail"": ""....................................                                     [100%]\n36 passed in 5.22s\n"",
+          ""stdout_tail"": ""....................................                                     [100%]\n36 passed in 5.14s\n"",
           ""timed_out"": false
         }
       ],
@@ -860,20 +1265,20 @@ forced_broad_regression,no_persistence,ablation_no_persistence,"Ablation: state 
         ""target"": ""shared.local_corpus.LocalCorpusIndex""
       },
       ""name"": ""local_corpus_import_query_v1"",
-      ""started_at"": ""2026-05-26T07:31:20Z"",
+      ""started_at"": ""2026-05-26T07:47:43Z"",
       ""target_path"": ""shared/local_corpus.py"",
       ""test_path"": ""tests/test_local_corpus_import_query_rewrite.py""
     }
   ],
   ""rollback"": true,
-  ""state_path"": ""/tmp/rsi_experiments_3zd3n7b7/forced_broad_regression__no_persistence/.omega_rsi_runs/closed_rsi_state.json"",
+  ""state_path"": ""/tmp/rsi_experiments_3p46hqsu/forced_broad_regression__no_persistence/.omega_rsi_runs/closed_rsi_state.json"",
   ""thdse_core_gate"": true,
   ""total_accepted"": 0,
   ""total_rejected"": 2
 }
 ",
-forced_broad_regression,no_rollback,ablation_no_rollback,Ablation: rejected candidates are intentionally left in disposable copies.,0,36.655,0,2,0.0,2,False,True,0,36.655,4,/tmp/rsi_experiments_3zd3n7b7/forced_broad_regression__no_rollback/.omega_rsi_runs/closed_rsi_summary.json,"   ""cwd"": ""/tmp/rsi_experiments_3zd3n7b7/forced_broad_regression__no_rollback"",
-          ""elapsed_s"": 0.201,
+forced_broad_regression,no_rollback,ablation_no_rollback,Ablation: rejected candidates are intentionally left in disposable copies.,0,36.4,0,2,0.0,2,False,True,0,36.4,3,/tmp/rsi_experiments_3p46hqsu/forced_broad_regression__no_rollback/.omega_rsi_runs/closed_rsi_summary.json,"   ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/forced_broad_regression__no_rollback"",
+          ""elapsed_s"": 0.211,
           ""exit_code"": 0,
           ""label"": ""local_corpus_import_query_v1_focused"",
           ""stderr_tail"": """",
@@ -891,12 +1296,12 @@ forced_broad_regression,no_rollback,ablation_no_rollback,Ablation: rejected cand
             ""--disable-warnings"",
             ""tests""
           ],
-          ""cwd"": ""/tmp/rsi_experiments_3zd3n7b7/forced_broad_regression__no_rollback"",
-          ""elapsed_s"": 12.233,
+          ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/forced_broad_regression__no_rollback"",
+          ""elapsed_s"": 12.135,
           ""exit_code"": 1,
           ""label"": ""local_corpus_import_query_v1_root_broad"",
           ""stderr_tail"": """",
-          ""stdout_tail"": ""........................................................................ [ 16%]\n........................................................................ [ 32%]\n..F..................................................................... [ 49%]\n........................................................s............... [ 65%]\n........................................................................ [ 82%]\n...............................................................s........ [ 98%]\n......                                                                   [100%]\n=================================== FAILURES ===================================\n______________________ test_forced_broad_regression_gate _______________________\n\n    def test_forced_broad_regression_gate():\n>       assert False, 'intentional broad-gate regression for rollback ablation'\nE       AssertionError: intentional broad-gate regression for rollback ablation\nE       assert False\n\ntests/test_forced_broad_regression_gate.py:2: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_forced_broad_regression_gate.py::test_forced_broad_regression_gate - AssertionError: intentional broad-gate regression for rollback ablation\nassert False\n1 failed, 435 passed, 4 skipped in 11.79s\n"",
+          ""stdout_tail"": ""........................................................................ [ 16%]\n........................................................................ [ 32%]\n..F..................................................................... [ 49%]\n........................................................s............... [ 65%]\n........................................................................ [ 82%]\n................................................................s....... [ 98%]\n.......                                                                  [100%]\n=================================== FAILURES ===================================\n______________________ test_forced_broad_regression_gate _______________________\n\n    def test_forced_broad_regression_gate():\n>       assert False, 'intentional broad-gate regression for rollback ablation'\nE       AssertionError: intentional broad-gate regression for rollback ablation\nE       assert False\n\ntests/test_forced_broad_regression_gate.py:2: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_forced_broad_regression_gate.py::test_forced_broad_regression_gate - AssertionError: intentional broad-gate regression for rollback ablation\nassert False\n1 failed, 436 passed, 4 skipped in 11.66s\n"",
           ""timed_out"": false
         },
         {
@@ -914,12 +1319,12 @@ forced_broad_regression,no_rollback,ablation_no_rollback,Ablation: rejected cand
             ""tests/test_structural_diff.py"",
             ""tests/test_batch_correlation.py""
           ],
-          ""cwd"": ""/tmp/rsi_experiments_3zd3n7b7/forced_broad_regression__no_rollback/thdse"",
-          ""elapsed_s"": 5.459,
+          ""cwd"": ""/tmp/rsi_experiments_3p46hqsu/forced_broad_regression__no_rollback/thdse"",
+          ""elapsed_s"": 5.394,
           ""exit_code"": 0,
           ""label"": ""local_corpus_import_query_v1_thdse_core"",
           ""stderr_tail"": """",
-          ""stdout_tail"": ""....................................                                     [100%]\n36 passed in 5.20s\n"",
+          ""stdout_tail"": ""....................................                                     [100%]\n36 passed in 5.14s\n"",
           ""timed_out"": false
         }
       ],
@@ -931,25 +1336,25 @@ forced_broad_regression,no_rollback,ablation_no_rollback,Ablation: rejected cand
         ""target"": ""shared.local_corpus.LocalCorpusIndex""
       },
       ""name"": ""local_corpus_import_query_v1"",
-      ""started_at"": ""2026-05-26T07:31:57Z"",
+      ""started_at"": ""2026-05-26T07:48:19Z"",
       ""target_path"": ""shared/local_corpus.py"",
       ""test_path"": ""tests/test_local_corpus_import_query_rewrite.py""
     }
   ],
   ""rollback"": false,
-  ""state_path"": ""/tmp/rsi_experiments_3zd3n7b7/forced_broad_regression__no_rollback/.omega_rsi_runs/closed_rsi_state.json"",
+  ""state_path"": ""/tmp/rsi_experiments_3p46hqsu/forced_broad_regression__no_rollback/.omega_rsi_runs/closed_rsi_state.json"",
   ""thdse_core_gate"": true,
   ""total_accepted"": 0,
   ""total_rejected"": 2
 }
 ",
-forced_broad_regression,ci_only_validation,baseline_ci_only,Baseline: run validation without candidate generation or code patching.,1,12.865,0,0,0.0,0,,False,0,12.865,1,/tmp/rsi_experiments_3zd3n7b7/forced_broad_regression__ci_only_validation/.omega_rsi_runs/closed_rsi_summary.json,"........................................................................ [ 16%]
-........................................................................ [ 33%]
+forced_broad_regression,ci_only_validation,baseline_ci_only,Baseline: run validation without candidate generation or code patching.,1,12.638,0,0,0.0,0,,False,0,12.638,0,/tmp/rsi_experiments_3p46hqsu/forced_broad_regression__ci_only_validation/.omega_rsi_runs/closed_rsi_summary.json,"........................................................................ [ 16%]
+........................................................................ [ 32%]
 ..F..................................................................... [ 49%]
-......................................................s................. [ 66%]
+......................................................s................. [ 65%]
 ........................................................................ [ 82%]
-.............................................................s.......... [ 99%]
-....                                                                     [100%]
+..............................................................s......... [ 98%]
+.....                                                                    [100%]
 =================================== FAILURES ===================================
 ______________________ test_forced_broad_regression_gate _______________________
 
@@ -962,5 +1367,5 @@ tests/test_forced_broad_regression_gate.py:2: AssertionError
 =========================== short test summary info ============================
 FAILED tests/test_forced_broad_regression_gate.py::test_forced_broad_regression_gate - AssertionError: intentional broad-gate regression for rollback ablation
 assert False
-1 failed, 433 passed, 4 skipped in 12.42s
+1 failed, 434 passed, 4 skipped in 12.15s
 ",
