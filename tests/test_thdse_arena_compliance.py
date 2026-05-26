@@ -191,7 +191,7 @@ def test_python_fallback_correlation_self_is_one():
     assert arena.compute_correlation(h, h) == pytest.approx(1.0, abs=1e-6)
 
 
-def test_python_fallback_correlate_matrix_is_symmetric():
+def test_python_fallback_correlate_matrix_matches_upper_triangle_contract():
     import sys
 
     sys.path.insert(0, str(_THDSE))
@@ -203,13 +203,19 @@ def test_python_fallback_correlate_matrix_is_symmetric():
         h = arena.allocate()
         arena.inject_phases(h, [value] * 16)
         handles.append(h)
-    matrix = arena.correlate_matrix(handles)
+    flat = arena.correlate_matrix(handles)
     n = len(handles)
+    assert len(flat) == n * (n - 1) // 2
+    k = 0
     for i in range(n):
-        for j in range(n):
-            assert matrix[i][j] == pytest.approx(matrix[j][i], abs=1e-9)
-            if i == j:
-                assert matrix[i][j] == pytest.approx(1.0, abs=1e-6)
+        for j in range(i + 1, n):
+            expected = arena.compute_correlation(handles[i], handles[j])
+            assert flat[k] == pytest.approx(expected, abs=1e-9)
+            assert arena.compute_correlation(handles[j], handles[i]) == pytest.approx(
+                expected,
+                abs=1e-9,
+            )
+            k += 1
 
 
 def test_make_arena_returns_python_fallback_without_manager():

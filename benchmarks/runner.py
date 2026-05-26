@@ -728,6 +728,9 @@ def run_suite(
 
     from shared.atom_bank import save_atoms
     discovered = []
+    for source in seed_corpus.values():
+        if isinstance(source, str):
+            discovered.extend(_extract_clean_atoms(source))
     for prob in report["problems"]:
         if prob.get("solved"):
             src = prob.get("best_source", "")
