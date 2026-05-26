@@ -9,6 +9,9 @@ on:
       - main
     paths:
       - .github/workflows/rsi-research-experiments.yml
+  repository_dispatch:
+    types:
+      - rsi-research-experiment-recovery
   workflow_dispatch:
     inputs:
       max_generations:
