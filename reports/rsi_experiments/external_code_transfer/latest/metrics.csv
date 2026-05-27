@@ -1,5 +1,5 @@
 repository,repository_description,task,variant,family,description,repeat_index,seed,exit_code,elapsed_s,accepted_count,rejected_count,accepted_rate,regression_gate_failures,rollback_correct,persistence_file_exists,improvement_depth,cost_proxy_seconds,changed_files_count,summary_path,stdout_tail,stderr_tail,repository_split,transfer_origin,task_description,task_claim,capability_delta_score,solved_new_tasks,hidden_transfer,operator_reuse,failure_residue_count
-external_requests_code_transfer_repo,Actual psf/requests source-code and issue-failure sandbox fixture.,external_requests_code_failure_fixture_query,verified_closed_loop,proposed,"Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",0,e9973c27717f,0,1.409,3,0,1.0,0,,True,3,1.409,5,/tmp/rsi_experiments_oi1ojcn8/external_requests_code_transfer_repo__external_requests_code_failure_fixture_query__verified_closed_loop__r0/.omega_rsi_runs/closed_rsi_summary.json,"           ""pytest"",
+external_requests_code_transfer_repo,Actual psf/requests source-code and issue-failure sandbox fixture.,external_requests_code_failure_fixture_query,verified_closed_loop,proposed,"Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",0,e9973c27717f,0,1.464,3,0,1.0,0,,True,3,1.464,5,/tmp/rsi_experiments_7fobq1qa/external_requests_code_transfer_repo__external_requests_code_failure_fixture_query__verified_closed_loop__r0/.omega_rsi_runs/closed_rsi_summary.json,"           ""pytest"",
                 ""-q"",
                 ""tests/test_capability_schema_query_repair_operator_v1.py""
               ]
@@ -85,7 +85,7 @@ external_requests_code_transfer_repo,Actual psf/requests source-code and issue-f
           }
         }
       ],
-      ""started_at"": ""2026-05-27T03:47:14Z"",
+      ""started_at"": ""2026-05-27T04:00:36Z"",
       ""target_path"": ""shared/local_corpus.py"",
       ""test_path"": ""tests/test_autonomous_local_corpus_external_requests_code_signals_query_v1.py""
     }
@@ -102,13 +102,13 @@ external_requests_code_transfer_repo,Actual psf/requests source-code and issue-f
   ""rejected_this_run"": [],
   ""rollback"": true,
   ""solved_new_tasks"": 3,
-  ""state_path"": ""/tmp/rsi_experiments_oi1ojcn8/external_requests_code_transfer_repo__external_requests_code_failure_fixture_query__verified_closed_loop__r0/.omega_rsi_runs/closed_rsi_state.json"",
+  ""state_path"": ""/tmp/rsi_experiments_7fobq1qa/external_requests_code_transfer_repo__external_requests_code_failure_fixture_query__verified_closed_loop__r0/.omega_rsi_runs/closed_rsi_state.json"",
   ""thdse_core_gate"": true,
   ""total_accepted"": 3,
   ""total_rejected"": 0
 }
 ",,external_code_unseen,psf/requests,Measure transfer on a sandbox fixture extracted from actual psf/requests source snippets and issue failure excerpts.,External code transfer succeeds when the loop repairs a local executable failure target derived from bounded psf/requests source and failure snippets.,5.847,3,3,6,0
-external_requests_code_transfer_repo,Actual psf/requests source-code and issue-failure sandbox fixture.,external_requests_code_failure_fixture_query,agent_coding_loop,baseline_agent_coding_loop,Baseline: single-pass automated coding loop with validation but without persistent recursive depth.,0,63970cbb0307,0,0.509,1,0,1.0,0,,False,1,0.509,2,/tmp/rsi_experiments_oi1ojcn8/external_requests_code_transfer_repo__external_requests_code_failure_fixture_query__agent_coding_loop__r0/.omega_rsi_runs/closed_rsi_summary.json," ""target_surface"": ""shared/capability_primitives.py"",
+external_requests_code_transfer_repo,Actual psf/requests source-code and issue-failure sandbox fixture.,external_requests_code_failure_fixture_query,agent_coding_loop,baseline_agent_coding_loop,Baseline: single-pass automated coding loop with validation but without persistent recursive depth.,0,63970cbb0307,0,0.533,1,0,1.0,0,,False,1,0.533,2,/tmp/rsi_experiments_7fobq1qa/external_requests_code_transfer_repo__external_requests_code_failure_fixture_query__agent_coding_loop__r0/.omega_rsi_runs/closed_rsi_summary.json," ""target_surface"": ""shared/capability_primitives.py"",
           ""validation_plan"": {
             ""commands"": [
               [
@@ -200,7 +200,7 @@ external_requests_code_transfer_repo,Actual psf/requests source-code and issue-f
           }
         }
       ],
-      ""started_at"": ""2026-05-27T03:47:15Z"",
+      ""started_at"": ""2026-05-27T04:00:36Z"",
       ""target_path"": ""shared/external_repair_target.py"",
       ""test_path"": ""tests/test_external_code_repair_task.py""
     }
@@ -217,13 +217,13 @@ external_requests_code_transfer_repo,Actual psf/requests source-code and issue-f
   ""rejected_this_run"": [],
   ""rollback"": true,
   ""solved_new_tasks"": 1,
-  ""state_path"": ""/tmp/rsi_experiments_oi1ojcn8/external_requests_code_transfer_repo__external_requests_code_failure_fixture_query__agent_coding_loop__r0/.omega_rsi_runs/closed_rsi_state.json"",
+  ""state_path"": ""/tmp/rsi_experiments_7fobq1qa/external_requests_code_transfer_repo__external_requests_code_failure_fixture_query__agent_coding_loop__r0/.omega_rsi_runs/closed_rsi_state.json"",
   ""thdse_core_gate"": true,
   ""total_accepted"": 1,
   ""total_rejected"": 0
 }
 ",,external_code_unseen,psf/requests,Measure transfer on a sandbox fixture extracted from actual psf/requests source snippets and issue failure excerpts.,External code transfer succeeds when the loop repairs a local executable failure target derived from bounded psf/requests source and failure snippets.,1.949,1,1,2,0
-external_requests_code_transfer_repo,Actual psf/requests source-code and issue-failure sandbox fixture.,external_requests_code_failure_fixture_query,ci_only_validation,baseline_ci_only,Baseline: run validation without candidate generation or code patching.,0,e55ec0889c6f,1,0.24,0,0,0.0,0,,False,0,0.24,0,/tmp/rsi_experiments_oi1ojcn8/external_requests_code_transfer_repo__external_requests_code_failure_fixture_query__ci_only_validation__r0/.omega_rsi_runs/closed_rsi_summary.json,"F..                                                                      [100%]
+external_requests_code_transfer_repo,Actual psf/requests source-code and issue-failure sandbox fixture.,external_requests_code_failure_fixture_query,ci_only_validation,baseline_ci_only,Baseline: run validation without candidate generation or code patching.,0,e55ec0889c6f,1,0.249,0,0,0.0,0,,False,0,0.249,0,/tmp/rsi_experiments_7fobq1qa/external_requests_code_transfer_repo__external_requests_code_failure_fixture_query__ci_only_validation__r0/.omega_rsi_runs/closed_rsi_summary.json,"F..                                                                      [100%]
 =================================== FAILURES ===================================
 ___________ test_external_failure_signal_is_a_real_local_repair_task ___________
 
@@ -244,7 +244,7 @@ FAILED tests/test_external_code_repair_task.py::test_external_failure_signal_is_
   - read_error
 1 failed, 2 passed in 0.06s
 ",,external_code_unseen,psf/requests,Measure transfer on a sandbox fixture extracted from actual psf/requests source snippets and issue failure excerpts.,External code transfer succeeds when the loop repairs a local executable failure target derived from bounded psf/requests source and failure snippets.,0,0,0,0,0
-external_hypothesis_code_transfer_repo,Actual Hypothesis source-code and issue-failure sandbox fixture.,external_hypothesis_code_failure_fixture_query,verified_closed_loop,proposed,"Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",0,abf3e17ce572,0,1.402,3,0,1.0,0,,True,3,1.402,5,/tmp/rsi_experiments_oi1ojcn8/external_hypothesis_code_transfer_repo__external_hypothesis_code_failure_fixture_query__verified_closed_loop__r0/.omega_rsi_runs/closed_rsi_summary.json,"               ""-q"",
+external_hypothesis_code_transfer_repo,Actual Hypothesis source-code and issue-failure sandbox fixture.,external_hypothesis_code_failure_fixture_query,verified_closed_loop,proposed,"Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",0,abf3e17ce572,0,1.574,3,0,1.0,0,,True,3,1.574,5,/tmp/rsi_experiments_7fobq1qa/external_hypothesis_code_transfer_repo__external_hypothesis_code_failure_fixture_query__verified_closed_loop__r0/.omega_rsi_runs/closed_rsi_summary.json,"               ""-q"",
                 ""tests/test_capability_schema_query_repair_operator_v1.py""
               ]
             ],
@@ -329,7 +329,7 @@ external_hypothesis_code_transfer_repo,Actual Hypothesis source-code and issue-f
           }
         }
       ],
-      ""started_at"": ""2026-05-27T03:47:17Z"",
+      ""started_at"": ""2026-05-27T04:00:38Z"",
       ""target_path"": ""shared/local_corpus.py"",
       ""test_path"": ""tests/test_autonomous_local_corpus_external_hypothesis_code_signals_query_v1.py""
     }
@@ -346,13 +346,13 @@ external_hypothesis_code_transfer_repo,Actual Hypothesis source-code and issue-f
   ""rejected_this_run"": [],
   ""rollback"": true,
   ""solved_new_tasks"": 3,
-  ""state_path"": ""/tmp/rsi_experiments_oi1ojcn8/external_hypothesis_code_transfer_repo__external_hypothesis_code_failure_fixture_query__verified_closed_loop__r0/.omega_rsi_runs/closed_rsi_state.json"",
+  ""state_path"": ""/tmp/rsi_experiments_7fobq1qa/external_hypothesis_code_transfer_repo__external_hypothesis_code_failure_fixture_query__verified_closed_loop__r0/.omega_rsi_runs/closed_rsi_state.json"",
   ""thdse_core_gate"": true,
   ""total_accepted"": 3,
   ""total_rejected"": 0
 }
 ",,external_code_unseen,hypothesisworks/hypothesis,Measure transfer on a sandbox fixture extracted from actual hypothesisworks/hypothesis source snippets and issue failure excerpts.,External code transfer succeeds when the loop repairs a local executable failure target derived from bounded hypothesisworks/hypothesis source and failure snippets.,5.847,3,3,6,0
-external_hypothesis_code_transfer_repo,Actual Hypothesis source-code and issue-failure sandbox fixture.,external_hypothesis_code_failure_fixture_query,agent_coding_loop,baseline_agent_coding_loop,Baseline: single-pass automated coding loop with validation but without persistent recursive depth.,0,703bdd368e6e,0,0.511,1,0,1.0,0,,False,1,0.511,2,/tmp/rsi_experiments_oi1ojcn8/external_hypothesis_code_transfer_repo__external_hypothesis_code_failure_fixture_query__agent_coding_loop__r0/.omega_rsi_runs/closed_rsi_summary.json,"rget_surface"": ""shared/capability_primitives.py"",
+external_hypothesis_code_transfer_repo,Actual Hypothesis source-code and issue-failure sandbox fixture.,external_hypothesis_code_failure_fixture_query,agent_coding_loop,baseline_agent_coding_loop,Baseline: single-pass automated coding loop with validation but without persistent recursive depth.,0,703bdd368e6e,0,0.534,1,0,1.0,0,,False,1,0.534,2,/tmp/rsi_experiments_7fobq1qa/external_hypothesis_code_transfer_repo__external_hypothesis_code_failure_fixture_query__agent_coding_loop__r0/.omega_rsi_runs/closed_rsi_summary.json,"rget_surface"": ""shared/capability_primitives.py"",
           ""validation_plan"": {
             ""commands"": [
               [
@@ -444,7 +444,7 @@ external_hypothesis_code_transfer_repo,Actual Hypothesis source-code and issue-f
           }
         }
       ],
-      ""started_at"": ""2026-05-27T03:47:17Z"",
+      ""started_at"": ""2026-05-27T04:00:39Z"",
       ""target_path"": ""shared/external_repair_target.py"",
       ""test_path"": ""tests/test_external_code_repair_task.py""
     }
@@ -461,13 +461,13 @@ external_hypothesis_code_transfer_repo,Actual Hypothesis source-code and issue-f
   ""rejected_this_run"": [],
   ""rollback"": true,
   ""solved_new_tasks"": 1,
-  ""state_path"": ""/tmp/rsi_experiments_oi1ojcn8/external_hypothesis_code_transfer_repo__external_hypothesis_code_failure_fixture_query__agent_coding_loop__r0/.omega_rsi_runs/closed_rsi_state.json"",
+  ""state_path"": ""/tmp/rsi_experiments_7fobq1qa/external_hypothesis_code_transfer_repo__external_hypothesis_code_failure_fixture_query__agent_coding_loop__r0/.omega_rsi_runs/closed_rsi_state.json"",
   ""thdse_core_gate"": true,
   ""total_accepted"": 1,
   ""total_rejected"": 0
 }
 ",,external_code_unseen,hypothesisworks/hypothesis,Measure transfer on a sandbox fixture extracted from actual hypothesisworks/hypothesis source snippets and issue failure excerpts.,External code transfer succeeds when the loop repairs a local executable failure target derived from bounded hypothesisworks/hypothesis source and failure snippets.,1.949,1,1,2,0
-external_hypothesis_code_transfer_repo,Actual Hypothesis source-code and issue-failure sandbox fixture.,external_hypothesis_code_failure_fixture_query,ci_only_validation,baseline_ci_only,Baseline: run validation without candidate generation or code patching.,0,b8dbae0c8588,1,0.239,0,0,0.0,0,,False,0,0.239,0,/tmp/rsi_experiments_oi1ojcn8/external_hypothesis_code_transfer_repo__external_hypothesis_code_failure_fixture_query__ci_only_validation__r0/.omega_rsi_runs/closed_rsi_summary.json,"F..                                                                      [100%]
+external_hypothesis_code_transfer_repo,Actual Hypothesis source-code and issue-failure sandbox fixture.,external_hypothesis_code_failure_fixture_query,ci_only_validation,baseline_ci_only,Baseline: run validation without candidate generation or code patching.,0,b8dbae0c8588,1,0.257,0,0,0.0,0,,False,0,0.257,0,/tmp/rsi_experiments_7fobq1qa/external_hypothesis_code_transfer_repo__external_hypothesis_code_failure_fixture_query__ci_only_validation__r0/.omega_rsi_runs/closed_rsi_summary.json,"F..                                                                      [100%]
 =================================== FAILURES ===================================
 ___________ test_external_failure_signal_is_a_real_local_repair_task ___________
 
@@ -488,7 +488,7 @@ FAILED tests/test_external_code_repair_task.py::test_external_failure_signal_is_
   - read_error
 1 failed, 2 passed in 0.06s
 ",,external_code_unseen,hypothesisworks/hypothesis,Measure transfer on a sandbox fixture extracted from actual hypothesisworks/hypothesis source snippets and issue failure excerpts.,External code transfer succeeds when the loop repairs a local executable failure target derived from bounded hypothesisworks/hypothesis source and failure snippets.,0,0,0,0,0
-external_pandas_code_transfer_repo,Actual pandas source-code and issue-failure sandbox fixture.,external_pandas_code_failure_fixture_query,verified_closed_loop,proposed,"Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",0,7dac74bf59c1,0,1.39,3,0,1.0,0,,True,3,1.39,5,/tmp/rsi_experiments_oi1ojcn8/external_pandas_code_transfer_repo__external_pandas_code_failure_fixture_query__verified_closed_loop__r0/.omega_rsi_runs/closed_rsi_summary.json,"           ""-m"",
+external_pandas_code_transfer_repo,Actual pandas source-code and issue-failure sandbox fixture.,external_pandas_code_failure_fixture_query,verified_closed_loop,proposed,"Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",0,7dac74bf59c1,0,1.473,3,0,1.0,0,,True,3,1.473,5,/tmp/rsi_experiments_7fobq1qa/external_pandas_code_transfer_repo__external_pandas_code_failure_fixture_query__verified_closed_loop__r0/.omega_rsi_runs/closed_rsi_summary.json,"           ""-m"",
                 ""pytest"",
                 ""-q"",
                 ""tests/test_capability_schema_query_repair_operator_v1.py""
@@ -575,7 +575,7 @@ external_pandas_code_transfer_repo,Actual pandas source-code and issue-failure s
           }
         }
       ],
-      ""started_at"": ""2026-05-27T03:47:19Z"",
+      ""started_at"": ""2026-05-27T04:00:40Z"",
       ""target_path"": ""shared/local_corpus.py"",
       ""test_path"": ""tests/test_autonomous_local_corpus_external_pandas_code_signals_query_v1.py""
     }
@@ -592,13 +592,13 @@ external_pandas_code_transfer_repo,Actual pandas source-code and issue-failure s
   ""rejected_this_run"": [],
   ""rollback"": true,
   ""solved_new_tasks"": 3,
-  ""state_path"": ""/tmp/rsi_experiments_oi1ojcn8/external_pandas_code_transfer_repo__external_pandas_code_failure_fixture_query__verified_closed_loop__r0/.omega_rsi_runs/closed_rsi_state.json"",
+  ""state_path"": ""/tmp/rsi_experiments_7fobq1qa/external_pandas_code_transfer_repo__external_pandas_code_failure_fixture_query__verified_closed_loop__r0/.omega_rsi_runs/closed_rsi_state.json"",
   ""thdse_core_gate"": true,
   ""total_accepted"": 3,
   ""total_rejected"": 0
 }
 ",,external_code_unseen,pandas-dev/pandas,Measure transfer on a sandbox fixture extracted from actual pandas-dev/pandas source snippets and issue failure excerpts.,External code transfer succeeds when the loop repairs a local executable failure target derived from bounded pandas-dev/pandas source and failure snippets.,5.847,3,3,6,0
-external_pandas_code_transfer_repo,Actual pandas source-code and issue-failure sandbox fixture.,external_pandas_code_failure_fixture_query,agent_coding_loop,baseline_agent_coding_loop,Baseline: single-pass automated coding loop with validation but without persistent recursive depth.,0,41ef53e5270e,0,0.515,1,0,1.0,0,,False,1,0.515,2,/tmp/rsi_experiments_oi1ojcn8/external_pandas_code_transfer_repo__external_pandas_code_failure_fixture_query__agent_coding_loop__r0/.omega_rsi_runs/closed_rsi_summary.json,"     ""target_surface"": ""shared/capability_primitives.py"",
+external_pandas_code_transfer_repo,Actual pandas source-code and issue-failure sandbox fixture.,external_pandas_code_failure_fixture_query,agent_coding_loop,baseline_agent_coding_loop,Baseline: single-pass automated coding loop with validation but without persistent recursive depth.,0,41ef53e5270e,0,0.543,1,0,1.0,0,,False,1,0.543,2,/tmp/rsi_experiments_7fobq1qa/external_pandas_code_transfer_repo__external_pandas_code_failure_fixture_query__agent_coding_loop__r0/.omega_rsi_runs/closed_rsi_summary.json,"     ""target_surface"": ""shared/capability_primitives.py"",
           ""validation_plan"": {
             ""commands"": [
               [
@@ -690,7 +690,7 @@ external_pandas_code_transfer_repo,Actual pandas source-code and issue-failure s
           }
         }
       ],
-      ""started_at"": ""2026-05-27T03:47:19Z"",
+      ""started_at"": ""2026-05-27T04:00:41Z"",
       ""target_path"": ""shared/external_repair_target.py"",
       ""test_path"": ""tests/test_external_code_repair_task.py""
     }
@@ -707,13 +707,13 @@ external_pandas_code_transfer_repo,Actual pandas source-code and issue-failure s
   ""rejected_this_run"": [],
   ""rollback"": true,
   ""solved_new_tasks"": 1,
-  ""state_path"": ""/tmp/rsi_experiments_oi1ojcn8/external_pandas_code_transfer_repo__external_pandas_code_failure_fixture_query__agent_coding_loop__r0/.omega_rsi_runs/closed_rsi_state.json"",
+  ""state_path"": ""/tmp/rsi_experiments_7fobq1qa/external_pandas_code_transfer_repo__external_pandas_code_failure_fixture_query__agent_coding_loop__r0/.omega_rsi_runs/closed_rsi_state.json"",
   ""thdse_core_gate"": true,
   ""total_accepted"": 1,
   ""total_rejected"": 0
 }
 ",,external_code_unseen,pandas-dev/pandas,Measure transfer on a sandbox fixture extracted from actual pandas-dev/pandas source snippets and issue failure excerpts.,External code transfer succeeds when the loop repairs a local executable failure target derived from bounded pandas-dev/pandas source and failure snippets.,1.949,1,1,2,0
-external_pandas_code_transfer_repo,Actual pandas source-code and issue-failure sandbox fixture.,external_pandas_code_failure_fixture_query,ci_only_validation,baseline_ci_only,Baseline: run validation without candidate generation or code patching.,0,8fbc501fd3ee,1,0.241,0,0,0.0,0,,False,0,0.241,0,/tmp/rsi_experiments_oi1ojcn8/external_pandas_code_transfer_repo__external_pandas_code_failure_fixture_query__ci_only_validation__r0/.omega_rsi_runs/closed_rsi_summary.json,"F..                                                                      [100%]
+external_pandas_code_transfer_repo,Actual pandas source-code and issue-failure sandbox fixture.,external_pandas_code_failure_fixture_query,ci_only_validation,baseline_ci_only,Baseline: run validation without candidate generation or code patching.,0,8fbc501fd3ee,1,0.252,0,0,0.0,0,,False,0,0.252,0,/tmp/rsi_experiments_7fobq1qa/external_pandas_code_transfer_repo__external_pandas_code_failure_fixture_query__ci_only_validation__r0/.omega_rsi_runs/closed_rsi_summary.json,"F..                                                                      [100%]
 =================================== FAILURES ===================================
 ___________ test_external_failure_signal_is_a_real_local_repair_task ___________
 
@@ -734,7 +734,7 @@ FAILED tests/test_external_code_repair_task.py::test_external_failure_signal_is_
   - read_error
 1 failed, 2 passed in 0.06s
 ",,external_code_unseen,pandas-dev/pandas,Measure transfer on a sandbox fixture extracted from actual pandas-dev/pandas source snippets and issue failure excerpts.,External code transfer succeeds when the loop repairs a local executable failure target derived from bounded pandas-dev/pandas source and failure snippets.,0,0,0,0,0
-external_dask_code_transfer_repo,Actual dask source-code and issue-failure sandbox fixture.,external_dask_code_failure_fixture_query,verified_closed_loop,proposed,"Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",0,532d7e1261ff,0,1.401,3,0,1.0,0,,True,3,1.401,5,/tmp/rsi_experiments_oi1ojcn8/external_dask_code_transfer_repo__external_dask_code_failure_fixture_query__verified_closed_loop__r0/.omega_rsi_runs/closed_rsi_summary.json,"       ""python"",
+external_dask_code_transfer_repo,Actual dask source-code and issue-failure sandbox fixture.,external_dask_code_failure_fixture_query,verified_closed_loop,proposed,"Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",0,532d7e1261ff,0,1.503,3,0,1.0,0,,True,3,1.503,5,/tmp/rsi_experiments_7fobq1qa/external_dask_code_transfer_repo__external_dask_code_failure_fixture_query__verified_closed_loop__r0/.omega_rsi_runs/closed_rsi_summary.json,"       ""python"",
                 ""-m"",
                 ""pytest"",
                 ""-q"",
@@ -822,7 +822,7 @@ external_dask_code_transfer_repo,Actual dask source-code and issue-failure sandb
           }
         }
       ],
-      ""started_at"": ""2026-05-27T03:47:21Z"",
+      ""started_at"": ""2026-05-27T04:00:43Z"",
       ""target_path"": ""shared/local_corpus.py"",
       ""test_path"": ""tests/test_autonomous_local_corpus_external_dask_code_signals_query_v1.py""
     }
@@ -839,13 +839,13 @@ external_dask_code_transfer_repo,Actual dask source-code and issue-failure sandb
   ""rejected_this_run"": [],
   ""rollback"": true,
   ""solved_new_tasks"": 3,
-  ""state_path"": ""/tmp/rsi_experiments_oi1ojcn8/external_dask_code_transfer_repo__external_dask_code_failure_fixture_query__verified_closed_loop__r0/.omega_rsi_runs/closed_rsi_state.json"",
+  ""state_path"": ""/tmp/rsi_experiments_7fobq1qa/external_dask_code_transfer_repo__external_dask_code_failure_fixture_query__verified_closed_loop__r0/.omega_rsi_runs/closed_rsi_state.json"",
   ""thdse_core_gate"": true,
   ""total_accepted"": 3,
   ""total_rejected"": 0
 }
 ",,external_code_unseen,dask/dask,Measure transfer on a sandbox fixture extracted from actual dask/dask source snippets and issue failure excerpts.,External code transfer succeeds when the loop repairs a local executable failure target derived from bounded dask/dask source and failure snippets.,5.847,3,3,6,0
-external_dask_code_transfer_repo,Actual dask source-code and issue-failure sandbox fixture.,external_dask_code_failure_fixture_query,agent_coding_loop,baseline_agent_coding_loop,Baseline: single-pass automated coding loop with validation but without persistent recursive depth.,0,6ec2da674d74,0,0.517,1,0,1.0,0,,False,1,0.517,2,/tmp/rsi_experiments_oi1ojcn8/external_dask_code_transfer_repo__external_dask_code_failure_fixture_query__agent_coding_loop__r0/.omega_rsi_runs/closed_rsi_summary.json,"         ""target_surface"": ""shared/capability_primitives.py"",
+external_dask_code_transfer_repo,Actual dask source-code and issue-failure sandbox fixture.,external_dask_code_failure_fixture_query,agent_coding_loop,baseline_agent_coding_loop,Baseline: single-pass automated coding loop with validation but without persistent recursive depth.,0,6ec2da674d74,0,0.532,1,0,1.0,0,,False,1,0.532,2,/tmp/rsi_experiments_7fobq1qa/external_dask_code_transfer_repo__external_dask_code_failure_fixture_query__agent_coding_loop__r0/.omega_rsi_runs/closed_rsi_summary.json,"         ""target_surface"": ""shared/capability_primitives.py"",
           ""validation_plan"": {
             ""commands"": [
               [
@@ -937,7 +937,7 @@ external_dask_code_transfer_repo,Actual dask source-code and issue-failure sandb
           }
         }
       ],
-      ""started_at"": ""2026-05-27T03:47:21Z"",
+      ""started_at"": ""2026-05-27T04:00:43Z"",
       ""target_path"": ""shared/external_repair_target.py"",
       ""test_path"": ""tests/test_external_code_repair_task.py""
     }
@@ -954,13 +954,13 @@ external_dask_code_transfer_repo,Actual dask source-code and issue-failure sandb
   ""rejected_this_run"": [],
   ""rollback"": true,
   ""solved_new_tasks"": 1,
-  ""state_path"": ""/tmp/rsi_experiments_oi1ojcn8/external_dask_code_transfer_repo__external_dask_code_failure_fixture_query__agent_coding_loop__r0/.omega_rsi_runs/closed_rsi_state.json"",
+  ""state_path"": ""/tmp/rsi_experiments_7fobq1qa/external_dask_code_transfer_repo__external_dask_code_failure_fixture_query__agent_coding_loop__r0/.omega_rsi_runs/closed_rsi_state.json"",
   ""thdse_core_gate"": true,
   ""total_accepted"": 1,
   ""total_rejected"": 0
 }
 ",,external_code_unseen,dask/dask,Measure transfer on a sandbox fixture extracted from actual dask/dask source snippets and issue failure excerpts.,External code transfer succeeds when the loop repairs a local executable failure target derived from bounded dask/dask source and failure snippets.,1.949,1,1,2,0
-external_dask_code_transfer_repo,Actual dask source-code and issue-failure sandbox fixture.,external_dask_code_failure_fixture_query,ci_only_validation,baseline_ci_only,Baseline: run validation without candidate generation or code patching.,0,809d2d8ebfe7,1,0.24,0,0,0.0,0,,False,0,0.24,0,/tmp/rsi_experiments_oi1ojcn8/external_dask_code_transfer_repo__external_dask_code_failure_fixture_query__ci_only_validation__r0/.omega_rsi_runs/closed_rsi_summary.json,"F..                                                                      [100%]
+external_dask_code_transfer_repo,Actual dask source-code and issue-failure sandbox fixture.,external_dask_code_failure_fixture_query,ci_only_validation,baseline_ci_only,Baseline: run validation without candidate generation or code patching.,0,809d2d8ebfe7,1,0.255,0,0,0.0,0,,False,0,0.255,0,/tmp/rsi_experiments_7fobq1qa/external_dask_code_transfer_repo__external_dask_code_failure_fixture_query__ci_only_validation__r0/.omega_rsi_runs/closed_rsi_summary.json,"F..                                                                      [100%]
 =================================== FAILURES ===================================
 ___________ test_external_failure_signal_is_a_real_local_repair_task ___________
 
