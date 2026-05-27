@@ -1,1497 +1,983 @@
-repository,repository_description,task,variant,family,description,repeat_index,seed,exit_code,elapsed_s,accepted_count,rejected_count,accepted_rate,regression_gate_failures,rollback_correct,persistence_file_exists,improvement_depth,cost_proxy_seconds,changed_files_count,summary_path,stdout_tail,stderr_tail,repository_split,transfer_origin,task_description,task_claim
-external_requests_code_transfer_repo,Actual psf/requests source-code and issue-failure sandbox fixture.,external_requests_code_failure_fixture_query,verified_closed_loop,proposed,"Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",0,e9973c27717f,0,1.337,3,0,1.0,0,,True,3,1.337,4,/tmp/rsi_experiments_j0sowaa1/external_requests_code_transfer_repo__external_requests_code_failure_fixture_query__verified_closed_loop__r0/.omega_rsi_runs/closed_rsi_summary.json,"egy:tuple_membership, canonical_strategy_bonus."",
-        ""target"": ""shared.local_corpus.LocalCorpusIndex""
-      },
-      ""name"": ""autonomous_local_corpus_external_requests_code_signals_query_v1"",
-      ""started_at"": ""2026-05-26T22:48:08Z"",
+repository,repository_description,task,variant,family,description,repeat_index,seed,exit_code,elapsed_s,accepted_count,rejected_count,accepted_rate,regression_gate_failures,rollback_correct,persistence_file_exists,improvement_depth,cost_proxy_seconds,changed_files_count,summary_path,stdout_tail,stderr_tail,repository_split,transfer_origin,task_description,task_claim,capability_delta_score,solved_new_tasks,hidden_transfer,operator_reuse,failure_residue_count
+external_requests_code_transfer_repo,Actual psf/requests source-code and issue-failure sandbox fixture.,external_requests_code_failure_fixture_query,verified_closed_loop,proposed,"Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",0,e9973c27717f,0,1.409,3,0,1.0,0,,True,3,1.409,5,/tmp/rsi_experiments_oi1ojcn8/external_requests_code_transfer_repo__external_requests_code_failure_fixture_query__verified_closed_loop__r0/.omega_rsi_runs/closed_rsi_summary.json,"           ""pytest"",
+                ""-q"",
+                ""tests/test_capability_schema_query_repair_operator_v1.py""
+              ]
+            ],
+            ""expected_signals"": [
+              ""public_counterexample_passes"",
+              ""hidden_transfer_case_passes"",
+              ""no_broad_regression_gate_failure""
+            ],
+            ""name"": ""validate_records_with_external_requests_code_signal""
+          }
+        },
+        {
+          ""family"": ""schema_query_repair"",
+          ""kind"": ""search_heuristic"",
+          ""name"": ""prefer_records_with_external_requests_code_signal_reuse"",
+          ""rationale"": ""Rank exact capability repair operators ahead of unrelated schema repairs."",
+          ""target_surface"": ""scripts/closed_recursive_self_improvement_loop.py"",
+          ""validation_plan"": {
+            ""commands"": [
+              [
+                ""python"",
+                ""-m"",
+                ""pytest"",
+                ""-q"",
+                ""tests/test_capability_schema_query_repair_operator_v1.py""
+              ]
+            ],
+            ""expected_signals"": [
+              ""public_counterexample_passes"",
+              ""hidden_transfer_case_passes"",
+              ""no_broad_regression_gate_failure""
+            ],
+            ""name"": ""validate_records_with_external_requests_code_signal""
+          }
+        },
+        {
+          ""family"": ""schema_query_repair"",
+          ""kind"": ""evaluator_mutation"",
+          ""name"": ""records_with_external_requests_code_signal_hidden_transfer_case"",
+          ""rationale"": ""Add a held-out case that checks transfer beyond the public example."",
+          ""target_surface"": ""shared/capability_benchmarks.py"",
+          ""validation_plan"": {
+            ""commands"": [
+              [
+                ""python"",
+                ""-m"",
+                ""pytest"",
+                ""-q"",
+                ""tests/test_capability_schema_query_repair_operator_v1.py""
+              ]
+            ],
+            ""expected_signals"": [
+              ""public_counterexample_passes"",
+              ""hidden_transfer_case_passes"",
+              ""no_broad_regression_gate_failure""
+            ],
+            ""name"": ""validate_records_with_external_requests_code_signal""
+          }
+        },
+        {
+          ""family"": ""schema_query_repair"",
+          ""kind"": ""counterexample_test"",
+          ""name"": ""test_records_with_external_requests_code_signal_counterexample"",
+          ""rationale"": ""Lock the primitive with public and hidden transfer counterexamples."",
+          ""target_surface"": ""tests/test_capability_schema_query_repair_operator_v1.py"",
+          ""validation_plan"": {
+            ""commands"": [
+              [
+                ""python"",
+                ""-m"",
+                ""pytest"",
+                ""-q"",
+                ""tests/test_capability_schema_query_repair_operator_v1.py""
+              ]
+            ],
+            ""expected_signals"": [
+              ""public_counterexample_passes"",
+              ""hidden_transfer_case_passes"",
+              ""no_broad_regression_gate_failure""
+            ],
+            ""name"": ""validate_records_with_external_requests_code_signal""
+          }
+        }
+      ],
+      ""started_at"": ""2026-05-27T03:47:14Z"",
       ""target_path"": ""shared/local_corpus.py"",
       ""test_path"": ""tests/test_autonomous_local_corpus_external_requests_code_signals_query_v1.py""
-    },
-    {
-      ""accepted"": true,
-      ""error"": """",
-      ""extra_paths"": [],
-      ""finished_at"": ""2026-05-26T22:48:09Z"",
-      ""gates"": [
-        {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""py_compile"",
-            ""shared/local_corpus.py"",
-            ""tests/test_emergent_local_corpus_definitions_membership_v1.py""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_requests_code_transfer_repo__external_requests_code_failure_fixture_query__verified_closed_loop__r0"",
-          ""elapsed_s"": 0.034,
-          ""exit_code"": 0,
-          ""label"": ""emergent_local_corpus_definitions_membership_v1_compile"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": """",
-          ""timed_out"": false
-        },
-        {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""pytest"",
-            ""-q"",
-            ""--import-mode=importlib"",
-            ""--maxfail=5"",
-            ""--disable-warnings"",
-            ""tests/test_emergent_local_corpus_definitions_membership_v1.py""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_requests_code_transfer_repo__external_requests_code_failure_fixture_query__verified_closed_loop__r0"",
-          ""elapsed_s"": 0.187,
-          ""exit_code"": 0,
-          ""label"": ""emergent_local_corpus_definitions_membership_v1_focused"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": "".                                                                        [100%]\n1 passed in 0.01s\n"",
-          ""timed_out"": false
-        },
-        {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""pytest"",
-            ""-q"",
-            ""--import-mode=importlib"",
-            ""--maxfail=20"",
-            ""--disable-warnings"",
-            ""tests""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_requests_code_transfer_repo__external_requests_code_failure_fixture_query__verified_closed_loop__r0"",
-          ""elapsed_s"": 0.197,
-          ""exit_code"": 0,
-          ""label"": ""emergent_local_corpus_definitions_membership_v1_root_broad"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": "".....                                                                    [100%]\n5 passed in 0.02s\n"",
-          ""timed_out"": false
-        }
-      ],
-      ""generation"": 3,
-      ""goal"": {
-        ""metric"": ""planner score 9.999 plus generated regression test"",
-        ""name"": ""emergently_query_local_corpus_definitions"",
-        ""rationale"": ""The bounded emergent planner generated an alternate membership query hypothesis for definitions. Evidence: field:definitions, method:records_matching_definitions, strategy:alternate_tuple_membership."",
-        ""target"": ""shared.local_corpus.LocalCorpusIndex""
-      },
-      ""name"": ""emergent_local_corpus_definitions_membership_v1"",
-      ""started_at"": ""2026-05-26T22:48:08Z"",
-      ""target_path"": ""shared/local_corpus.py"",
-      ""test_path"": ""tests/test_emergent_local_corpus_definitions_membership_v1.py""
     }
   ],
-  ""active_base"": ""emergent_local_corpus_definitions_membership_v1"",
+  ""active_base"": ""autonomous_local_corpus_external_requests_code_signals_query_v1"",
   ""active_generation"": 3,
   ""broad_gate"": true,
+  ""capability_delta_score"": 5.847,
   ""dry_run"": false,
+  ""failure_residue_count"": 0,
+  ""hidden_transfer"": 3,
+  ""operator_reuse"": 6,
   ""persistence"": true,
   ""rejected_this_run"": [],
   ""rollback"": true,
-  ""state_path"": ""/tmp/rsi_experiments_j0sowaa1/external_requests_code_transfer_repo__external_requests_code_failure_fixture_query__verified_closed_loop__r0/.omega_rsi_runs/closed_rsi_state.json"",
+  ""solved_new_tasks"": 3,
+  ""state_path"": ""/tmp/rsi_experiments_oi1ojcn8/external_requests_code_transfer_repo__external_requests_code_failure_fixture_query__verified_closed_loop__r0/.omega_rsi_runs/closed_rsi_state.json"",
   ""thdse_core_gate"": true,
   ""total_accepted"": 3,
   ""total_rejected"": 0
 }
-",,external_code_unseen,psf/requests,Measure transfer on a sandbox fixture extracted from actual psf/requests source snippets and issue failure excerpts.,External code transfer succeeds when the loop patches a query API for external_requests_code_signals derived from bounded psf/requests source and failure snippets.
-external_requests_code_transfer_repo,Actual psf/requests source-code and issue-failure sandbox fixture.,external_requests_code_failure_fixture_query,agent_coding_loop,baseline_agent_coding_loop,Baseline: single-pass automated coding loop with validation but without persistent recursive depth.,0,63970cbb0307,0,0.486,1,0,1.0,0,,False,1,0.486,2,/tmp/rsi_experiments_j0sowaa1/external_requests_code_transfer_repo__external_requests_code_failure_fixture_query__agent_coding_loop__r0/.omega_rsi_runs/closed_rsi_summary.json,"{
-  ""accepted_this_run"": [
-    {
-      ""accepted"": true,
-      ""error"": """",
-      ""extra_paths"": [],
-      ""finished_at"": ""2026-05-26T22:48:09Z"",
-      ""gates"": [
-        {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""py_compile"",
-            ""shared/local_corpus.py"",
-            ""tests/test_autonomous_local_corpus_definitions_query_v1.py""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_requests_code_transfer_repo__external_requests_code_failure_fixture_query__agent_coding_loop__r0"",
-          ""elapsed_s"": 0.034,
-          ""exit_code"": 0,
-          ""label"": ""autonomous_local_corpus_definitions_query_v1_compile"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": """",
-          ""timed_out"": false
+",,external_code_unseen,psf/requests,Measure transfer on a sandbox fixture extracted from actual psf/requests source snippets and issue failure excerpts.,External code transfer succeeds when the loop repairs a local executable failure target derived from bounded psf/requests source and failure snippets.,5.847,3,3,6,0
+external_requests_code_transfer_repo,Actual psf/requests source-code and issue-failure sandbox fixture.,external_requests_code_failure_fixture_query,agent_coding_loop,baseline_agent_coding_loop,Baseline: single-pass automated coding loop with validation but without persistent recursive depth.,0,63970cbb0307,0,0.509,1,0,1.0,0,,False,1,0.509,2,/tmp/rsi_experiments_oi1ojcn8/external_requests_code_transfer_repo__external_requests_code_failure_fixture_query__agent_coding_loop__r0/.omega_rsi_runs/closed_rsi_summary.json," ""target_surface"": ""shared/capability_primitives.py"",
+          ""validation_plan"": {
+            ""commands"": [
+              [
+                ""python"",
+                ""-m"",
+                ""pytest"",
+                ""-q"",
+                ""tests/test_capability_external_code_repair_operator_v1.py""
+              ]
+            ],
+            ""expected_signals"": [
+              ""public_counterexample_passes"",
+              ""hidden_transfer_case_passes"",
+              ""no_broad_regression_gate_failure""
+            ],
+            ""name"": ""validate_external_failure_signal""
+          }
         },
         {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""pytest"",
-            ""-q"",
-            ""--import-mode=importlib"",
-            ""--maxfail=5"",
-            ""--disable-warnings"",
-            ""tests/test_autonomous_local_corpus_definitions_query_v1.py""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_requests_code_transfer_repo__external_requests_code_failure_fixture_query__agent_coding_loop__r0"",
-          ""elapsed_s"": 0.187,
-          ""exit_code"": 0,
-          ""label"": ""autonomous_local_corpus_definitions_query_v1_focused"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": "".                                                                        [100%]\n1 passed in 0.01s\n"",
-          ""timed_out"": false
+          ""family"": ""external_code_repair"",
+          ""kind"": ""search_heuristic"",
+          ""name"": ""prefer_external_failure_signal_reuse"",
+          ""rationale"": ""Rank exact capability repair operators ahead of unrelated schema repairs."",
+          ""target_surface"": ""scripts/closed_recursive_self_improvement_loop.py"",
+          ""validation_plan"": {
+            ""commands"": [
+              [
+                ""python"",
+                ""-m"",
+                ""pytest"",
+                ""-q"",
+                ""tests/test_capability_external_code_repair_operator_v1.py""
+              ]
+            ],
+            ""expected_signals"": [
+              ""public_counterexample_passes"",
+              ""hidden_transfer_case_passes"",
+              ""no_broad_regression_gate_failure""
+            ],
+            ""name"": ""validate_external_failure_signal""
+          }
         },
         {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""pytest"",
-            ""-q"",
-            ""--import-mode=importlib"",
-            ""--maxfail=20"",
-            ""--disable-warnings"",
-            ""tests""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_requests_code_transfer_repo__external_requests_code_failure_fixture_query__agent_coding_loop__r0"",
-          ""elapsed_s"": 0.202,
-          ""exit_code"": 0,
-          ""label"": ""autonomous_local_corpus_definitions_query_v1_root_broad"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": ""...                                                                      [100%]\n3 passed in 0.03s\n"",
-          ""timed_out"": false
+          ""family"": ""external_code_repair"",
+          ""kind"": ""evaluator_mutation"",
+          ""name"": ""external_failure_signal_hidden_transfer_case"",
+          ""rationale"": ""Add a held-out case that checks transfer beyond the public example."",
+          ""target_surface"": ""shared/capability_benchmarks.py"",
+          ""validation_plan"": {
+            ""commands"": [
+              [
+                ""python"",
+                ""-m"",
+                ""pytest"",
+                ""-q"",
+                ""tests/test_capability_external_code_repair_operator_v1.py""
+              ]
+            ],
+            ""expected_signals"": [
+              ""public_counterexample_passes"",
+              ""hidden_transfer_case_passes"",
+              ""no_broad_regression_gate_failure""
+            ],
+            ""name"": ""validate_external_failure_signal""
+          }
+        },
+        {
+          ""family"": ""external_code_repair"",
+          ""kind"": ""counterexample_test"",
+          ""name"": ""test_external_failure_signal_counterexample"",
+          ""rationale"": ""Lock the primitive with public and hidden transfer counterexamples."",
+          ""target_surface"": ""tests/test_capability_external_code_repair_operator_v1.py"",
+          ""validation_plan"": {
+            ""commands"": [
+              [
+                ""python"",
+                ""-m"",
+                ""pytest"",
+                ""-q"",
+                ""tests/test_capability_external_code_repair_operator_v1.py""
+              ]
+            ],
+            ""expected_signals"": [
+              ""public_counterexample_passes"",
+              ""hidden_transfer_case_passes"",
+              ""no_broad_regression_gate_failure""
+            ],
+            ""name"": ""validate_external_failure_signal""
+          }
         }
       ],
-      ""generation"": 1,
-      ""goal"": {
-        ""metric"": ""planner score 11.999 plus generated regression test"",
-        ""name"": ""autonomously_query_local_corpus_definitions"",
-        ""rationale"": ""The planner found a tuple-valued definitions field without a matching query API on LocalCorpusIndex. Evidence: field:definitions, method:records_with_definition, strategy:tuple_membership, canonical_strategy_bonus."",
-        ""target"": ""shared.local_corpus.LocalCorpusIndex""
-      },
-      ""name"": ""autonomous_local_corpus_definitions_query_v1"",
-      ""started_at"": ""2026-05-26T22:48:09Z"",
-      ""target_path"": ""shared/local_corpus.py"",
-      ""test_path"": ""tests/test_autonomous_local_corpus_definitions_query_v1.py""
+      ""started_at"": ""2026-05-27T03:47:15Z"",
+      ""target_path"": ""shared/external_repair_target.py"",
+      ""test_path"": ""tests/test_external_code_repair_task.py""
     }
   ],
-  ""active_base"": ""autonomous_local_corpus_definitions_query_v1"",
+  ""active_base"": ""external_code_repair_failure_signal_v1"",
   ""active_generation"": 1,
   ""broad_gate"": true,
+  ""capability_delta_score"": 1.949,
   ""dry_run"": false,
+  ""failure_residue_count"": 0,
+  ""hidden_transfer"": 1,
+  ""operator_reuse"": 2,
   ""persistence"": false,
   ""rejected_this_run"": [],
   ""rollback"": true,
-  ""state_path"": ""/tmp/rsi_experiments_j0sowaa1/external_requests_code_transfer_repo__external_requests_code_failure_fixture_query__agent_coding_loop__r0/.omega_rsi_runs/closed_rsi_state.json"",
+  ""solved_new_tasks"": 1,
+  ""state_path"": ""/tmp/rsi_experiments_oi1ojcn8/external_requests_code_transfer_repo__external_requests_code_failure_fixture_query__agent_coding_loop__r0/.omega_rsi_runs/closed_rsi_state.json"",
   ""thdse_core_gate"": true,
   ""total_accepted"": 1,
   ""total_rejected"": 0
 }
-",,external_code_unseen,psf/requests,Measure transfer on a sandbox fixture extracted from actual psf/requests source snippets and issue failure excerpts.,External code transfer succeeds when the loop patches a query API for external_requests_code_signals derived from bounded psf/requests source and failure snippets.
-external_requests_code_transfer_repo,Actual psf/requests source-code and issue-failure sandbox fixture.,external_requests_code_failure_fixture_query,ci_only_validation,baseline_ci_only,Baseline: run validation without candidate generation or code patching.,0,e55ec0889c6f,0,0.207,0,0,0.0,0,,False,0,0.207,0,/tmp/rsi_experiments_j0sowaa1/external_requests_code_transfer_repo__external_requests_code_failure_fixture_query__ci_only_validation__r0/.omega_rsi_runs/closed_rsi_summary.json,"..                                                                       [100%]
-2 passed in 0.03s
-",,external_code_unseen,psf/requests,Measure transfer on a sandbox fixture extracted from actual psf/requests source snippets and issue failure excerpts.,External code transfer succeeds when the loop patches a query API for external_requests_code_signals derived from bounded psf/requests source and failure snippets.
-external_requests_code_transfer_repo,Actual psf/requests source-code and issue-failure sandbox fixture.,external_requests_code_failure_fixture_query,verified_closed_loop,proposed,"Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",1,9ff9196fe8d7,0,1.331,3,0,1.0,0,,True,3,1.331,4,/tmp/rsi_experiments_j0sowaa1/external_requests_code_transfer_repo__external_requests_code_failure_fixture_query__verified_closed_loop__r1/.omega_rsi_runs/closed_rsi_summary.json,"egy:tuple_membership, canonical_strategy_bonus."",
-        ""target"": ""shared.local_corpus.LocalCorpusIndex""
-      },
-      ""name"": ""autonomous_local_corpus_external_requests_code_signals_query_v1"",
-      ""started_at"": ""2026-05-26T22:48:10Z"",
-      ""target_path"": ""shared/local_corpus.py"",
-      ""test_path"": ""tests/test_autonomous_local_corpus_external_requests_code_signals_query_v1.py""
-    },
-    {
-      ""accepted"": true,
-      ""error"": """",
-      ""extra_paths"": [],
-      ""finished_at"": ""2026-05-26T22:48:11Z"",
-      ""gates"": [
-        {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""py_compile"",
-            ""shared/local_corpus.py"",
-            ""tests/test_emergent_local_corpus_definitions_membership_v1.py""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_requests_code_transfer_repo__external_requests_code_failure_fixture_query__verified_closed_loop__r1"",
-          ""elapsed_s"": 0.033,
-          ""exit_code"": 0,
-          ""label"": ""emergent_local_corpus_definitions_membership_v1_compile"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": """",
-          ""timed_out"": false
+",,external_code_unseen,psf/requests,Measure transfer on a sandbox fixture extracted from actual psf/requests source snippets and issue failure excerpts.,External code transfer succeeds when the loop repairs a local executable failure target derived from bounded psf/requests source and failure snippets.,1.949,1,1,2,0
+external_requests_code_transfer_repo,Actual psf/requests source-code and issue-failure sandbox fixture.,external_requests_code_failure_fixture_query,ci_only_validation,baseline_ci_only,Baseline: run validation without candidate generation or code patching.,0,e55ec0889c6f,1,0.24,0,0,0.0,0,,False,0,0.24,0,/tmp/rsi_experiments_oi1ojcn8/external_requests_code_transfer_repo__external_requests_code_failure_fixture_query__ci_only_validation__r0/.omega_rsi_runs/closed_rsi_summary.json,"F..                                                                      [100%]
+=================================== FAILURES ===================================
+___________ test_external_failure_signal_is_a_real_local_repair_task ___________
+
+    def test_external_failure_signal_is_a_real_local_repair_task():
+        failure_text = (Path.cwd() / ""external_sandbox"" / ""failure_excerpt.txt"").read_text(encoding=""utf-8"")
+        events = (""metadata_loaded"", ""read_error"", ""empty_content"")
+    
+        assert failure_text
+>       assert external_failure_signal(events) == ""read_error""
+E       AssertionError: assert '' == 'read_error'
+E         
+E         - read_error
+
+tests/test_external_code_repair_task.py:11: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_external_code_repair_task.py::test_external_failure_signal_is_a_real_local_repair_task - AssertionError: assert '' == 'read_error'
+  
+  - read_error
+1 failed, 2 passed in 0.06s
+",,external_code_unseen,psf/requests,Measure transfer on a sandbox fixture extracted from actual psf/requests source snippets and issue failure excerpts.,External code transfer succeeds when the loop repairs a local executable failure target derived from bounded psf/requests source and failure snippets.,0,0,0,0,0
+external_hypothesis_code_transfer_repo,Actual Hypothesis source-code and issue-failure sandbox fixture.,external_hypothesis_code_failure_fixture_query,verified_closed_loop,proposed,"Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",0,abf3e17ce572,0,1.402,3,0,1.0,0,,True,3,1.402,5,/tmp/rsi_experiments_oi1ojcn8/external_hypothesis_code_transfer_repo__external_hypothesis_code_failure_fixture_query__verified_closed_loop__r0/.omega_rsi_runs/closed_rsi_summary.json,"               ""-q"",
+                ""tests/test_capability_schema_query_repair_operator_v1.py""
+              ]
+            ],
+            ""expected_signals"": [
+              ""public_counterexample_passes"",
+              ""hidden_transfer_case_passes"",
+              ""no_broad_regression_gate_failure""
+            ],
+            ""name"": ""validate_records_with_external_hypothesis_code_signal""
+          }
         },
         {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""pytest"",
-            ""-q"",
-            ""--import-mode=importlib"",
-            ""--maxfail=5"",
-            ""--disable-warnings"",
-            ""tests/test_emergent_local_corpus_definitions_membership_v1.py""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_requests_code_transfer_repo__external_requests_code_failure_fixture_query__verified_closed_loop__r1"",
-          ""elapsed_s"": 0.187,
-          ""exit_code"": 0,
-          ""label"": ""emergent_local_corpus_definitions_membership_v1_focused"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": "".                                                                        [100%]\n1 passed in 0.01s\n"",
-          ""timed_out"": false
+          ""family"": ""schema_query_repair"",
+          ""kind"": ""search_heuristic"",
+          ""name"": ""prefer_records_with_external_hypothesis_code_signal_reuse"",
+          ""rationale"": ""Rank exact capability repair operators ahead of unrelated schema repairs."",
+          ""target_surface"": ""scripts/closed_recursive_self_improvement_loop.py"",
+          ""validation_plan"": {
+            ""commands"": [
+              [
+                ""python"",
+                ""-m"",
+                ""pytest"",
+                ""-q"",
+                ""tests/test_capability_schema_query_repair_operator_v1.py""
+              ]
+            ],
+            ""expected_signals"": [
+              ""public_counterexample_passes"",
+              ""hidden_transfer_case_passes"",
+              ""no_broad_regression_gate_failure""
+            ],
+            ""name"": ""validate_records_with_external_hypothesis_code_signal""
+          }
         },
         {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""pytest"",
-            ""-q"",
-            ""--import-mode=importlib"",
-            ""--maxfail=20"",
-            ""--disable-warnings"",
-            ""tests""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_requests_code_transfer_repo__external_requests_code_failure_fixture_query__verified_closed_loop__r1"",
-          ""elapsed_s"": 0.198,
-          ""exit_code"": 0,
-          ""label"": ""emergent_local_corpus_definitions_membership_v1_root_broad"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": "".....                                                                    [100%]\n5 passed in 0.02s\n"",
-          ""timed_out"": false
+          ""family"": ""schema_query_repair"",
+          ""kind"": ""evaluator_mutation"",
+          ""name"": ""records_with_external_hypothesis_code_signal_hidden_transfer_case"",
+          ""rationale"": ""Add a held-out case that checks transfer beyond the public example."",
+          ""target_surface"": ""shared/capability_benchmarks.py"",
+          ""validation_plan"": {
+            ""commands"": [
+              [
+                ""python"",
+                ""-m"",
+                ""pytest"",
+                ""-q"",
+                ""tests/test_capability_schema_query_repair_operator_v1.py""
+              ]
+            ],
+            ""expected_signals"": [
+              ""public_counterexample_passes"",
+              ""hidden_transfer_case_passes"",
+              ""no_broad_regression_gate_failure""
+            ],
+            ""name"": ""validate_records_with_external_hypothesis_code_signal""
+          }
+        },
+        {
+          ""family"": ""schema_query_repair"",
+          ""kind"": ""counterexample_test"",
+          ""name"": ""test_records_with_external_hypothesis_code_signal_counterexample"",
+          ""rationale"": ""Lock the primitive with public and hidden transfer counterexamples."",
+          ""target_surface"": ""tests/test_capability_schema_query_repair_operator_v1.py"",
+          ""validation_plan"": {
+            ""commands"": [
+              [
+                ""python"",
+                ""-m"",
+                ""pytest"",
+                ""-q"",
+                ""tests/test_capability_schema_query_repair_operator_v1.py""
+              ]
+            ],
+            ""expected_signals"": [
+              ""public_counterexample_passes"",
+              ""hidden_transfer_case_passes"",
+              ""no_broad_regression_gate_failure""
+            ],
+            ""name"": ""validate_records_with_external_hypothesis_code_signal""
+          }
         }
       ],
-      ""generation"": 3,
-      ""goal"": {
-        ""metric"": ""planner score 9.999 plus generated regression test"",
-        ""name"": ""emergently_query_local_corpus_definitions"",
-        ""rationale"": ""The bounded emergent planner generated an alternate membership query hypothesis for definitions. Evidence: field:definitions, method:records_matching_definitions, strategy:alternate_tuple_membership."",
-        ""target"": ""shared.local_corpus.LocalCorpusIndex""
-      },
-      ""name"": ""emergent_local_corpus_definitions_membership_v1"",
-      ""started_at"": ""2026-05-26T22:48:10Z"",
-      ""target_path"": ""shared/local_corpus.py"",
-      ""test_path"": ""tests/test_emergent_local_corpus_definitions_membership_v1.py""
-    }
-  ],
-  ""active_base"": ""emergent_local_corpus_definitions_membership_v1"",
-  ""active_generation"": 3,
-  ""broad_gate"": true,
-  ""dry_run"": false,
-  ""persistence"": true,
-  ""rejected_this_run"": [],
-  ""rollback"": true,
-  ""state_path"": ""/tmp/rsi_experiments_j0sowaa1/external_requests_code_transfer_repo__external_requests_code_failure_fixture_query__verified_closed_loop__r1/.omega_rsi_runs/closed_rsi_state.json"",
-  ""thdse_core_gate"": true,
-  ""total_accepted"": 3,
-  ""total_rejected"": 0
-}
-",,external_code_unseen,psf/requests,Measure transfer on a sandbox fixture extracted from actual psf/requests source snippets and issue failure excerpts.,External code transfer succeeds when the loop patches a query API for external_requests_code_signals derived from bounded psf/requests source and failure snippets.
-external_requests_code_transfer_repo,Actual psf/requests source-code and issue-failure sandbox fixture.,external_requests_code_failure_fixture_query,agent_coding_loop,baseline_agent_coding_loop,Baseline: single-pass automated coding loop with validation but without persistent recursive depth.,1,0c3e7da36a57,0,0.488,1,0,1.0,0,,False,1,0.488,2,/tmp/rsi_experiments_j0sowaa1/external_requests_code_transfer_repo__external_requests_code_failure_fixture_query__agent_coding_loop__r1/.omega_rsi_runs/closed_rsi_summary.json,"{
-  ""accepted_this_run"": [
-    {
-      ""accepted"": true,
-      ""error"": """",
-      ""extra_paths"": [],
-      ""finished_at"": ""2026-05-26T22:48:11Z"",
-      ""gates"": [
-        {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""py_compile"",
-            ""shared/local_corpus.py"",
-            ""tests/test_autonomous_local_corpus_definitions_query_v1.py""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_requests_code_transfer_repo__external_requests_code_failure_fixture_query__agent_coding_loop__r1"",
-          ""elapsed_s"": 0.034,
-          ""exit_code"": 0,
-          ""label"": ""autonomous_local_corpus_definitions_query_v1_compile"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": """",
-          ""timed_out"": false
-        },
-        {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""pytest"",
-            ""-q"",
-            ""--import-mode=importlib"",
-            ""--maxfail=5"",
-            ""--disable-warnings"",
-            ""tests/test_autonomous_local_corpus_definitions_query_v1.py""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_requests_code_transfer_repo__external_requests_code_failure_fixture_query__agent_coding_loop__r1"",
-          ""elapsed_s"": 0.186,
-          ""exit_code"": 0,
-          ""label"": ""autonomous_local_corpus_definitions_query_v1_focused"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": "".                                                                        [100%]\n1 passed in 0.01s\n"",
-          ""timed_out"": false
-        },
-        {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""pytest"",
-            ""-q"",
-            ""--import-mode=importlib"",
-            ""--maxfail=20"",
-            ""--disable-warnings"",
-            ""tests""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_requests_code_transfer_repo__external_requests_code_failure_fixture_query__agent_coding_loop__r1"",
-          ""elapsed_s"": 0.204,
-          ""exit_code"": 0,
-          ""label"": ""autonomous_local_corpus_definitions_query_v1_root_broad"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": ""...                                                                      [100%]\n3 passed in 0.03s\n"",
-          ""timed_out"": false
-        }
-      ],
-      ""generation"": 1,
-      ""goal"": {
-        ""metric"": ""planner score 11.999 plus generated regression test"",
-        ""name"": ""autonomously_query_local_corpus_definitions"",
-        ""rationale"": ""The planner found a tuple-valued definitions field without a matching query API on LocalCorpusIndex. Evidence: field:definitions, method:records_with_definition, strategy:tuple_membership, canonical_strategy_bonus."",
-        ""target"": ""shared.local_corpus.LocalCorpusIndex""
-      },
-      ""name"": ""autonomous_local_corpus_definitions_query_v1"",
-      ""started_at"": ""2026-05-26T22:48:11Z"",
-      ""target_path"": ""shared/local_corpus.py"",
-      ""test_path"": ""tests/test_autonomous_local_corpus_definitions_query_v1.py""
-    }
-  ],
-  ""active_base"": ""autonomous_local_corpus_definitions_query_v1"",
-  ""active_generation"": 1,
-  ""broad_gate"": true,
-  ""dry_run"": false,
-  ""persistence"": false,
-  ""rejected_this_run"": [],
-  ""rollback"": true,
-  ""state_path"": ""/tmp/rsi_experiments_j0sowaa1/external_requests_code_transfer_repo__external_requests_code_failure_fixture_query__agent_coding_loop__r1/.omega_rsi_runs/closed_rsi_state.json"",
-  ""thdse_core_gate"": true,
-  ""total_accepted"": 1,
-  ""total_rejected"": 0
-}
-",,external_code_unseen,psf/requests,Measure transfer on a sandbox fixture extracted from actual psf/requests source snippets and issue failure excerpts.,External code transfer succeeds when the loop patches a query API for external_requests_code_signals derived from bounded psf/requests source and failure snippets.
-external_requests_code_transfer_repo,Actual psf/requests source-code and issue-failure sandbox fixture.,external_requests_code_failure_fixture_query,ci_only_validation,baseline_ci_only,Baseline: run validation without candidate generation or code patching.,1,d39fd7dd6c9d,0,0.214,0,0,0.0,0,,False,0,0.214,0,/tmp/rsi_experiments_j0sowaa1/external_requests_code_transfer_repo__external_requests_code_failure_fixture_query__ci_only_validation__r1/.omega_rsi_runs/closed_rsi_summary.json,"..                                                                       [100%]
-2 passed in 0.03s
-",,external_code_unseen,psf/requests,Measure transfer on a sandbox fixture extracted from actual psf/requests source snippets and issue failure excerpts.,External code transfer succeeds when the loop patches a query API for external_requests_code_signals derived from bounded psf/requests source and failure snippets.
-external_hypothesis_code_transfer_repo,Actual Hypothesis source-code and issue-failure sandbox fixture.,external_hypothesis_code_failure_fixture_query,verified_closed_loop,proposed,"Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",0,abf3e17ce572,0,1.336,3,0,1.0,0,,True,3,1.336,4,/tmp/rsi_experiments_j0sowaa1/external_hypothesis_code_transfer_repo__external_hypothesis_code_failure_fixture_query__verified_closed_loop__r0/.omega_rsi_runs/closed_rsi_summary.json,", canonical_strategy_bonus."",
-        ""target"": ""shared.local_corpus.LocalCorpusIndex""
-      },
-      ""name"": ""autonomous_local_corpus_external_hypothesis_code_signals_query_v1"",
-      ""started_at"": ""2026-05-26T22:48:12Z"",
+      ""started_at"": ""2026-05-27T03:47:17Z"",
       ""target_path"": ""shared/local_corpus.py"",
       ""test_path"": ""tests/test_autonomous_local_corpus_external_hypothesis_code_signals_query_v1.py""
-    },
-    {
-      ""accepted"": true,
-      ""error"": """",
-      ""extra_paths"": [],
-      ""finished_at"": ""2026-05-26T22:48:13Z"",
-      ""gates"": [
-        {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""py_compile"",
-            ""shared/local_corpus.py"",
-            ""tests/test_emergent_local_corpus_definitions_membership_v1.py""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_hypothesis_code_transfer_repo__external_hypothesis_code_failure_fixture_query__verified_closed_loop__r0"",
-          ""elapsed_s"": 0.033,
-          ""exit_code"": 0,
-          ""label"": ""emergent_local_corpus_definitions_membership_v1_compile"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": """",
-          ""timed_out"": false
-        },
-        {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""pytest"",
-            ""-q"",
-            ""--import-mode=importlib"",
-            ""--maxfail=5"",
-            ""--disable-warnings"",
-            ""tests/test_emergent_local_corpus_definitions_membership_v1.py""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_hypothesis_code_transfer_repo__external_hypothesis_code_failure_fixture_query__verified_closed_loop__r0"",
-          ""elapsed_s"": 0.187,
-          ""exit_code"": 0,
-          ""label"": ""emergent_local_corpus_definitions_membership_v1_focused"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": "".                                                                        [100%]\n1 passed in 0.01s\n"",
-          ""timed_out"": false
-        },
-        {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""pytest"",
-            ""-q"",
-            ""--import-mode=importlib"",
-            ""--maxfail=20"",
-            ""--disable-warnings"",
-            ""tests""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_hypothesis_code_transfer_repo__external_hypothesis_code_failure_fixture_query__verified_closed_loop__r0"",
-          ""elapsed_s"": 0.203,
-          ""exit_code"": 0,
-          ""label"": ""emergent_local_corpus_definitions_membership_v1_root_broad"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": "".....                                                                    [100%]\n5 passed in 0.02s\n"",
-          ""timed_out"": false
-        }
-      ],
-      ""generation"": 3,
-      ""goal"": {
-        ""metric"": ""planner score 9.999 plus generated regression test"",
-        ""name"": ""emergently_query_local_corpus_definitions"",
-        ""rationale"": ""The bounded emergent planner generated an alternate membership query hypothesis for definitions. Evidence: field:definitions, method:records_matching_definitions, strategy:alternate_tuple_membership."",
-        ""target"": ""shared.local_corpus.LocalCorpusIndex""
-      },
-      ""name"": ""emergent_local_corpus_definitions_membership_v1"",
-      ""started_at"": ""2026-05-26T22:48:12Z"",
-      ""target_path"": ""shared/local_corpus.py"",
-      ""test_path"": ""tests/test_emergent_local_corpus_definitions_membership_v1.py""
     }
   ],
-  ""active_base"": ""emergent_local_corpus_definitions_membership_v1"",
+  ""active_base"": ""autonomous_local_corpus_external_hypothesis_code_signals_query_v1"",
   ""active_generation"": 3,
   ""broad_gate"": true,
+  ""capability_delta_score"": 5.847,
   ""dry_run"": false,
+  ""failure_residue_count"": 0,
+  ""hidden_transfer"": 3,
+  ""operator_reuse"": 6,
   ""persistence"": true,
   ""rejected_this_run"": [],
   ""rollback"": true,
-  ""state_path"": ""/tmp/rsi_experiments_j0sowaa1/external_hypothesis_code_transfer_repo__external_hypothesis_code_failure_fixture_query__verified_closed_loop__r0/.omega_rsi_runs/closed_rsi_state.json"",
+  ""solved_new_tasks"": 3,
+  ""state_path"": ""/tmp/rsi_experiments_oi1ojcn8/external_hypothesis_code_transfer_repo__external_hypothesis_code_failure_fixture_query__verified_closed_loop__r0/.omega_rsi_runs/closed_rsi_state.json"",
   ""thdse_core_gate"": true,
   ""total_accepted"": 3,
   ""total_rejected"": 0
 }
-",,external_code_unseen,hypothesisworks/hypothesis,Measure transfer on a sandbox fixture extracted from actual hypothesisworks/hypothesis source snippets and issue failure excerpts.,External code transfer succeeds when the loop patches a query API for external_hypothesis_code_signals derived from bounded hypothesisworks/hypothesis source and failure snippets.
-external_hypothesis_code_transfer_repo,Actual Hypothesis source-code and issue-failure sandbox fixture.,external_hypothesis_code_failure_fixture_query,agent_coding_loop,baseline_agent_coding_loop,Baseline: single-pass automated coding loop with validation but without persistent recursive depth.,0,703bdd368e6e,0,0.489,1,0,1.0,0,,False,1,0.489,2,/tmp/rsi_experiments_j0sowaa1/external_hypothesis_code_transfer_repo__external_hypothesis_code_failure_fixture_query__agent_coding_loop__r0/.omega_rsi_runs/closed_rsi_summary.json,"{
-  ""accepted_this_run"": [
-    {
-      ""accepted"": true,
-      ""error"": """",
-      ""extra_paths"": [],
-      ""finished_at"": ""2026-05-26T22:48:13Z"",
-      ""gates"": [
-        {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""py_compile"",
-            ""shared/local_corpus.py"",
-            ""tests/test_autonomous_local_corpus_definitions_query_v1.py""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_hypothesis_code_transfer_repo__external_hypothesis_code_failure_fixture_query__agent_coding_loop__r0"",
-          ""elapsed_s"": 0.033,
-          ""exit_code"": 0,
-          ""label"": ""autonomous_local_corpus_definitions_query_v1_compile"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": """",
-          ""timed_out"": false
+",,external_code_unseen,hypothesisworks/hypothesis,Measure transfer on a sandbox fixture extracted from actual hypothesisworks/hypothesis source snippets and issue failure excerpts.,External code transfer succeeds when the loop repairs a local executable failure target derived from bounded hypothesisworks/hypothesis source and failure snippets.,5.847,3,3,6,0
+external_hypothesis_code_transfer_repo,Actual Hypothesis source-code and issue-failure sandbox fixture.,external_hypothesis_code_failure_fixture_query,agent_coding_loop,baseline_agent_coding_loop,Baseline: single-pass automated coding loop with validation but without persistent recursive depth.,0,703bdd368e6e,0,0.511,1,0,1.0,0,,False,1,0.511,2,/tmp/rsi_experiments_oi1ojcn8/external_hypothesis_code_transfer_repo__external_hypothesis_code_failure_fixture_query__agent_coding_loop__r0/.omega_rsi_runs/closed_rsi_summary.json,"rget_surface"": ""shared/capability_primitives.py"",
+          ""validation_plan"": {
+            ""commands"": [
+              [
+                ""python"",
+                ""-m"",
+                ""pytest"",
+                ""-q"",
+                ""tests/test_capability_external_code_repair_operator_v1.py""
+              ]
+            ],
+            ""expected_signals"": [
+              ""public_counterexample_passes"",
+              ""hidden_transfer_case_passes"",
+              ""no_broad_regression_gate_failure""
+            ],
+            ""name"": ""validate_external_failure_signal""
+          }
         },
         {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""pytest"",
-            ""-q"",
-            ""--import-mode=importlib"",
-            ""--maxfail=5"",
-            ""--disable-warnings"",
-            ""tests/test_autonomous_local_corpus_definitions_query_v1.py""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_hypothesis_code_transfer_repo__external_hypothesis_code_failure_fixture_query__agent_coding_loop__r0"",
-          ""elapsed_s"": 0.187,
-          ""exit_code"": 0,
-          ""label"": ""autonomous_local_corpus_definitions_query_v1_focused"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": "".                                                                        [100%]\n1 passed in 0.01s\n"",
-          ""timed_out"": false
+          ""family"": ""external_code_repair"",
+          ""kind"": ""search_heuristic"",
+          ""name"": ""prefer_external_failure_signal_reuse"",
+          ""rationale"": ""Rank exact capability repair operators ahead of unrelated schema repairs."",
+          ""target_surface"": ""scripts/closed_recursive_self_improvement_loop.py"",
+          ""validation_plan"": {
+            ""commands"": [
+              [
+                ""python"",
+                ""-m"",
+                ""pytest"",
+                ""-q"",
+                ""tests/test_capability_external_code_repair_operator_v1.py""
+              ]
+            ],
+            ""expected_signals"": [
+              ""public_counterexample_passes"",
+              ""hidden_transfer_case_passes"",
+              ""no_broad_regression_gate_failure""
+            ],
+            ""name"": ""validate_external_failure_signal""
+          }
         },
         {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""pytest"",
-            ""-q"",
-            ""--import-mode=importlib"",
-            ""--maxfail=20"",
-            ""--disable-warnings"",
-            ""tests""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_hypothesis_code_transfer_repo__external_hypothesis_code_failure_fixture_query__agent_coding_loop__r0"",
-          ""elapsed_s"": 0.205,
-          ""exit_code"": 0,
-          ""label"": ""autonomous_local_corpus_definitions_query_v1_root_broad"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": ""...                                                                      [100%]\n3 passed in 0.03s\n"",
-          ""timed_out"": false
+          ""family"": ""external_code_repair"",
+          ""kind"": ""evaluator_mutation"",
+          ""name"": ""external_failure_signal_hidden_transfer_case"",
+          ""rationale"": ""Add a held-out case that checks transfer beyond the public example."",
+          ""target_surface"": ""shared/capability_benchmarks.py"",
+          ""validation_plan"": {
+            ""commands"": [
+              [
+                ""python"",
+                ""-m"",
+                ""pytest"",
+                ""-q"",
+                ""tests/test_capability_external_code_repair_operator_v1.py""
+              ]
+            ],
+            ""expected_signals"": [
+              ""public_counterexample_passes"",
+              ""hidden_transfer_case_passes"",
+              ""no_broad_regression_gate_failure""
+            ],
+            ""name"": ""validate_external_failure_signal""
+          }
+        },
+        {
+          ""family"": ""external_code_repair"",
+          ""kind"": ""counterexample_test"",
+          ""name"": ""test_external_failure_signal_counterexample"",
+          ""rationale"": ""Lock the primitive with public and hidden transfer counterexamples."",
+          ""target_surface"": ""tests/test_capability_external_code_repair_operator_v1.py"",
+          ""validation_plan"": {
+            ""commands"": [
+              [
+                ""python"",
+                ""-m"",
+                ""pytest"",
+                ""-q"",
+                ""tests/test_capability_external_code_repair_operator_v1.py""
+              ]
+            ],
+            ""expected_signals"": [
+              ""public_counterexample_passes"",
+              ""hidden_transfer_case_passes"",
+              ""no_broad_regression_gate_failure""
+            ],
+            ""name"": ""validate_external_failure_signal""
+          }
         }
       ],
-      ""generation"": 1,
-      ""goal"": {
-        ""metric"": ""planner score 11.999 plus generated regression test"",
-        ""name"": ""autonomously_query_local_corpus_definitions"",
-        ""rationale"": ""The planner found a tuple-valued definitions field without a matching query API on LocalCorpusIndex. Evidence: field:definitions, method:records_with_definition, strategy:tuple_membership, canonical_strategy_bonus."",
-        ""target"": ""shared.local_corpus.LocalCorpusIndex""
-      },
-      ""name"": ""autonomous_local_corpus_definitions_query_v1"",
-      ""started_at"": ""2026-05-26T22:48:13Z"",
-      ""target_path"": ""shared/local_corpus.py"",
-      ""test_path"": ""tests/test_autonomous_local_corpus_definitions_query_v1.py""
+      ""started_at"": ""2026-05-27T03:47:17Z"",
+      ""target_path"": ""shared/external_repair_target.py"",
+      ""test_path"": ""tests/test_external_code_repair_task.py""
     }
   ],
-  ""active_base"": ""autonomous_local_corpus_definitions_query_v1"",
+  ""active_base"": ""external_code_repair_failure_signal_v1"",
   ""active_generation"": 1,
   ""broad_gate"": true,
+  ""capability_delta_score"": 1.949,
   ""dry_run"": false,
+  ""failure_residue_count"": 0,
+  ""hidden_transfer"": 1,
+  ""operator_reuse"": 2,
   ""persistence"": false,
   ""rejected_this_run"": [],
   ""rollback"": true,
-  ""state_path"": ""/tmp/rsi_experiments_j0sowaa1/external_hypothesis_code_transfer_repo__external_hypothesis_code_failure_fixture_query__agent_coding_loop__r0/.omega_rsi_runs/closed_rsi_state.json"",
+  ""solved_new_tasks"": 1,
+  ""state_path"": ""/tmp/rsi_experiments_oi1ojcn8/external_hypothesis_code_transfer_repo__external_hypothesis_code_failure_fixture_query__agent_coding_loop__r0/.omega_rsi_runs/closed_rsi_state.json"",
   ""thdse_core_gate"": true,
   ""total_accepted"": 1,
   ""total_rejected"": 0
 }
-",,external_code_unseen,hypothesisworks/hypothesis,Measure transfer on a sandbox fixture extracted from actual hypothesisworks/hypothesis source snippets and issue failure excerpts.,External code transfer succeeds when the loop patches a query API for external_hypothesis_code_signals derived from bounded hypothesisworks/hypothesis source and failure snippets.
-external_hypothesis_code_transfer_repo,Actual Hypothesis source-code and issue-failure sandbox fixture.,external_hypothesis_code_failure_fixture_query,ci_only_validation,baseline_ci_only,Baseline: run validation without candidate generation or code patching.,0,b8dbae0c8588,0,0.208,0,0,0.0,0,,False,0,0.208,0,/tmp/rsi_experiments_j0sowaa1/external_hypothesis_code_transfer_repo__external_hypothesis_code_failure_fixture_query__ci_only_validation__r0/.omega_rsi_runs/closed_rsi_summary.json,"..                                                                       [100%]
-2 passed in 0.03s
-",,external_code_unseen,hypothesisworks/hypothesis,Measure transfer on a sandbox fixture extracted from actual hypothesisworks/hypothesis source snippets and issue failure excerpts.,External code transfer succeeds when the loop patches a query API for external_hypothesis_code_signals derived from bounded hypothesisworks/hypothesis source and failure snippets.
-external_hypothesis_code_transfer_repo,Actual Hypothesis source-code and issue-failure sandbox fixture.,external_hypothesis_code_failure_fixture_query,verified_closed_loop,proposed,"Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",1,d500f95641ac,0,1.336,3,0,1.0,0,,True,3,1.336,4,/tmp/rsi_experiments_j0sowaa1/external_hypothesis_code_transfer_repo__external_hypothesis_code_failure_fixture_query__verified_closed_loop__r1/.omega_rsi_runs/closed_rsi_summary.json,", canonical_strategy_bonus."",
-        ""target"": ""shared.local_corpus.LocalCorpusIndex""
-      },
-      ""name"": ""autonomous_local_corpus_external_hypothesis_code_signals_query_v1"",
-      ""started_at"": ""2026-05-26T22:48:14Z"",
-      ""target_path"": ""shared/local_corpus.py"",
-      ""test_path"": ""tests/test_autonomous_local_corpus_external_hypothesis_code_signals_query_v1.py""
-    },
-    {
-      ""accepted"": true,
-      ""error"": """",
-      ""extra_paths"": [],
-      ""finished_at"": ""2026-05-26T22:48:15Z"",
-      ""gates"": [
-        {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""py_compile"",
-            ""shared/local_corpus.py"",
-            ""tests/test_emergent_local_corpus_definitions_membership_v1.py""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_hypothesis_code_transfer_repo__external_hypothesis_code_failure_fixture_query__verified_closed_loop__r1"",
-          ""elapsed_s"": 0.034,
-          ""exit_code"": 0,
-          ""label"": ""emergent_local_corpus_definitions_membership_v1_compile"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": """",
-          ""timed_out"": false
+",,external_code_unseen,hypothesisworks/hypothesis,Measure transfer on a sandbox fixture extracted from actual hypothesisworks/hypothesis source snippets and issue failure excerpts.,External code transfer succeeds when the loop repairs a local executable failure target derived from bounded hypothesisworks/hypothesis source and failure snippets.,1.949,1,1,2,0
+external_hypothesis_code_transfer_repo,Actual Hypothesis source-code and issue-failure sandbox fixture.,external_hypothesis_code_failure_fixture_query,ci_only_validation,baseline_ci_only,Baseline: run validation without candidate generation or code patching.,0,b8dbae0c8588,1,0.239,0,0,0.0,0,,False,0,0.239,0,/tmp/rsi_experiments_oi1ojcn8/external_hypothesis_code_transfer_repo__external_hypothesis_code_failure_fixture_query__ci_only_validation__r0/.omega_rsi_runs/closed_rsi_summary.json,"F..                                                                      [100%]
+=================================== FAILURES ===================================
+___________ test_external_failure_signal_is_a_real_local_repair_task ___________
+
+    def test_external_failure_signal_is_a_real_local_repair_task():
+        failure_text = (Path.cwd() / ""external_sandbox"" / ""failure_excerpt.txt"").read_text(encoding=""utf-8"")
+        events = (""metadata_loaded"", ""read_error"", ""empty_content"")
+    
+        assert failure_text
+>       assert external_failure_signal(events) == ""read_error""
+E       AssertionError: assert '' == 'read_error'
+E         
+E         - read_error
+
+tests/test_external_code_repair_task.py:11: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_external_code_repair_task.py::test_external_failure_signal_is_a_real_local_repair_task - AssertionError: assert '' == 'read_error'
+  
+  - read_error
+1 failed, 2 passed in 0.06s
+",,external_code_unseen,hypothesisworks/hypothesis,Measure transfer on a sandbox fixture extracted from actual hypothesisworks/hypothesis source snippets and issue failure excerpts.,External code transfer succeeds when the loop repairs a local executable failure target derived from bounded hypothesisworks/hypothesis source and failure snippets.,0,0,0,0,0
+external_pandas_code_transfer_repo,Actual pandas source-code and issue-failure sandbox fixture.,external_pandas_code_failure_fixture_query,verified_closed_loop,proposed,"Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",0,7dac74bf59c1,0,1.39,3,0,1.0,0,,True,3,1.39,5,/tmp/rsi_experiments_oi1ojcn8/external_pandas_code_transfer_repo__external_pandas_code_failure_fixture_query__verified_closed_loop__r0/.omega_rsi_runs/closed_rsi_summary.json,"           ""-m"",
+                ""pytest"",
+                ""-q"",
+                ""tests/test_capability_schema_query_repair_operator_v1.py""
+              ]
+            ],
+            ""expected_signals"": [
+              ""public_counterexample_passes"",
+              ""hidden_transfer_case_passes"",
+              ""no_broad_regression_gate_failure""
+            ],
+            ""name"": ""validate_records_with_external_pandas_code_signal""
+          }
         },
         {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""pytest"",
-            ""-q"",
-            ""--import-mode=importlib"",
-            ""--maxfail=5"",
-            ""--disable-warnings"",
-            ""tests/test_emergent_local_corpus_definitions_membership_v1.py""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_hypothesis_code_transfer_repo__external_hypothesis_code_failure_fixture_query__verified_closed_loop__r1"",
-          ""elapsed_s"": 0.189,
-          ""exit_code"": 0,
-          ""label"": ""emergent_local_corpus_definitions_membership_v1_focused"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": "".                                                                        [100%]\n1 passed in 0.01s\n"",
-          ""timed_out"": false
+          ""family"": ""schema_query_repair"",
+          ""kind"": ""search_heuristic"",
+          ""name"": ""prefer_records_with_external_pandas_code_signal_reuse"",
+          ""rationale"": ""Rank exact capability repair operators ahead of unrelated schema repairs."",
+          ""target_surface"": ""scripts/closed_recursive_self_improvement_loop.py"",
+          ""validation_plan"": {
+            ""commands"": [
+              [
+                ""python"",
+                ""-m"",
+                ""pytest"",
+                ""-q"",
+                ""tests/test_capability_schema_query_repair_operator_v1.py""
+              ]
+            ],
+            ""expected_signals"": [
+              ""public_counterexample_passes"",
+              ""hidden_transfer_case_passes"",
+              ""no_broad_regression_gate_failure""
+            ],
+            ""name"": ""validate_records_with_external_pandas_code_signal""
+          }
         },
         {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""pytest"",
-            ""-q"",
-            ""--import-mode=importlib"",
-            ""--maxfail=20"",
-            ""--disable-warnings"",
-            ""tests""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_hypothesis_code_transfer_repo__external_hypothesis_code_failure_fixture_query__verified_closed_loop__r1"",
-          ""elapsed_s"": 0.199,
-          ""exit_code"": 0,
-          ""label"": ""emergent_local_corpus_definitions_membership_v1_root_broad"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": "".....                                                                    [100%]\n5 passed in 0.02s\n"",
-          ""timed_out"": false
+          ""family"": ""schema_query_repair"",
+          ""kind"": ""evaluator_mutation"",
+          ""name"": ""records_with_external_pandas_code_signal_hidden_transfer_case"",
+          ""rationale"": ""Add a held-out case that checks transfer beyond the public example."",
+          ""target_surface"": ""shared/capability_benchmarks.py"",
+          ""validation_plan"": {
+            ""commands"": [
+              [
+                ""python"",
+                ""-m"",
+                ""pytest"",
+                ""-q"",
+                ""tests/test_capability_schema_query_repair_operator_v1.py""
+              ]
+            ],
+            ""expected_signals"": [
+              ""public_counterexample_passes"",
+              ""hidden_transfer_case_passes"",
+              ""no_broad_regression_gate_failure""
+            ],
+            ""name"": ""validate_records_with_external_pandas_code_signal""
+          }
+        },
+        {
+          ""family"": ""schema_query_repair"",
+          ""kind"": ""counterexample_test"",
+          ""name"": ""test_records_with_external_pandas_code_signal_counterexample"",
+          ""rationale"": ""Lock the primitive with public and hidden transfer counterexamples."",
+          ""target_surface"": ""tests/test_capability_schema_query_repair_operator_v1.py"",
+          ""validation_plan"": {
+            ""commands"": [
+              [
+                ""python"",
+                ""-m"",
+                ""pytest"",
+                ""-q"",
+                ""tests/test_capability_schema_query_repair_operator_v1.py""
+              ]
+            ],
+            ""expected_signals"": [
+              ""public_counterexample_passes"",
+              ""hidden_transfer_case_passes"",
+              ""no_broad_regression_gate_failure""
+            ],
+            ""name"": ""validate_records_with_external_pandas_code_signal""
+          }
         }
       ],
-      ""generation"": 3,
-      ""goal"": {
-        ""metric"": ""planner score 9.999 plus generated regression test"",
-        ""name"": ""emergently_query_local_corpus_definitions"",
-        ""rationale"": ""The bounded emergent planner generated an alternate membership query hypothesis for definitions. Evidence: field:definitions, method:records_matching_definitions, strategy:alternate_tuple_membership."",
-        ""target"": ""shared.local_corpus.LocalCorpusIndex""
-      },
-      ""name"": ""emergent_local_corpus_definitions_membership_v1"",
-      ""started_at"": ""2026-05-26T22:48:14Z"",
-      ""target_path"": ""shared/local_corpus.py"",
-      ""test_path"": ""tests/test_emergent_local_corpus_definitions_membership_v1.py""
-    }
-  ],
-  ""active_base"": ""emergent_local_corpus_definitions_membership_v1"",
-  ""active_generation"": 3,
-  ""broad_gate"": true,
-  ""dry_run"": false,
-  ""persistence"": true,
-  ""rejected_this_run"": [],
-  ""rollback"": true,
-  ""state_path"": ""/tmp/rsi_experiments_j0sowaa1/external_hypothesis_code_transfer_repo__external_hypothesis_code_failure_fixture_query__verified_closed_loop__r1/.omega_rsi_runs/closed_rsi_state.json"",
-  ""thdse_core_gate"": true,
-  ""total_accepted"": 3,
-  ""total_rejected"": 0
-}
-",,external_code_unseen,hypothesisworks/hypothesis,Measure transfer on a sandbox fixture extracted from actual hypothesisworks/hypothesis source snippets and issue failure excerpts.,External code transfer succeeds when the loop patches a query API for external_hypothesis_code_signals derived from bounded hypothesisworks/hypothesis source and failure snippets.
-external_hypothesis_code_transfer_repo,Actual Hypothesis source-code and issue-failure sandbox fixture.,external_hypothesis_code_failure_fixture_query,agent_coding_loop,baseline_agent_coding_loop,Baseline: single-pass automated coding loop with validation but without persistent recursive depth.,1,051593a8761d,0,0.499,1,0,1.0,0,,False,1,0.499,2,/tmp/rsi_experiments_j0sowaa1/external_hypothesis_code_transfer_repo__external_hypothesis_code_failure_fixture_query__agent_coding_loop__r1/.omega_rsi_runs/closed_rsi_summary.json,"{
-  ""accepted_this_run"": [
-    {
-      ""accepted"": true,
-      ""error"": """",
-      ""extra_paths"": [],
-      ""finished_at"": ""2026-05-26T22:48:15Z"",
-      ""gates"": [
-        {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""py_compile"",
-            ""shared/local_corpus.py"",
-            ""tests/test_autonomous_local_corpus_definitions_query_v1.py""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_hypothesis_code_transfer_repo__external_hypothesis_code_failure_fixture_query__agent_coding_loop__r1"",
-          ""elapsed_s"": 0.034,
-          ""exit_code"": 0,
-          ""label"": ""autonomous_local_corpus_definitions_query_v1_compile"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": """",
-          ""timed_out"": false
-        },
-        {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""pytest"",
-            ""-q"",
-            ""--import-mode=importlib"",
-            ""--maxfail=5"",
-            ""--disable-warnings"",
-            ""tests/test_autonomous_local_corpus_definitions_query_v1.py""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_hypothesis_code_transfer_repo__external_hypothesis_code_failure_fixture_query__agent_coding_loop__r1"",
-          ""elapsed_s"": 0.188,
-          ""exit_code"": 0,
-          ""label"": ""autonomous_local_corpus_definitions_query_v1_focused"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": "".                                                                        [100%]\n1 passed in 0.01s\n"",
-          ""timed_out"": false
-        },
-        {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""pytest"",
-            ""-q"",
-            ""--import-mode=importlib"",
-            ""--maxfail=20"",
-            ""--disable-warnings"",
-            ""tests""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_hypothesis_code_transfer_repo__external_hypothesis_code_failure_fixture_query__agent_coding_loop__r1"",
-          ""elapsed_s"": 0.212,
-          ""exit_code"": 0,
-          ""label"": ""autonomous_local_corpus_definitions_query_v1_root_broad"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": ""...                                                                      [100%]\n3 passed in 0.03s\n"",
-          ""timed_out"": false
-        }
-      ],
-      ""generation"": 1,
-      ""goal"": {
-        ""metric"": ""planner score 11.999 plus generated regression test"",
-        ""name"": ""autonomously_query_local_corpus_definitions"",
-        ""rationale"": ""The planner found a tuple-valued definitions field without a matching query API on LocalCorpusIndex. Evidence: field:definitions, method:records_with_definition, strategy:tuple_membership, canonical_strategy_bonus."",
-        ""target"": ""shared.local_corpus.LocalCorpusIndex""
-      },
-      ""name"": ""autonomous_local_corpus_definitions_query_v1"",
-      ""started_at"": ""2026-05-26T22:48:15Z"",
-      ""target_path"": ""shared/local_corpus.py"",
-      ""test_path"": ""tests/test_autonomous_local_corpus_definitions_query_v1.py""
-    }
-  ],
-  ""active_base"": ""autonomous_local_corpus_definitions_query_v1"",
-  ""active_generation"": 1,
-  ""broad_gate"": true,
-  ""dry_run"": false,
-  ""persistence"": false,
-  ""rejected_this_run"": [],
-  ""rollback"": true,
-  ""state_path"": ""/tmp/rsi_experiments_j0sowaa1/external_hypothesis_code_transfer_repo__external_hypothesis_code_failure_fixture_query__agent_coding_loop__r1/.omega_rsi_runs/closed_rsi_state.json"",
-  ""thdse_core_gate"": true,
-  ""total_accepted"": 1,
-  ""total_rejected"": 0
-}
-",,external_code_unseen,hypothesisworks/hypothesis,Measure transfer on a sandbox fixture extracted from actual hypothesisworks/hypothesis source snippets and issue failure excerpts.,External code transfer succeeds when the loop patches a query API for external_hypothesis_code_signals derived from bounded hypothesisworks/hypothesis source and failure snippets.
-external_hypothesis_code_transfer_repo,Actual Hypothesis source-code and issue-failure sandbox fixture.,external_hypothesis_code_failure_fixture_query,ci_only_validation,baseline_ci_only,Baseline: run validation without candidate generation or code patching.,1,a6b7372a7675,0,0.208,0,0,0.0,0,,False,0,0.208,0,/tmp/rsi_experiments_j0sowaa1/external_hypothesis_code_transfer_repo__external_hypothesis_code_failure_fixture_query__ci_only_validation__r1/.omega_rsi_runs/closed_rsi_summary.json,"..                                                                       [100%]
-2 passed in 0.03s
-",,external_code_unseen,hypothesisworks/hypothesis,Measure transfer on a sandbox fixture extracted from actual hypothesisworks/hypothesis source snippets and issue failure excerpts.,External code transfer succeeds when the loop patches a query API for external_hypothesis_code_signals derived from bounded hypothesisworks/hypothesis source and failure snippets.
-external_pandas_code_transfer_repo,Actual pandas source-code and issue-failure sandbox fixture.,external_pandas_code_failure_fixture_query,verified_closed_loop,proposed,"Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",0,7dac74bf59c1,0,1.333,3,0,1.0,0,,True,3,1.333,4,/tmp/rsi_experiments_j0sowaa1/external_pandas_code_transfer_repo__external_pandas_code_failure_fixture_query__verified_closed_loop__r0/.omega_rsi_runs/closed_rsi_summary.json,"s_code_signal, strategy:tuple_membership, canonical_strategy_bonus."",
-        ""target"": ""shared.local_corpus.LocalCorpusIndex""
-      },
-      ""name"": ""autonomous_local_corpus_external_pandas_code_signals_query_v1"",
-      ""started_at"": ""2026-05-26T22:48:16Z"",
+      ""started_at"": ""2026-05-27T03:47:19Z"",
       ""target_path"": ""shared/local_corpus.py"",
       ""test_path"": ""tests/test_autonomous_local_corpus_external_pandas_code_signals_query_v1.py""
-    },
-    {
-      ""accepted"": true,
-      ""error"": """",
-      ""extra_paths"": [],
-      ""finished_at"": ""2026-05-26T22:48:17Z"",
-      ""gates"": [
-        {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""py_compile"",
-            ""shared/local_corpus.py"",
-            ""tests/test_emergent_local_corpus_definitions_membership_v1.py""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_pandas_code_transfer_repo__external_pandas_code_failure_fixture_query__verified_closed_loop__r0"",
-          ""elapsed_s"": 0.034,
-          ""exit_code"": 0,
-          ""label"": ""emergent_local_corpus_definitions_membership_v1_compile"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": """",
-          ""timed_out"": false
-        },
-        {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""pytest"",
-            ""-q"",
-            ""--import-mode=importlib"",
-            ""--maxfail=5"",
-            ""--disable-warnings"",
-            ""tests/test_emergent_local_corpus_definitions_membership_v1.py""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_pandas_code_transfer_repo__external_pandas_code_failure_fixture_query__verified_closed_loop__r0"",
-          ""elapsed_s"": 0.187,
-          ""exit_code"": 0,
-          ""label"": ""emergent_local_corpus_definitions_membership_v1_focused"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": "".                                                                        [100%]\n1 passed in 0.01s\n"",
-          ""timed_out"": false
-        },
-        {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""pytest"",
-            ""-q"",
-            ""--import-mode=importlib"",
-            ""--maxfail=20"",
-            ""--disable-warnings"",
-            ""tests""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_pandas_code_transfer_repo__external_pandas_code_failure_fixture_query__verified_closed_loop__r0"",
-          ""elapsed_s"": 0.197,
-          ""exit_code"": 0,
-          ""label"": ""emergent_local_corpus_definitions_membership_v1_root_broad"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": "".....                                                                    [100%]\n5 passed in 0.02s\n"",
-          ""timed_out"": false
-        }
-      ],
-      ""generation"": 3,
-      ""goal"": {
-        ""metric"": ""planner score 9.999 plus generated regression test"",
-        ""name"": ""emergently_query_local_corpus_definitions"",
-        ""rationale"": ""The bounded emergent planner generated an alternate membership query hypothesis for definitions. Evidence: field:definitions, method:records_matching_definitions, strategy:alternate_tuple_membership."",
-        ""target"": ""shared.local_corpus.LocalCorpusIndex""
-      },
-      ""name"": ""emergent_local_corpus_definitions_membership_v1"",
-      ""started_at"": ""2026-05-26T22:48:16Z"",
-      ""target_path"": ""shared/local_corpus.py"",
-      ""test_path"": ""tests/test_emergent_local_corpus_definitions_membership_v1.py""
     }
   ],
-  ""active_base"": ""emergent_local_corpus_definitions_membership_v1"",
+  ""active_base"": ""autonomous_local_corpus_external_pandas_code_signals_query_v1"",
   ""active_generation"": 3,
   ""broad_gate"": true,
+  ""capability_delta_score"": 5.847,
   ""dry_run"": false,
+  ""failure_residue_count"": 0,
+  ""hidden_transfer"": 3,
+  ""operator_reuse"": 6,
   ""persistence"": true,
   ""rejected_this_run"": [],
   ""rollback"": true,
-  ""state_path"": ""/tmp/rsi_experiments_j0sowaa1/external_pandas_code_transfer_repo__external_pandas_code_failure_fixture_query__verified_closed_loop__r0/.omega_rsi_runs/closed_rsi_state.json"",
+  ""solved_new_tasks"": 3,
+  ""state_path"": ""/tmp/rsi_experiments_oi1ojcn8/external_pandas_code_transfer_repo__external_pandas_code_failure_fixture_query__verified_closed_loop__r0/.omega_rsi_runs/closed_rsi_state.json"",
   ""thdse_core_gate"": true,
   ""total_accepted"": 3,
   ""total_rejected"": 0
 }
-",,external_code_unseen,pandas-dev/pandas,Measure transfer on a sandbox fixture extracted from actual pandas-dev/pandas source snippets and issue failure excerpts.,External code transfer succeeds when the loop patches a query API for external_pandas_code_signals derived from bounded pandas-dev/pandas source and failure snippets.
-external_pandas_code_transfer_repo,Actual pandas source-code and issue-failure sandbox fixture.,external_pandas_code_failure_fixture_query,agent_coding_loop,baseline_agent_coding_loop,Baseline: single-pass automated coding loop with validation but without persistent recursive depth.,0,41ef53e5270e,0,0.485,1,0,1.0,0,,False,1,0.485,2,/tmp/rsi_experiments_j0sowaa1/external_pandas_code_transfer_repo__external_pandas_code_failure_fixture_query__agent_coding_loop__r0/.omega_rsi_runs/closed_rsi_summary.json,"{
-  ""accepted_this_run"": [
-    {
-      ""accepted"": true,
-      ""error"": """",
-      ""extra_paths"": [],
-      ""finished_at"": ""2026-05-26T22:48:17Z"",
-      ""gates"": [
-        {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""py_compile"",
-            ""shared/local_corpus.py"",
-            ""tests/test_autonomous_local_corpus_definitions_query_v1.py""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_pandas_code_transfer_repo__external_pandas_code_failure_fixture_query__agent_coding_loop__r0"",
-          ""elapsed_s"": 0.033,
-          ""exit_code"": 0,
-          ""label"": ""autonomous_local_corpus_definitions_query_v1_compile"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": """",
-          ""timed_out"": false
+",,external_code_unseen,pandas-dev/pandas,Measure transfer on a sandbox fixture extracted from actual pandas-dev/pandas source snippets and issue failure excerpts.,External code transfer succeeds when the loop repairs a local executable failure target derived from bounded pandas-dev/pandas source and failure snippets.,5.847,3,3,6,0
+external_pandas_code_transfer_repo,Actual pandas source-code and issue-failure sandbox fixture.,external_pandas_code_failure_fixture_query,agent_coding_loop,baseline_agent_coding_loop,Baseline: single-pass automated coding loop with validation but without persistent recursive depth.,0,41ef53e5270e,0,0.515,1,0,1.0,0,,False,1,0.515,2,/tmp/rsi_experiments_oi1ojcn8/external_pandas_code_transfer_repo__external_pandas_code_failure_fixture_query__agent_coding_loop__r0/.omega_rsi_runs/closed_rsi_summary.json,"     ""target_surface"": ""shared/capability_primitives.py"",
+          ""validation_plan"": {
+            ""commands"": [
+              [
+                ""python"",
+                ""-m"",
+                ""pytest"",
+                ""-q"",
+                ""tests/test_capability_external_code_repair_operator_v1.py""
+              ]
+            ],
+            ""expected_signals"": [
+              ""public_counterexample_passes"",
+              ""hidden_transfer_case_passes"",
+              ""no_broad_regression_gate_failure""
+            ],
+            ""name"": ""validate_external_failure_signal""
+          }
         },
         {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""pytest"",
-            ""-q"",
-            ""--import-mode=importlib"",
-            ""--maxfail=5"",
-            ""--disable-warnings"",
-            ""tests/test_autonomous_local_corpus_definitions_query_v1.py""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_pandas_code_transfer_repo__external_pandas_code_failure_fixture_query__agent_coding_loop__r0"",
-          ""elapsed_s"": 0.186,
-          ""exit_code"": 0,
-          ""label"": ""autonomous_local_corpus_definitions_query_v1_focused"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": "".                                                                        [100%]\n1 passed in 0.01s\n"",
-          ""timed_out"": false
+          ""family"": ""external_code_repair"",
+          ""kind"": ""search_heuristic"",
+          ""name"": ""prefer_external_failure_signal_reuse"",
+          ""rationale"": ""Rank exact capability repair operators ahead of unrelated schema repairs."",
+          ""target_surface"": ""scripts/closed_recursive_self_improvement_loop.py"",
+          ""validation_plan"": {
+            ""commands"": [
+              [
+                ""python"",
+                ""-m"",
+                ""pytest"",
+                ""-q"",
+                ""tests/test_capability_external_code_repair_operator_v1.py""
+              ]
+            ],
+            ""expected_signals"": [
+              ""public_counterexample_passes"",
+              ""hidden_transfer_case_passes"",
+              ""no_broad_regression_gate_failure""
+            ],
+            ""name"": ""validate_external_failure_signal""
+          }
         },
         {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""pytest"",
-            ""-q"",
-            ""--import-mode=importlib"",
-            ""--maxfail=20"",
-            ""--disable-warnings"",
-            ""tests""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_pandas_code_transfer_repo__external_pandas_code_failure_fixture_query__agent_coding_loop__r0"",
-          ""elapsed_s"": 0.202,
-          ""exit_code"": 0,
-          ""label"": ""autonomous_local_corpus_definitions_query_v1_root_broad"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": ""...                                                                      [100%]\n3 passed in 0.03s\n"",
-          ""timed_out"": false
+          ""family"": ""external_code_repair"",
+          ""kind"": ""evaluator_mutation"",
+          ""name"": ""external_failure_signal_hidden_transfer_case"",
+          ""rationale"": ""Add a held-out case that checks transfer beyond the public example."",
+          ""target_surface"": ""shared/capability_benchmarks.py"",
+          ""validation_plan"": {
+            ""commands"": [
+              [
+                ""python"",
+                ""-m"",
+                ""pytest"",
+                ""-q"",
+                ""tests/test_capability_external_code_repair_operator_v1.py""
+              ]
+            ],
+            ""expected_signals"": [
+              ""public_counterexample_passes"",
+              ""hidden_transfer_case_passes"",
+              ""no_broad_regression_gate_failure""
+            ],
+            ""name"": ""validate_external_failure_signal""
+          }
+        },
+        {
+          ""family"": ""external_code_repair"",
+          ""kind"": ""counterexample_test"",
+          ""name"": ""test_external_failure_signal_counterexample"",
+          ""rationale"": ""Lock the primitive with public and hidden transfer counterexamples."",
+          ""target_surface"": ""tests/test_capability_external_code_repair_operator_v1.py"",
+          ""validation_plan"": {
+            ""commands"": [
+              [
+                ""python"",
+                ""-m"",
+                ""pytest"",
+                ""-q"",
+                ""tests/test_capability_external_code_repair_operator_v1.py""
+              ]
+            ],
+            ""expected_signals"": [
+              ""public_counterexample_passes"",
+              ""hidden_transfer_case_passes"",
+              ""no_broad_regression_gate_failure""
+            ],
+            ""name"": ""validate_external_failure_signal""
+          }
         }
       ],
-      ""generation"": 1,
-      ""goal"": {
-        ""metric"": ""planner score 11.999 plus generated regression test"",
-        ""name"": ""autonomously_query_local_corpus_definitions"",
-        ""rationale"": ""The planner found a tuple-valued definitions field without a matching query API on LocalCorpusIndex. Evidence: field:definitions, method:records_with_definition, strategy:tuple_membership, canonical_strategy_bonus."",
-        ""target"": ""shared.local_corpus.LocalCorpusIndex""
-      },
-      ""name"": ""autonomous_local_corpus_definitions_query_v1"",
-      ""started_at"": ""2026-05-26T22:48:17Z"",
-      ""target_path"": ""shared/local_corpus.py"",
-      ""test_path"": ""tests/test_autonomous_local_corpus_definitions_query_v1.py""
+      ""started_at"": ""2026-05-27T03:47:19Z"",
+      ""target_path"": ""shared/external_repair_target.py"",
+      ""test_path"": ""tests/test_external_code_repair_task.py""
     }
   ],
-  ""active_base"": ""autonomous_local_corpus_definitions_query_v1"",
+  ""active_base"": ""external_code_repair_failure_signal_v1"",
   ""active_generation"": 1,
   ""broad_gate"": true,
+  ""capability_delta_score"": 1.949,
   ""dry_run"": false,
+  ""failure_residue_count"": 0,
+  ""hidden_transfer"": 1,
+  ""operator_reuse"": 2,
   ""persistence"": false,
   ""rejected_this_run"": [],
   ""rollback"": true,
-  ""state_path"": ""/tmp/rsi_experiments_j0sowaa1/external_pandas_code_transfer_repo__external_pandas_code_failure_fixture_query__agent_coding_loop__r0/.omega_rsi_runs/closed_rsi_state.json"",
+  ""solved_new_tasks"": 1,
+  ""state_path"": ""/tmp/rsi_experiments_oi1ojcn8/external_pandas_code_transfer_repo__external_pandas_code_failure_fixture_query__agent_coding_loop__r0/.omega_rsi_runs/closed_rsi_state.json"",
   ""thdse_core_gate"": true,
   ""total_accepted"": 1,
   ""total_rejected"": 0
 }
-",,external_code_unseen,pandas-dev/pandas,Measure transfer on a sandbox fixture extracted from actual pandas-dev/pandas source snippets and issue failure excerpts.,External code transfer succeeds when the loop patches a query API for external_pandas_code_signals derived from bounded pandas-dev/pandas source and failure snippets.
-external_pandas_code_transfer_repo,Actual pandas source-code and issue-failure sandbox fixture.,external_pandas_code_failure_fixture_query,ci_only_validation,baseline_ci_only,Baseline: run validation without candidate generation or code patching.,0,8fbc501fd3ee,0,0.206,0,0,0.0,0,,False,0,0.206,0,/tmp/rsi_experiments_j0sowaa1/external_pandas_code_transfer_repo__external_pandas_code_failure_fixture_query__ci_only_validation__r0/.omega_rsi_runs/closed_rsi_summary.json,"..                                                                       [100%]
-2 passed in 0.03s
-",,external_code_unseen,pandas-dev/pandas,Measure transfer on a sandbox fixture extracted from actual pandas-dev/pandas source snippets and issue failure excerpts.,External code transfer succeeds when the loop patches a query API for external_pandas_code_signals derived from bounded pandas-dev/pandas source and failure snippets.
-external_pandas_code_transfer_repo,Actual pandas source-code and issue-failure sandbox fixture.,external_pandas_code_failure_fixture_query,verified_closed_loop,proposed,"Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",1,bf3d613212d6,0,1.362,3,0,1.0,0,,True,3,1.362,4,/tmp/rsi_experiments_j0sowaa1/external_pandas_code_transfer_repo__external_pandas_code_failure_fixture_query__verified_closed_loop__r1/.omega_rsi_runs/closed_rsi_summary.json,"s_code_signal, strategy:tuple_membership, canonical_strategy_bonus."",
-        ""target"": ""shared.local_corpus.LocalCorpusIndex""
-      },
-      ""name"": ""autonomous_local_corpus_external_pandas_code_signals_query_v1"",
-      ""started_at"": ""2026-05-26T22:48:18Z"",
-      ""target_path"": ""shared/local_corpus.py"",
-      ""test_path"": ""tests/test_autonomous_local_corpus_external_pandas_code_signals_query_v1.py""
-    },
-    {
-      ""accepted"": true,
-      ""error"": """",
-      ""extra_paths"": [],
-      ""finished_at"": ""2026-05-26T22:48:19Z"",
-      ""gates"": [
-        {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""py_compile"",
-            ""shared/local_corpus.py"",
-            ""tests/test_emergent_local_corpus_definitions_membership_v1.py""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_pandas_code_transfer_repo__external_pandas_code_failure_fixture_query__verified_closed_loop__r1"",
-          ""elapsed_s"": 0.034,
-          ""exit_code"": 0,
-          ""label"": ""emergent_local_corpus_definitions_membership_v1_compile"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": """",
-          ""timed_out"": false
+",,external_code_unseen,pandas-dev/pandas,Measure transfer on a sandbox fixture extracted from actual pandas-dev/pandas source snippets and issue failure excerpts.,External code transfer succeeds when the loop repairs a local executable failure target derived from bounded pandas-dev/pandas source and failure snippets.,1.949,1,1,2,0
+external_pandas_code_transfer_repo,Actual pandas source-code and issue-failure sandbox fixture.,external_pandas_code_failure_fixture_query,ci_only_validation,baseline_ci_only,Baseline: run validation without candidate generation or code patching.,0,8fbc501fd3ee,1,0.241,0,0,0.0,0,,False,0,0.241,0,/tmp/rsi_experiments_oi1ojcn8/external_pandas_code_transfer_repo__external_pandas_code_failure_fixture_query__ci_only_validation__r0/.omega_rsi_runs/closed_rsi_summary.json,"F..                                                                      [100%]
+=================================== FAILURES ===================================
+___________ test_external_failure_signal_is_a_real_local_repair_task ___________
+
+    def test_external_failure_signal_is_a_real_local_repair_task():
+        failure_text = (Path.cwd() / ""external_sandbox"" / ""failure_excerpt.txt"").read_text(encoding=""utf-8"")
+        events = (""metadata_loaded"", ""read_error"", ""empty_content"")
+    
+        assert failure_text
+>       assert external_failure_signal(events) == ""read_error""
+E       AssertionError: assert '' == 'read_error'
+E         
+E         - read_error
+
+tests/test_external_code_repair_task.py:11: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_external_code_repair_task.py::test_external_failure_signal_is_a_real_local_repair_task - AssertionError: assert '' == 'read_error'
+  
+  - read_error
+1 failed, 2 passed in 0.06s
+",,external_code_unseen,pandas-dev/pandas,Measure transfer on a sandbox fixture extracted from actual pandas-dev/pandas source snippets and issue failure excerpts.,External code transfer succeeds when the loop repairs a local executable failure target derived from bounded pandas-dev/pandas source and failure snippets.,0,0,0,0,0
+external_dask_code_transfer_repo,Actual dask source-code and issue-failure sandbox fixture.,external_dask_code_failure_fixture_query,verified_closed_loop,proposed,"Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",0,532d7e1261ff,0,1.401,3,0,1.0,0,,True,3,1.401,5,/tmp/rsi_experiments_oi1ojcn8/external_dask_code_transfer_repo__external_dask_code_failure_fixture_query__verified_closed_loop__r0/.omega_rsi_runs/closed_rsi_summary.json,"       ""python"",
+                ""-m"",
+                ""pytest"",
+                ""-q"",
+                ""tests/test_capability_schema_query_repair_operator_v1.py""
+              ]
+            ],
+            ""expected_signals"": [
+              ""public_counterexample_passes"",
+              ""hidden_transfer_case_passes"",
+              ""no_broad_regression_gate_failure""
+            ],
+            ""name"": ""validate_records_with_external_dask_code_signal""
+          }
         },
         {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""pytest"",
-            ""-q"",
-            ""--import-mode=importlib"",
-            ""--maxfail=5"",
-            ""--disable-warnings"",
-            ""tests/test_emergent_local_corpus_definitions_membership_v1.py""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_pandas_code_transfer_repo__external_pandas_code_failure_fixture_query__verified_closed_loop__r1"",
-          ""elapsed_s"": 0.203,
-          ""exit_code"": 0,
-          ""label"": ""emergent_local_corpus_definitions_membership_v1_focused"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": "".                                                                        [100%]\n1 passed in 0.02s\n"",
-          ""timed_out"": false
+          ""family"": ""schema_query_repair"",
+          ""kind"": ""search_heuristic"",
+          ""name"": ""prefer_records_with_external_dask_code_signal_reuse"",
+          ""rationale"": ""Rank exact capability repair operators ahead of unrelated schema repairs."",
+          ""target_surface"": ""scripts/closed_recursive_self_improvement_loop.py"",
+          ""validation_plan"": {
+            ""commands"": [
+              [
+                ""python"",
+                ""-m"",
+                ""pytest"",
+                ""-q"",
+                ""tests/test_capability_schema_query_repair_operator_v1.py""
+              ]
+            ],
+            ""expected_signals"": [
+              ""public_counterexample_passes"",
+              ""hidden_transfer_case_passes"",
+              ""no_broad_regression_gate_failure""
+            ],
+            ""name"": ""validate_records_with_external_dask_code_signal""
+          }
         },
         {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""pytest"",
-            ""-q"",
-            ""--import-mode=importlib"",
-            ""--maxfail=20"",
-            ""--disable-warnings"",
-            ""tests""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_pandas_code_transfer_repo__external_pandas_code_failure_fixture_query__verified_closed_loop__r1"",
-          ""elapsed_s"": 0.208,
-          ""exit_code"": 0,
-          ""label"": ""emergent_local_corpus_definitions_membership_v1_root_broad"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": "".....                                                                    [100%]\n5 passed in 0.03s\n"",
-          ""timed_out"": false
+          ""family"": ""schema_query_repair"",
+          ""kind"": ""evaluator_mutation"",
+          ""name"": ""records_with_external_dask_code_signal_hidden_transfer_case"",
+          ""rationale"": ""Add a held-out case that checks transfer beyond the public example."",
+          ""target_surface"": ""shared/capability_benchmarks.py"",
+          ""validation_plan"": {
+            ""commands"": [
+              [
+                ""python"",
+                ""-m"",
+                ""pytest"",
+                ""-q"",
+                ""tests/test_capability_schema_query_repair_operator_v1.py""
+              ]
+            ],
+            ""expected_signals"": [
+              ""public_counterexample_passes"",
+              ""hidden_transfer_case_passes"",
+              ""no_broad_regression_gate_failure""
+            ],
+            ""name"": ""validate_records_with_external_dask_code_signal""
+          }
+        },
+        {
+          ""family"": ""schema_query_repair"",
+          ""kind"": ""counterexample_test"",
+          ""name"": ""test_records_with_external_dask_code_signal_counterexample"",
+          ""rationale"": ""Lock the primitive with public and hidden transfer counterexamples."",
+          ""target_surface"": ""tests/test_capability_schema_query_repair_operator_v1.py"",
+          ""validation_plan"": {
+            ""commands"": [
+              [
+                ""python"",
+                ""-m"",
+                ""pytest"",
+                ""-q"",
+                ""tests/test_capability_schema_query_repair_operator_v1.py""
+              ]
+            ],
+            ""expected_signals"": [
+              ""public_counterexample_passes"",
+              ""hidden_transfer_case_passes"",
+              ""no_broad_regression_gate_failure""
+            ],
+            ""name"": ""validate_records_with_external_dask_code_signal""
+          }
         }
       ],
-      ""generation"": 3,
-      ""goal"": {
-        ""metric"": ""planner score 9.999 plus generated regression test"",
-        ""name"": ""emergently_query_local_corpus_definitions"",
-        ""rationale"": ""The bounded emergent planner generated an alternate membership query hypothesis for definitions. Evidence: field:definitions, method:records_matching_definitions, strategy:alternate_tuple_membership."",
-        ""target"": ""shared.local_corpus.LocalCorpusIndex""
-      },
-      ""name"": ""emergent_local_corpus_definitions_membership_v1"",
-      ""started_at"": ""2026-05-26T22:48:18Z"",
-      ""target_path"": ""shared/local_corpus.py"",
-      ""test_path"": ""tests/test_emergent_local_corpus_definitions_membership_v1.py""
-    }
-  ],
-  ""active_base"": ""emergent_local_corpus_definitions_membership_v1"",
-  ""active_generation"": 3,
-  ""broad_gate"": true,
-  ""dry_run"": false,
-  ""persistence"": true,
-  ""rejected_this_run"": [],
-  ""rollback"": true,
-  ""state_path"": ""/tmp/rsi_experiments_j0sowaa1/external_pandas_code_transfer_repo__external_pandas_code_failure_fixture_query__verified_closed_loop__r1/.omega_rsi_runs/closed_rsi_state.json"",
-  ""thdse_core_gate"": true,
-  ""total_accepted"": 3,
-  ""total_rejected"": 0
-}
-",,external_code_unseen,pandas-dev/pandas,Measure transfer on a sandbox fixture extracted from actual pandas-dev/pandas source snippets and issue failure excerpts.,External code transfer succeeds when the loop patches a query API for external_pandas_code_signals derived from bounded pandas-dev/pandas source and failure snippets.
-external_pandas_code_transfer_repo,Actual pandas source-code and issue-failure sandbox fixture.,external_pandas_code_failure_fixture_query,agent_coding_loop,baseline_agent_coding_loop,Baseline: single-pass automated coding loop with validation but without persistent recursive depth.,1,5b900de7872c,0,0.516,1,0,1.0,0,,False,1,0.516,2,/tmp/rsi_experiments_j0sowaa1/external_pandas_code_transfer_repo__external_pandas_code_failure_fixture_query__agent_coding_loop__r1/.omega_rsi_runs/closed_rsi_summary.json,"{
-  ""accepted_this_run"": [
-    {
-      ""accepted"": true,
-      ""error"": """",
-      ""extra_paths"": [],
-      ""finished_at"": ""2026-05-26T22:48:19Z"",
-      ""gates"": [
-        {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""py_compile"",
-            ""shared/local_corpus.py"",
-            ""tests/test_autonomous_local_corpus_definitions_query_v1.py""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_pandas_code_transfer_repo__external_pandas_code_failure_fixture_query__agent_coding_loop__r1"",
-          ""elapsed_s"": 0.034,
-          ""exit_code"": 0,
-          ""label"": ""autonomous_local_corpus_definitions_query_v1_compile"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": """",
-          ""timed_out"": false
-        },
-        {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""pytest"",
-            ""-q"",
-            ""--import-mode=importlib"",
-            ""--maxfail=5"",
-            ""--disable-warnings"",
-            ""tests/test_autonomous_local_corpus_definitions_query_v1.py""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_pandas_code_transfer_repo__external_pandas_code_failure_fixture_query__agent_coding_loop__r1"",
-          ""elapsed_s"": 0.214,
-          ""exit_code"": 0,
-          ""label"": ""autonomous_local_corpus_definitions_query_v1_focused"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": "".                                                                        [100%]\n1 passed in 0.01s\n"",
-          ""timed_out"": false
-        },
-        {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""pytest"",
-            ""-q"",
-            ""--import-mode=importlib"",
-            ""--maxfail=20"",
-            ""--disable-warnings"",
-            ""tests""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_pandas_code_transfer_repo__external_pandas_code_failure_fixture_query__agent_coding_loop__r1"",
-          ""elapsed_s"": 0.203,
-          ""exit_code"": 0,
-          ""label"": ""autonomous_local_corpus_definitions_query_v1_root_broad"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": ""...                                                                      [100%]\n3 passed in 0.03s\n"",
-          ""timed_out"": false
-        }
-      ],
-      ""generation"": 1,
-      ""goal"": {
-        ""metric"": ""planner score 11.999 plus generated regression test"",
-        ""name"": ""autonomously_query_local_corpus_definitions"",
-        ""rationale"": ""The planner found a tuple-valued definitions field without a matching query API on LocalCorpusIndex. Evidence: field:definitions, method:records_with_definition, strategy:tuple_membership, canonical_strategy_bonus."",
-        ""target"": ""shared.local_corpus.LocalCorpusIndex""
-      },
-      ""name"": ""autonomous_local_corpus_definitions_query_v1"",
-      ""started_at"": ""2026-05-26T22:48:19Z"",
-      ""target_path"": ""shared/local_corpus.py"",
-      ""test_path"": ""tests/test_autonomous_local_corpus_definitions_query_v1.py""
-    }
-  ],
-  ""active_base"": ""autonomous_local_corpus_definitions_query_v1"",
-  ""active_generation"": 1,
-  ""broad_gate"": true,
-  ""dry_run"": false,
-  ""persistence"": false,
-  ""rejected_this_run"": [],
-  ""rollback"": true,
-  ""state_path"": ""/tmp/rsi_experiments_j0sowaa1/external_pandas_code_transfer_repo__external_pandas_code_failure_fixture_query__agent_coding_loop__r1/.omega_rsi_runs/closed_rsi_state.json"",
-  ""thdse_core_gate"": true,
-  ""total_accepted"": 1,
-  ""total_rejected"": 0
-}
-",,external_code_unseen,pandas-dev/pandas,Measure transfer on a sandbox fixture extracted from actual pandas-dev/pandas source snippets and issue failure excerpts.,External code transfer succeeds when the loop patches a query API for external_pandas_code_signals derived from bounded pandas-dev/pandas source and failure snippets.
-external_pandas_code_transfer_repo,Actual pandas source-code and issue-failure sandbox fixture.,external_pandas_code_failure_fixture_query,ci_only_validation,baseline_ci_only,Baseline: run validation without candidate generation or code patching.,1,4d1bfa03c9d9,0,0.206,0,0,0.0,0,,False,0,0.206,0,/tmp/rsi_experiments_j0sowaa1/external_pandas_code_transfer_repo__external_pandas_code_failure_fixture_query__ci_only_validation__r1/.omega_rsi_runs/closed_rsi_summary.json,"..                                                                       [100%]
-2 passed in 0.03s
-",,external_code_unseen,pandas-dev/pandas,Measure transfer on a sandbox fixture extracted from actual pandas-dev/pandas source snippets and issue failure excerpts.,External code transfer succeeds when the loop patches a query API for external_pandas_code_signals derived from bounded pandas-dev/pandas source and failure snippets.
-external_dask_code_transfer_repo,Actual dask source-code and issue-failure sandbox fixture.,external_dask_code_failure_fixture_query,verified_closed_loop,proposed,"Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",0,532d7e1261ff,0,1.387,3,0,1.0,0,,True,3,1.387,4,/tmp/rsi_experiments_j0sowaa1/external_dask_code_transfer_repo__external_dask_code_failure_fixture_query__verified_closed_loop__r0/.omega_rsi_runs/closed_rsi_summary.json,"rds_with_external_dask_code_signal, strategy:tuple_membership, canonical_strategy_bonus."",
-        ""target"": ""shared.local_corpus.LocalCorpusIndex""
-      },
-      ""name"": ""autonomous_local_corpus_external_dask_code_signals_query_v1"",
-      ""started_at"": ""2026-05-26T22:48:20Z"",
+      ""started_at"": ""2026-05-27T03:47:21Z"",
       ""target_path"": ""shared/local_corpus.py"",
       ""test_path"": ""tests/test_autonomous_local_corpus_external_dask_code_signals_query_v1.py""
-    },
-    {
-      ""accepted"": true,
-      ""error"": """",
-      ""extra_paths"": [],
-      ""finished_at"": ""2026-05-26T22:48:21Z"",
-      ""gates"": [
-        {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""py_compile"",
-            ""shared/local_corpus.py"",
-            ""tests/test_emergent_local_corpus_definitions_membership_v1.py""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_dask_code_transfer_repo__external_dask_code_failure_fixture_query__verified_closed_loop__r0"",
-          ""elapsed_s"": 0.034,
-          ""exit_code"": 0,
-          ""label"": ""emergent_local_corpus_definitions_membership_v1_compile"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": """",
-          ""timed_out"": false
-        },
-        {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""pytest"",
-            ""-q"",
-            ""--import-mode=importlib"",
-            ""--maxfail=5"",
-            ""--disable-warnings"",
-            ""tests/test_emergent_local_corpus_definitions_membership_v1.py""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_dask_code_transfer_repo__external_dask_code_failure_fixture_query__verified_closed_loop__r0"",
-          ""elapsed_s"": 0.21,
-          ""exit_code"": 0,
-          ""label"": ""emergent_local_corpus_definitions_membership_v1_focused"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": "".                                                                        [100%]\n1 passed in 0.01s\n"",
-          ""timed_out"": false
-        },
-        {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""pytest"",
-            ""-q"",
-            ""--import-mode=importlib"",
-            ""--maxfail=20"",
-            ""--disable-warnings"",
-            ""tests""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_dask_code_transfer_repo__external_dask_code_failure_fixture_query__verified_closed_loop__r0"",
-          ""elapsed_s"": 0.228,
-          ""exit_code"": 0,
-          ""label"": ""emergent_local_corpus_definitions_membership_v1_root_broad"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": "".....                                                                    [100%]\n5 passed in 0.03s\n"",
-          ""timed_out"": false
-        }
-      ],
-      ""generation"": 3,
-      ""goal"": {
-        ""metric"": ""planner score 9.999 plus generated regression test"",
-        ""name"": ""emergently_query_local_corpus_definitions"",
-        ""rationale"": ""The bounded emergent planner generated an alternate membership query hypothesis for definitions. Evidence: field:definitions, method:records_matching_definitions, strategy:alternate_tuple_membership."",
-        ""target"": ""shared.local_corpus.LocalCorpusIndex""
-      },
-      ""name"": ""emergent_local_corpus_definitions_membership_v1"",
-      ""started_at"": ""2026-05-26T22:48:21Z"",
-      ""target_path"": ""shared/local_corpus.py"",
-      ""test_path"": ""tests/test_emergent_local_corpus_definitions_membership_v1.py""
     }
   ],
-  ""active_base"": ""emergent_local_corpus_definitions_membership_v1"",
+  ""active_base"": ""autonomous_local_corpus_external_dask_code_signals_query_v1"",
   ""active_generation"": 3,
   ""broad_gate"": true,
+  ""capability_delta_score"": 5.847,
   ""dry_run"": false,
+  ""failure_residue_count"": 0,
+  ""hidden_transfer"": 3,
+  ""operator_reuse"": 6,
   ""persistence"": true,
   ""rejected_this_run"": [],
   ""rollback"": true,
-  ""state_path"": ""/tmp/rsi_experiments_j0sowaa1/external_dask_code_transfer_repo__external_dask_code_failure_fixture_query__verified_closed_loop__r0/.omega_rsi_runs/closed_rsi_state.json"",
+  ""solved_new_tasks"": 3,
+  ""state_path"": ""/tmp/rsi_experiments_oi1ojcn8/external_dask_code_transfer_repo__external_dask_code_failure_fixture_query__verified_closed_loop__r0/.omega_rsi_runs/closed_rsi_state.json"",
   ""thdse_core_gate"": true,
   ""total_accepted"": 3,
   ""total_rejected"": 0
 }
-",,external_code_unseen,dask/dask,Measure transfer on a sandbox fixture extracted from actual dask/dask source snippets and issue failure excerpts.,External code transfer succeeds when the loop patches a query API for external_dask_code_signals derived from bounded dask/dask source and failure snippets.
-external_dask_code_transfer_repo,Actual dask source-code and issue-failure sandbox fixture.,external_dask_code_failure_fixture_query,agent_coding_loop,baseline_agent_coding_loop,Baseline: single-pass automated coding loop with validation but without persistent recursive depth.,0,6ec2da674d74,0,0.49,1,0,1.0,0,,False,1,0.49,2,/tmp/rsi_experiments_j0sowaa1/external_dask_code_transfer_repo__external_dask_code_failure_fixture_query__agent_coding_loop__r0/.omega_rsi_runs/closed_rsi_summary.json,"{
-  ""accepted_this_run"": [
-    {
-      ""accepted"": true,
-      ""error"": """",
-      ""extra_paths"": [],
-      ""finished_at"": ""2026-05-26T22:48:22Z"",
-      ""gates"": [
-        {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""py_compile"",
-            ""shared/local_corpus.py"",
-            ""tests/test_autonomous_local_corpus_definitions_query_v1.py""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_dask_code_transfer_repo__external_dask_code_failure_fixture_query__agent_coding_loop__r0"",
-          ""elapsed_s"": 0.033,
-          ""exit_code"": 0,
-          ""label"": ""autonomous_local_corpus_definitions_query_v1_compile"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": """",
-          ""timed_out"": false
+",,external_code_unseen,dask/dask,Measure transfer on a sandbox fixture extracted from actual dask/dask source snippets and issue failure excerpts.,External code transfer succeeds when the loop repairs a local executable failure target derived from bounded dask/dask source and failure snippets.,5.847,3,3,6,0
+external_dask_code_transfer_repo,Actual dask source-code and issue-failure sandbox fixture.,external_dask_code_failure_fixture_query,agent_coding_loop,baseline_agent_coding_loop,Baseline: single-pass automated coding loop with validation but without persistent recursive depth.,0,6ec2da674d74,0,0.517,1,0,1.0,0,,False,1,0.517,2,/tmp/rsi_experiments_oi1ojcn8/external_dask_code_transfer_repo__external_dask_code_failure_fixture_query__agent_coding_loop__r0/.omega_rsi_runs/closed_rsi_summary.json,"         ""target_surface"": ""shared/capability_primitives.py"",
+          ""validation_plan"": {
+            ""commands"": [
+              [
+                ""python"",
+                ""-m"",
+                ""pytest"",
+                ""-q"",
+                ""tests/test_capability_external_code_repair_operator_v1.py""
+              ]
+            ],
+            ""expected_signals"": [
+              ""public_counterexample_passes"",
+              ""hidden_transfer_case_passes"",
+              ""no_broad_regression_gate_failure""
+            ],
+            ""name"": ""validate_external_failure_signal""
+          }
         },
         {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""pytest"",
-            ""-q"",
-            ""--import-mode=importlib"",
-            ""--maxfail=5"",
-            ""--disable-warnings"",
-            ""tests/test_autonomous_local_corpus_definitions_query_v1.py""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_dask_code_transfer_repo__external_dask_code_failure_fixture_query__agent_coding_loop__r0"",
-          ""elapsed_s"": 0.19,
-          ""exit_code"": 0,
-          ""label"": ""autonomous_local_corpus_definitions_query_v1_focused"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": "".                                                                        [100%]\n1 passed in 0.01s\n"",
-          ""timed_out"": false
+          ""family"": ""external_code_repair"",
+          ""kind"": ""search_heuristic"",
+          ""name"": ""prefer_external_failure_signal_reuse"",
+          ""rationale"": ""Rank exact capability repair operators ahead of unrelated schema repairs."",
+          ""target_surface"": ""scripts/closed_recursive_self_improvement_loop.py"",
+          ""validation_plan"": {
+            ""commands"": [
+              [
+                ""python"",
+                ""-m"",
+                ""pytest"",
+                ""-q"",
+                ""tests/test_capability_external_code_repair_operator_v1.py""
+              ]
+            ],
+            ""expected_signals"": [
+              ""public_counterexample_passes"",
+              ""hidden_transfer_case_passes"",
+              ""no_broad_regression_gate_failure""
+            ],
+            ""name"": ""validate_external_failure_signal""
+          }
         },
         {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""pytest"",
-            ""-q"",
-            ""--import-mode=importlib"",
-            ""--maxfail=20"",
-            ""--disable-warnings"",
-            ""tests""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_dask_code_transfer_repo__external_dask_code_failure_fixture_query__agent_coding_loop__r0"",
-          ""elapsed_s"": 0.202,
-          ""exit_code"": 0,
-          ""label"": ""autonomous_local_corpus_definitions_query_v1_root_broad"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": ""...                                                                      [100%]\n3 passed in 0.03s\n"",
-          ""timed_out"": false
+          ""family"": ""external_code_repair"",
+          ""kind"": ""evaluator_mutation"",
+          ""name"": ""external_failure_signal_hidden_transfer_case"",
+          ""rationale"": ""Add a held-out case that checks transfer beyond the public example."",
+          ""target_surface"": ""shared/capability_benchmarks.py"",
+          ""validation_plan"": {
+            ""commands"": [
+              [
+                ""python"",
+                ""-m"",
+                ""pytest"",
+                ""-q"",
+                ""tests/test_capability_external_code_repair_operator_v1.py""
+              ]
+            ],
+            ""expected_signals"": [
+              ""public_counterexample_passes"",
+              ""hidden_transfer_case_passes"",
+              ""no_broad_regression_gate_failure""
+            ],
+            ""name"": ""validate_external_failure_signal""
+          }
+        },
+        {
+          ""family"": ""external_code_repair"",
+          ""kind"": ""counterexample_test"",
+          ""name"": ""test_external_failure_signal_counterexample"",
+          ""rationale"": ""Lock the primitive with public and hidden transfer counterexamples."",
+          ""target_surface"": ""tests/test_capability_external_code_repair_operator_v1.py"",
+          ""validation_plan"": {
+            ""commands"": [
+              [
+                ""python"",
+                ""-m"",
+                ""pytest"",
+                ""-q"",
+                ""tests/test_capability_external_code_repair_operator_v1.py""
+              ]
+            ],
+            ""expected_signals"": [
+              ""public_counterexample_passes"",
+              ""hidden_transfer_case_passes"",
+              ""no_broad_regression_gate_failure""
+            ],
+            ""name"": ""validate_external_failure_signal""
+          }
         }
       ],
-      ""generation"": 1,
-      ""goal"": {
-        ""metric"": ""planner score 11.999 plus generated regression test"",
-        ""name"": ""autonomously_query_local_corpus_definitions"",
-        ""rationale"": ""The planner found a tuple-valued definitions field without a matching query API on LocalCorpusIndex. Evidence: field:definitions, method:records_with_definition, strategy:tuple_membership, canonical_strategy_bonus."",
-        ""target"": ""shared.local_corpus.LocalCorpusIndex""
-      },
-      ""name"": ""autonomous_local_corpus_definitions_query_v1"",
-      ""started_at"": ""2026-05-26T22:48:21Z"",
-      ""target_path"": ""shared/local_corpus.py"",
-      ""test_path"": ""tests/test_autonomous_local_corpus_definitions_query_v1.py""
+      ""started_at"": ""2026-05-27T03:47:21Z"",
+      ""target_path"": ""shared/external_repair_target.py"",
+      ""test_path"": ""tests/test_external_code_repair_task.py""
     }
   ],
-  ""active_base"": ""autonomous_local_corpus_definitions_query_v1"",
+  ""active_base"": ""external_code_repair_failure_signal_v1"",
   ""active_generation"": 1,
   ""broad_gate"": true,
+  ""capability_delta_score"": 1.949,
   ""dry_run"": false,
+  ""failure_residue_count"": 0,
+  ""hidden_transfer"": 1,
+  ""operator_reuse"": 2,
   ""persistence"": false,
   ""rejected_this_run"": [],
   ""rollback"": true,
-  ""state_path"": ""/tmp/rsi_experiments_j0sowaa1/external_dask_code_transfer_repo__external_dask_code_failure_fixture_query__agent_coding_loop__r0/.omega_rsi_runs/closed_rsi_state.json"",
+  ""solved_new_tasks"": 1,
+  ""state_path"": ""/tmp/rsi_experiments_oi1ojcn8/external_dask_code_transfer_repo__external_dask_code_failure_fixture_query__agent_coding_loop__r0/.omega_rsi_runs/closed_rsi_state.json"",
   ""thdse_core_gate"": true,
   ""total_accepted"": 1,
   ""total_rejected"": 0
 }
-",,external_code_unseen,dask/dask,Measure transfer on a sandbox fixture extracted from actual dask/dask source snippets and issue failure excerpts.,External code transfer succeeds when the loop patches a query API for external_dask_code_signals derived from bounded dask/dask source and failure snippets.
-external_dask_code_transfer_repo,Actual dask source-code and issue-failure sandbox fixture.,external_dask_code_failure_fixture_query,ci_only_validation,baseline_ci_only,Baseline: run validation without candidate generation or code patching.,0,809d2d8ebfe7,0,0.208,0,0,0.0,0,,False,0,0.208,0,/tmp/rsi_experiments_j0sowaa1/external_dask_code_transfer_repo__external_dask_code_failure_fixture_query__ci_only_validation__r0/.omega_rsi_runs/closed_rsi_summary.json,"..                                                                       [100%]
-2 passed in 0.03s
-",,external_code_unseen,dask/dask,Measure transfer on a sandbox fixture extracted from actual dask/dask source snippets and issue failure excerpts.,External code transfer succeeds when the loop patches a query API for external_dask_code_signals derived from bounded dask/dask source and failure snippets.
-external_dask_code_transfer_repo,Actual dask source-code and issue-failure sandbox fixture.,external_dask_code_failure_fixture_query,verified_closed_loop,proposed,"Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",1,189bf7d00924,0,1.341,3,0,1.0,0,,True,3,1.341,4,/tmp/rsi_experiments_j0sowaa1/external_dask_code_transfer_repo__external_dask_code_failure_fixture_query__verified_closed_loop__r1/.omega_rsi_runs/closed_rsi_summary.json,"rds_with_external_dask_code_signal, strategy:tuple_membership, canonical_strategy_bonus."",
-        ""target"": ""shared.local_corpus.LocalCorpusIndex""
-      },
-      ""name"": ""autonomous_local_corpus_external_dask_code_signals_query_v1"",
-      ""started_at"": ""2026-05-26T22:48:22Z"",
-      ""target_path"": ""shared/local_corpus.py"",
-      ""test_path"": ""tests/test_autonomous_local_corpus_external_dask_code_signals_query_v1.py""
-    },
-    {
-      ""accepted"": true,
-      ""error"": """",
-      ""extra_paths"": [],
-      ""finished_at"": ""2026-05-26T22:48:23Z"",
-      ""gates"": [
-        {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""py_compile"",
-            ""shared/local_corpus.py"",
-            ""tests/test_emergent_local_corpus_definitions_membership_v1.py""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_dask_code_transfer_repo__external_dask_code_failure_fixture_query__verified_closed_loop__r1"",
-          ""elapsed_s"": 0.04,
-          ""exit_code"": 0,
-          ""label"": ""emergent_local_corpus_definitions_membership_v1_compile"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": """",
-          ""timed_out"": false
-        },
-        {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""pytest"",
-            ""-q"",
-            ""--import-mode=importlib"",
-            ""--maxfail=5"",
-            ""--disable-warnings"",
-            ""tests/test_emergent_local_corpus_definitions_membership_v1.py""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_dask_code_transfer_repo__external_dask_code_failure_fixture_query__verified_closed_loop__r1"",
-          ""elapsed_s"": 0.186,
-          ""exit_code"": 0,
-          ""label"": ""emergent_local_corpus_definitions_membership_v1_focused"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": "".                                                                        [100%]\n1 passed in 0.01s\n"",
-          ""timed_out"": false
-        },
-        {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""pytest"",
-            ""-q"",
-            ""--import-mode=importlib"",
-            ""--maxfail=20"",
-            ""--disable-warnings"",
-            ""tests""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_dask_code_transfer_repo__external_dask_code_failure_fixture_query__verified_closed_loop__r1"",
-          ""elapsed_s"": 0.197,
-          ""exit_code"": 0,
-          ""label"": ""emergent_local_corpus_definitions_membership_v1_root_broad"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": "".....                                                                    [100%]\n5 passed in 0.02s\n"",
-          ""timed_out"": false
-        }
-      ],
-      ""generation"": 3,
-      ""goal"": {
-        ""metric"": ""planner score 9.999 plus generated regression test"",
-        ""name"": ""emergently_query_local_corpus_definitions"",
-        ""rationale"": ""The bounded emergent planner generated an alternate membership query hypothesis for definitions. Evidence: field:definitions, method:records_matching_definitions, strategy:alternate_tuple_membership."",
-        ""target"": ""shared.local_corpus.LocalCorpusIndex""
-      },
-      ""name"": ""emergent_local_corpus_definitions_membership_v1"",
-      ""started_at"": ""2026-05-26T22:48:23Z"",
-      ""target_path"": ""shared/local_corpus.py"",
-      ""test_path"": ""tests/test_emergent_local_corpus_definitions_membership_v1.py""
-    }
-  ],
-  ""active_base"": ""emergent_local_corpus_definitions_membership_v1"",
-  ""active_generation"": 3,
-  ""broad_gate"": true,
-  ""dry_run"": false,
-  ""persistence"": true,
-  ""rejected_this_run"": [],
-  ""rollback"": true,
-  ""state_path"": ""/tmp/rsi_experiments_j0sowaa1/external_dask_code_transfer_repo__external_dask_code_failure_fixture_query__verified_closed_loop__r1/.omega_rsi_runs/closed_rsi_state.json"",
-  ""thdse_core_gate"": true,
-  ""total_accepted"": 3,
-  ""total_rejected"": 0
-}
-",,external_code_unseen,dask/dask,Measure transfer on a sandbox fixture extracted from actual dask/dask source snippets and issue failure excerpts.,External code transfer succeeds when the loop patches a query API for external_dask_code_signals derived from bounded dask/dask source and failure snippets.
-external_dask_code_transfer_repo,Actual dask source-code and issue-failure sandbox fixture.,external_dask_code_failure_fixture_query,agent_coding_loop,baseline_agent_coding_loop,Baseline: single-pass automated coding loop with validation but without persistent recursive depth.,1,f9e88a9575f1,0,0.488,1,0,1.0,0,,False,1,0.488,2,/tmp/rsi_experiments_j0sowaa1/external_dask_code_transfer_repo__external_dask_code_failure_fixture_query__agent_coding_loop__r1/.omega_rsi_runs/closed_rsi_summary.json,"{
-  ""accepted_this_run"": [
-    {
-      ""accepted"": true,
-      ""error"": """",
-      ""extra_paths"": [],
-      ""finished_at"": ""2026-05-26T22:48:24Z"",
-      ""gates"": [
-        {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""py_compile"",
-            ""shared/local_corpus.py"",
-            ""tests/test_autonomous_local_corpus_definitions_query_v1.py""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_dask_code_transfer_repo__external_dask_code_failure_fixture_query__agent_coding_loop__r1"",
-          ""elapsed_s"": 0.034,
-          ""exit_code"": 0,
-          ""label"": ""autonomous_local_corpus_definitions_query_v1_compile"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": """",
-          ""timed_out"": false
-        },
-        {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""pytest"",
-            ""-q"",
-            ""--import-mode=importlib"",
-            ""--maxfail=5"",
-            ""--disable-warnings"",
-            ""tests/test_autonomous_local_corpus_definitions_query_v1.py""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_dask_code_transfer_repo__external_dask_code_failure_fixture_query__agent_coding_loop__r1"",
-          ""elapsed_s"": 0.187,
-          ""exit_code"": 0,
-          ""label"": ""autonomous_local_corpus_definitions_query_v1_focused"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": "".                                                                        [100%]\n1 passed in 0.01s\n"",
-          ""timed_out"": false
-        },
-        {
-          ""args"": [
-            ""/opt/hostedtoolcache/Python/3.11.15/x64/bin/python"",
-            ""-m"",
-            ""pytest"",
-            ""-q"",
-            ""--import-mode=importlib"",
-            ""--maxfail=20"",
-            ""--disable-warnings"",
-            ""tests""
-          ],
-          ""cwd"": ""/tmp/rsi_experiments_j0sowaa1/external_dask_code_transfer_repo__external_dask_code_failure_fixture_query__agent_coding_loop__r1"",
-          ""elapsed_s"": 0.202,
-          ""exit_code"": 0,
-          ""label"": ""autonomous_local_corpus_definitions_query_v1_root_broad"",
-          ""stderr_tail"": """",
-          ""stdout_tail"": ""...                                                                      [100%]\n3 passed in 0.03s\n"",
-          ""timed_out"": false
-        }
-      ],
-      ""generation"": 1,
-      ""goal"": {
-        ""metric"": ""planner score 11.999 plus generated regression test"",
-        ""name"": ""autonomously_query_local_corpus_definitions"",
-        ""rationale"": ""The planner found a tuple-valued definitions field without a matching query API on LocalCorpusIndex. Evidence: field:definitions, method:records_with_definition, strategy:tuple_membership, canonical_strategy_bonus."",
-        ""target"": ""shared.local_corpus.LocalCorpusIndex""
-      },
-      ""name"": ""autonomous_local_corpus_definitions_query_v1"",
-      ""started_at"": ""2026-05-26T22:48:23Z"",
-      ""target_path"": ""shared/local_corpus.py"",
-      ""test_path"": ""tests/test_autonomous_local_corpus_definitions_query_v1.py""
-    }
-  ],
-  ""active_base"": ""autonomous_local_corpus_definitions_query_v1"",
-  ""active_generation"": 1,
-  ""broad_gate"": true,
-  ""dry_run"": false,
-  ""persistence"": false,
-  ""rejected_this_run"": [],
-  ""rollback"": true,
-  ""state_path"": ""/tmp/rsi_experiments_j0sowaa1/external_dask_code_transfer_repo__external_dask_code_failure_fixture_query__agent_coding_loop__r1/.omega_rsi_runs/closed_rsi_state.json"",
-  ""thdse_core_gate"": true,
-  ""total_accepted"": 1,
-  ""total_rejected"": 0
-}
-",,external_code_unseen,dask/dask,Measure transfer on a sandbox fixture extracted from actual dask/dask source snippets and issue failure excerpts.,External code transfer succeeds when the loop patches a query API for external_dask_code_signals derived from bounded dask/dask source and failure snippets.
-external_dask_code_transfer_repo,Actual dask source-code and issue-failure sandbox fixture.,external_dask_code_failure_fixture_query,ci_only_validation,baseline_ci_only,Baseline: run validation without candidate generation or code patching.,1,3608213f5bc3,0,0.208,0,0,0.0,0,,False,0,0.208,0,/tmp/rsi_experiments_j0sowaa1/external_dask_code_transfer_repo__external_dask_code_failure_fixture_query__ci_only_validation__r1/.omega_rsi_runs/closed_rsi_summary.json,"..                                                                       [100%]
-2 passed in 0.03s
-",,external_code_unseen,dask/dask,Measure transfer on a sandbox fixture extracted from actual dask/dask source snippets and issue failure excerpts.,External code transfer succeeds when the loop patches a query API for external_dask_code_signals derived from bounded dask/dask source and failure snippets.
+",,external_code_unseen,dask/dask,Measure transfer on a sandbox fixture extracted from actual dask/dask source snippets and issue failure excerpts.,External code transfer succeeds when the loop repairs a local executable failure target derived from bounded dask/dask source and failure snippets.,1.949,1,1,2,0
+external_dask_code_transfer_repo,Actual dask source-code and issue-failure sandbox fixture.,external_dask_code_failure_fixture_query,ci_only_validation,baseline_ci_only,Baseline: run validation without candidate generation or code patching.,0,809d2d8ebfe7,1,0.24,0,0,0.0,0,,False,0,0.24,0,/tmp/rsi_experiments_oi1ojcn8/external_dask_code_transfer_repo__external_dask_code_failure_fixture_query__ci_only_validation__r0/.omega_rsi_runs/closed_rsi_summary.json,"F..                                                                      [100%]
+=================================== FAILURES ===================================
+___________ test_external_failure_signal_is_a_real_local_repair_task ___________
+
+    def test_external_failure_signal_is_a_real_local_repair_task():
+        failure_text = (Path.cwd() / ""external_sandbox"" / ""failure_excerpt.txt"").read_text(encoding=""utf-8"")
+        events = (""metadata_loaded"", ""read_error"", ""empty_content"")
+    
+        assert failure_text
+>       assert external_failure_signal(events) == ""read_error""
+E       AssertionError: assert '' == 'read_error'
+E         
+E         - read_error
+
+tests/test_external_code_repair_task.py:11: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_external_code_repair_task.py::test_external_failure_signal_is_a_real_local_repair_task - AssertionError: assert '' == 'read_error'
+  
+  - read_error
+1 failed, 2 passed in 0.06s
+",,external_code_unseen,dask/dask,Measure transfer on a sandbox fixture extracted from actual dask/dask source snippets and issue failure excerpts.,External code transfer succeeds when the loop repairs a local executable failure target derived from bounded dask/dask source and failure snippets.,0,0,0,0,0

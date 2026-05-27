@@ -1,6 +1,6 @@
 # External Grounding Report
 
-- Generated at: 2026-05-26T22:48:03Z
+- Generated at: 2026-05-27T03:47:09Z
 - Sources: 4
 - Tasks: 4
 
@@ -23,14 +23,14 @@
 - URL: https://github.com/dask/dask/issues/12359
 - Title: 'cumsum' results differ from 'cumsum' on a pure numpy array
 
-### github:hypothesisworks/hypothesis#4744
+### github:hypothesisworks/hypothesis#4729
 
 - Repository: `hypothesisworks/hypothesis`
-- Kind: `external_regression_repair`
+- Kind: `external_bug_repair`
 - Score: 3.000
-- Labels: bug
-- URL: https://github.com/HypothesisWorks/hypothesis/issues/4744
-- Title: Pytest plugin produces corrupt patch if source file doesn't end in a newline
+- Labels: bug, performance
+- URL: https://github.com/HypothesisWorks/hypothesis/issues/4729
+- Title: Time blowup for `from_type` with certain abstract classes
 
 ### github:pandas-dev/pandas#65735
 

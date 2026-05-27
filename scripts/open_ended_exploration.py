@@ -18,6 +18,8 @@ from itertools import count, product
 from pathlib import Path
 from typing import Dict, Iterable, Iterator, List, Optional, Sequence, Tuple
 
+from shared.capability_benchmarks import ValidationPlan
+
 
 DEFAULT_META_DEPTH = 3
 DEFAULT_MAX_CANDIDATES = 48
@@ -68,6 +70,7 @@ class OpenCandidate:
     validation_status: str
     closure_state: str
     transfer_targets: Tuple[str, ...]
+    validation_plan: ValidationPlan
     meta_limit_layers: Tuple[MetaLimitLayer, ...]
     safety_controls: Tuple[str, ...]
     provenance: Dict[str, str]
@@ -273,6 +276,47 @@ def transfer_targets_for(domain: DomainSeed, domains: Sequence[DomainSeed], *, l
     return tuple(rotated[:limit])
 
 
+def validation_plan_for(domain: DomainSeed, axis: ExplorationAxis) -> ValidationPlan:
+    """Build an executable local validation plan for an open proposal."""
+
+    if "benchmarks" in axis.target_surfaces or "reports/rsi_experiments" in axis.target_surfaces:
+        commands = (
+            (
+                "python",
+                "scripts/rsi_experiment_suite.py",
+                "--repository",
+                "compact_kernel_repo",
+                "--task",
+                "local_corpus_queries_clean",
+                "--variant",
+                "verified_closed_loop",
+                "--repeats",
+                "1",
+            ),
+        )
+    elif "tests" in axis.target_surfaces:
+        commands = (("python", "-m", "pytest", "-q", "tests"),)
+    else:
+        commands = (
+            (
+                "python",
+                "scripts/open_ended_exploration.py",
+                "--max-candidates",
+                "3",
+                "--exclude-unverified",
+            ),
+        )
+    return ValidationPlan(
+        name=f"validate_{domain.name}_{axis.name}",
+        commands=commands,
+        expected_signals=(
+            "candidate_has_concrete_target_surface",
+            "candidate_has_bounded_execution_command",
+            "promotion_requires_passing_validation_plan",
+        ),
+    )
+
+
 def candidate_stream(
     domains: Sequence[DomainSeed],
     axes: Sequence[ExplorationAxis],
@@ -329,9 +373,10 @@ def candidate_stream(
             ),
             closure_state="open_loop_not_applied",
             transfer_targets=transfer_targets_for(domain, domains),
+            validation_plan=validation_plan_for(domain, axis),
             meta_limit_layers=build_meta_limit_layers(domain, axis, depth=meta_depth),
             safety_controls=(
-                "proposal_only",
+                "proposal_requires_executable_validation_plan",
                 "no_auto_patch",
                 "no_remote_code_execution",
                 "bounded_materialization",
@@ -395,6 +440,7 @@ def build_open_exploration_report(
         safety_model=(
             "The open exploration layer does not apply patches.",
             "Unverified self-modification proposals may be recorded but remain unapplied.",
+            "Every materialized proposal includes an executable validation plan before promotion.",
             "The candidate stream is conceptually open-ended, while each run materializes a bounded prefix.",
             "Every proposal records provenance, target surfaces, and transfer targets.",
             "Promotion into a closed loop requires a separate bounded workflow.",
@@ -433,6 +479,7 @@ def write_report(output_dir: Path, report: OpenExplorationReport) -> None:
     for candidate in report.candidates:
         meta_labels = ", ".join(layer.label for layer in candidate.meta_limit_layers)
         transfer = ", ".join(candidate.transfer_targets) if candidate.transfer_targets else "none"
+        commands = "; ".join(" ".join(command) for command in candidate.validation_plan.commands)
         lines.extend(
             [
                 f"### {candidate.candidate_id}",
@@ -443,6 +490,7 @@ def write_report(output_dir: Path, report: OpenExplorationReport) -> None:
                 f"- Closure state: `{candidate.closure_state}`",
                 f"- Transfer targets: {transfer}",
                 f"- Meta layers: {meta_labels}",
+                f"- Validation plan: `{commands}`",
                 f"- Hypothesis: {candidate.hypothesis}",
                 "",
             ]

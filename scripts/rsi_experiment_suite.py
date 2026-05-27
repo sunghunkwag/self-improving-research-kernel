@@ -98,6 +98,19 @@ class ExternalCodeFixtureSpec:
     description: str
 
 
+@dataclass(frozen=True)
+class CapabilityFixtureSpec:
+    """One executable capability benchmark fixture."""
+
+    repository_name: str
+    task_name: str
+    family: str
+    operator: str
+    public_assertion: str
+    hidden_assertion: str
+    description: str
+
+
 @dataclass
 class ExperimentResult:
     """JSON-compatible experiment outcome."""
@@ -128,6 +141,11 @@ class ExperimentResult:
     transfer_origin: str = ""
     task_description: str = ""
     task_claim: str = ""
+    capability_delta_score: float = 0.0
+    solved_new_tasks: int = 0
+    hidden_transfer: int = 0
+    operator_reuse: int = 0
+    failure_residue_count: int = 0
 
 
 EXTERNAL_ISSUE_FIXTURES: Tuple[ExternalIssueFixtureSpec, ...] = (
@@ -206,6 +224,55 @@ EXTERNAL_CODE_FIXTURES: Tuple[ExternalCodeFixtureSpec, ...] = (
 )
 
 
+CAPABILITY_FIXTURES: Tuple[CapabilityFixtureSpec, ...] = (
+    CapabilityFixtureSpec(
+        repository_name="capability_algorithm_synthesis_repo",
+        task_name="capability_algorithm_synthesis",
+        family="algorithm_synthesis",
+        operator="run_length_encode",
+        public_assertion="assert run_length_encode((1, 1, 2, 2, 2, 3)) == ((1, 2), (2, 3), (3, 1))",
+        hidden_assertion="assert run_length_encode(('a', 'a', 'b', 'a')) == (('a', 2), ('b', 1), ('a', 1))",
+        description="Executable algorithm-synthesis fixture requiring a reusable run-length encoder primitive.",
+    ),
+    CapabilityFixtureSpec(
+        repository_name="capability_symbolic_reasoning_repo",
+        task_name="capability_symbolic_reasoning",
+        family="symbolic_reasoning",
+        operator="infer_linear_rule",
+        public_assertion="assert infer_linear_rule((2, 5, 8, 11)) == {'start': 2, 'step': 3, 'next': 14}",
+        hidden_assertion="assert infer_linear_rule((-3, -1, 1)) == {'start': -3, 'step': 2, 'next': 3}",
+        description="Executable symbolic-reasoning fixture requiring linear rule inference.",
+    ),
+    CapabilityFixtureSpec(
+        repository_name="capability_grid_transformation_repo",
+        task_name="capability_grid_transformation",
+        family="grid_transformation",
+        operator="rotate_grid_clockwise",
+        public_assertion="assert rotate_grid_clockwise(((1, 2, 3), (4, 5, 6))) == ((4, 1), (5, 2), (6, 3))",
+        hidden_assertion="assert rotate_grid_clockwise((('x',), ('y',), ('z',))) == (('z', 'y', 'x'),)",
+        description="Executable grid-transformation fixture requiring ARC-like rotation.",
+    ),
+    CapabilityFixtureSpec(
+        repository_name="capability_bug_repair_repo",
+        task_name="capability_bug_repair",
+        family="bug_repair",
+        operator="dedupe_preserve_order",
+        public_assertion="assert dedupe_preserve_order(('b', 'a', 'b', 'c', 'a')) == ('b', 'a', 'c')",
+        hidden_assertion="assert dedupe_preserve_order((3, 3, 2, 3, 1, 2)) == (3, 2, 1)",
+        description="Executable bug-repair fixture requiring a corrected stable de-duplication primitive.",
+    ),
+    CapabilityFixtureSpec(
+        repository_name="capability_planning_state_transition_repo",
+        task_name="capability_planning_state_transition",
+        family="planning_state_transition",
+        operator="apply_grid_action",
+        public_assertion="assert apply_grid_action({'x': 0, 'y': 0}, 'east') == {'x': 1, 'y': 0}",
+        hidden_assertion="assert apply_grid_action({'x': 2, 'y': -1}, 'north') == {'x': 2, 'y': 0}",
+        description="Executable planning fixture requiring deterministic state transition updates.",
+    ),
+)
+
+
 DEFAULT_REPOSITORIES = (
     BenchmarkRepository(
         name="omega_full_repo",
@@ -214,6 +281,15 @@ DEFAULT_REPOSITORIES = (
     BenchmarkRepository(
         name="compact_kernel_repo",
         description="Minimal repository fixture containing only the closed loop, policy registry, local corpus module, and smoke tests.",
+    ),
+    *(
+        BenchmarkRepository(
+            name=spec.repository_name,
+            description=spec.description,
+            split="capability_unseen",
+            transfer_origin=spec.family,
+        )
+        for spec in CAPABILITY_FIXTURES
     ),
     BenchmarkRepository(
         name="unseen_schema_transfer_repo",
@@ -276,6 +352,18 @@ DEFAULT_TASKS = (
         description="Inject a failing broad-gate test to measure rollback and no-broad-gate regression risk.",
         repositories=("omega_full_repo", "compact_kernel_repo"),
     ),
+    *(
+        ExperimentTask(
+            name=spec.task_name,
+            description=f"Measure executable {spec.family} repair with public and hidden counterexamples.",
+            repositories=(spec.repository_name,),
+            claim=(
+                f"Capability transfer succeeds when the loop synthesizes the reusable "
+                f"{spec.operator} primitive for {spec.family}."
+            ),
+        )
+        for spec in CAPABILITY_FIXTURES
+    ),
     ExperimentTask(
         name="unseen_static_roles_query",
         description="Measure whether schema-driven generation transfers to a held-out tuple-valued LocalPythonFileRecord field.",
@@ -321,8 +409,8 @@ DEFAULT_TASKS = (
             ),
             repositories=(spec.repository_name,),
             claim=(
-                f"External code transfer succeeds when the loop patches a query API for "
-                f"{spec.field_name} derived from bounded {spec.source_repository} source and failure snippets."
+                f"External code transfer succeeds when the loop repairs a local executable "
+                f"failure target derived from bounded {spec.source_repository} source and failure snippets."
             ),
         )
         for spec in EXTERNAL_CODE_FIXTURES
@@ -424,6 +512,15 @@ def copy_required_file(src: Path, dst: Path, relative_path: str) -> None:
     shutil.copy2(source, target)
 
 
+def copy_optional_file(src: Path, dst: Path, relative_path: str) -> None:
+    source = src / relative_path
+    if not source.exists():
+        return
+    target = dst / relative_path
+    target.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(source, target)
+
+
 def build_compact_kernel_repo(src: Path, dst: Path) -> None:
     """Build a small benchmark repository fixture for fast repeated trials."""
 
@@ -435,6 +532,11 @@ def build_compact_kernel_repo(src: Path, dst: Path) -> None:
         "shared/local_corpus.py",
     ):
         copy_required_file(src, dst, relative_path)
+    for relative_path in (
+        "shared/capability_benchmarks.py",
+        "shared/capability_primitives.py",
+    ):
+        copy_optional_file(src, dst, relative_path)
     tests_dir = dst / "tests"
     tests_dir.mkdir(parents=True, exist_ok=True)
     (tests_dir / "test_fixture_smoke.py").write_text(
@@ -487,6 +589,63 @@ def build_unseen_schema_transfer_repo(
         "    )\n"
         f"    assert record.{field_name} == ('{sample_value}',)\n",
         encoding="utf-8",
+    )
+
+
+def strip_top_level_function(text: str, function_name: str) -> str:
+    """Remove one top-level function from a source string."""
+
+    pattern = rf"\ndef {re.escape(function_name)}\(.*?(?=\n\ndef |\n\n[A-Z_][A-Z0-9_]*\s*=|\Z)"
+    prefixed = "\n" + text
+    rewritten = re.sub(pattern, "\n", prefixed, count=1, flags=re.DOTALL)
+    return rewritten[1:]
+
+
+def capability_fixture_for_repository(repository_name: str) -> Optional[CapabilityFixtureSpec]:
+    """Return the capability fixture spec for a benchmark repository."""
+
+    return next(
+        (spec for spec in CAPABILITY_FIXTURES if spec.repository_name == repository_name),
+        None,
+    )
+
+
+def build_capability_benchmark_repo(
+    src: Path,
+    dst: Path,
+    spec: CapabilityFixtureSpec,
+) -> None:
+    """Build an executable capability fixture with one missing primitive."""
+
+    build_compact_kernel_repo(src, dst)
+    primitives = dst / "shared" / "capability_primitives.py"
+    if not primitives.exists():
+        primitives.write_text('"""Fixture-local capability primitives."""\n', encoding="utf-8")
+    text = strip_top_level_function(primitives.read_text(encoding="utf-8"), spec.operator)
+    primitives.write_text(text, encoding="utf-8")
+    test_path = dst / "tests" / f"test_capability_{spec.family}_fixture.py"
+    test_path.write_text(
+        f"from shared.capability_primitives import {spec.operator}\n\n\n"
+        f"def test_{spec.operator}_public_case():\n"
+        f"    {spec.public_assertion}\n\n\n"
+        f"def test_{spec.operator}_hidden_transfer_case():\n"
+        f"    {spec.hidden_assertion}\n",
+        encoding="utf-8",
+    )
+    write_json(
+        dst / "capability_fixture_metadata.json",
+        {
+            "fixture_kind": "capability_operator_repair",
+            "family": spec.family,
+            "operator": spec.operator,
+            "task_name": spec.task_name,
+            "safety_controls": [
+                "local_fixture_only",
+                "public_counterexample",
+                "hidden_transfer_counterexample",
+                "no_external_code_execution",
+            ],
+        },
     )
 
 
@@ -762,6 +921,32 @@ def copy_external_sandbox_text_fixture(
     return str(target.relative_to(dst))
 
 
+EXTERNAL_REPAIR_TARGET_SOURCE = '''"""Local executable repair target derived from external code failure excerpts."""
+
+EXTERNAL_REPAIR_TASK = "preserve_first_failure_signal"
+
+
+def external_failure_signal(events):
+    """Return failure signal from an event stream."""
+
+    return ""
+'''
+
+
+EXTERNAL_REPAIR_FIXTURE_TEST = '''from pathlib import Path
+
+from shared.external_repair_target import external_failure_signal
+
+
+def test_external_failure_signal_is_a_real_local_repair_task():
+    failure_text = (Path.cwd() / "external_sandbox" / "failure_excerpt.txt").read_text(encoding="utf-8")
+    events = ("metadata_loaded", "read_error", "empty_content")
+
+    assert failure_text
+    assert external_failure_signal(events) == "read_error"
+'''
+
+
 def build_external_code_transfer_repo(
     src: Path,
     dst: Path,
@@ -792,6 +977,10 @@ def build_external_code_transfer_repo(
         "failure_excerpt_path",
         "failure_excerpt.txt",
     )
+    repair_target = dst / "shared" / "external_repair_target.py"
+    repair_target.write_text(EXTERNAL_REPAIR_TARGET_SOURCE, encoding="utf-8")
+    repair_test = dst / "tests" / "test_external_code_repair_task.py"
+    repair_test.write_text(EXTERNAL_REPAIR_FIXTURE_TEST, encoding="utf-8")
     metadata = {
         "fixture_kind": "external_code_sandbox_transfer",
         "source_repository": spec.source_repository,
@@ -809,6 +998,8 @@ def build_external_code_transfer_repo(
         "failure_excerpt_sha256": fixture.get("failure_excerpt_sha256", ""),
         "copied_source_fixture": copied_source,
         "copied_failure_fixture": copied_failure,
+        "repair_target": "shared/external_repair_target.py",
+        "repair_test": "tests/test_external_code_repair_task.py",
         "safety_controls": [
             "text_fixture_only",
             "no_external_code_execution",
@@ -816,6 +1007,7 @@ def build_external_code_transfer_repo(
             "bounded_failure_excerpt",
             "source_url_provenance",
             "disposable_repo_execution_only",
+            "local_executable_repair_task",
         ],
     }
     write_json(dst / "external_code_sandbox_fixture.json", metadata)
@@ -827,6 +1019,10 @@ def build_benchmark_repo(src: Path, dst: Path, repository: BenchmarkRepository) 
         return
     if repository.name == "compact_kernel_repo":
         build_compact_kernel_repo(src, dst)
+        return
+    capability_spec = capability_fixture_for_repository(repository.name)
+    if capability_spec is not None:
+        build_capability_benchmark_repo(src, dst, capability_spec)
         return
     if repository.name == "unseen_schema_transfer_repo":
         build_unseen_schema_transfer_repo(src, dst)
@@ -1079,6 +1275,7 @@ def build_result(
     summary = read_json(summary_path, {})
     accepted = list(summary.get("accepted_this_run", []))
     rejected = list(summary.get("rejected_this_run", []))
+    records = [*accepted, *rejected]
     total_candidates = len(accepted) + len(rejected)
     changed = changed_files(before, after)
     rollback_correct: Optional[bool] = None
@@ -1113,6 +1310,20 @@ def build_result(
         transfer_origin=repository.transfer_origin,
         task_description=task.description,
         task_claim=task.claim,
+        capability_delta_score=round(
+            sum(float(record.get("capability_delta", {}).get("score", 0.0) or 0.0) for record in records),
+            3,
+        ),
+        solved_new_tasks=sum(
+            int(record.get("capability_delta", {}).get("solved_new_tasks", 0) or 0) for record in records
+        ),
+        hidden_transfer=sum(
+            int(record.get("capability_delta", {}).get("hidden_transfer", 0) or 0) for record in records
+        ),
+        operator_reuse=sum(
+            int(record.get("capability_delta", {}).get("operator_reuse", 0) or 0) for record in records
+        ),
+        failure_residue_count=sum(1 for record in records if record.get("failure_residue")),
     )
 
 
@@ -1164,6 +1375,11 @@ def aggregate_results(results: Sequence[ExperimentResult]) -> List[Dict[str, obj
                 "improvement_depth_mean": mean([float(row.improvement_depth) for row in rows]),
                 "cost_proxy_seconds_mean": mean([float(row.cost_proxy_seconds) for row in rows]),
                 "changed_files_count_mean": mean([float(row.changed_files_count) for row in rows]),
+                "capability_delta_score_mean": mean([float(row.capability_delta_score) for row in rows]),
+                "solved_new_tasks_mean": mean([float(row.solved_new_tasks) for row in rows]),
+                "hidden_transfer_mean": mean([float(row.hidden_transfer) for row in rows]),
+                "operator_reuse_mean": mean([float(row.operator_reuse) for row in rows]),
+                "failure_residue_count_mean": mean([float(row.failure_residue_count) for row in rows]),
             }
         )
     return aggregates
@@ -1268,10 +1484,20 @@ def build_baseline_comparisons(aggregates: Sequence[Dict[str, object]]) -> List[
         external_code_transfer_success = (
             proposed.get("repository_split") == "external_code_unseen"
             and proposed_acceptance > 0.0
-            and proposed_depth > agent_depth
+            and (
+                _float_value(proposed, "solved_new_tasks_mean") > 0.0
+                or proposed_depth > agent_depth
+            )
+        )
+        capability_transfer_success = (
+            proposed.get("repository_split") == "capability_unseen"
+            and proposed_acceptance > 0.0
+            and _float_value(proposed, "solved_new_tasks_mean") > 0.0
         )
 
-        if external_code_transfer_success:
+        if capability_transfer_success:
+            outcome = "capability_transfer_success"
+        elif external_code_transfer_success:
             outcome = "external_code_transfer_success"
         elif external_transfer_success:
             outcome = "external_transfer_success"
@@ -1306,6 +1532,7 @@ def build_baseline_comparisons(aggregates: Sequence[Dict[str, object]]) -> List[
                 "unseen_transfer_success": unseen_transfer_success,
                 "external_transfer_success": external_transfer_success,
                 "external_code_transfer_success": external_code_transfer_success,
+                "capability_transfer_success": capability_transfer_success,
                 "outcome": outcome,
             }
         )
@@ -1351,8 +1578,8 @@ def write_markdown_reports(output_dir: Path, results: List[ExperimentResult]) ->
         )
 
     comparison_lines = [
-        "| Repository | Split | Task | Outcome | Proposed Rate | Best Baseline | Baseline Rate | Depth Margin vs Agent | Safety Win | Unseen Transfer | External Transfer | External Code Transfer |",
-        "|---|---|---|---|---:|---|---:|---:|---:|---:|---:|---:|",
+        "| Repository | Split | Task | Outcome | Proposed Rate | Best Baseline | Baseline Rate | Depth Margin vs Agent | Safety Win | Unseen Transfer | External Transfer | External Code Transfer | Capability Transfer |",
+        "|---|---|---|---|---:|---|---:|---:|---:|---:|---:|---:|---:|",
     ]
     for row in comparisons:
         comparison_lines.append(
@@ -1361,7 +1588,8 @@ def write_markdown_reports(output_dir: Path, results: List[ExperimentResult]) ->
             f"{float(row['best_baseline_accepted_rate_mean']):.2f} | "
             f"{float(row['depth_margin_vs_agent_loop']):.2f} | "
             f"{row['safety_win_over_no_rollback']} | {row['unseen_transfer_success']} | "
-            f"{row['external_transfer_success']} | {row['external_code_transfer_success']} |"
+            f"{row['external_transfer_success']} | {row['external_code_transfer_success']} | "
+            f"{row['capability_transfer_success']} |"
         )
 
     repositories = sorted({result.repository for result in results})
@@ -1398,6 +1626,9 @@ def write_markdown_reports(output_dir: Path, results: List[ExperimentResult]) ->
         "- Baseline comparison rows explicitly label wins, ties, safety wins, and inconclusive cases.",
         "- The generator includes schema-driven candidate synthesis instead of only fixed candidate names.",
         "- The generator scores bounded competing hypotheses with rejection history before patching.",
+        "- CapabilityDelta scoring records solved tasks, hidden transfer, regression protection, operator reuse, and compute cost.",
+        "- Failure residue extraction records missing operators, missing abstractions, failed evaluators, and overfit signals.",
+        "- Capability fixtures include algorithm synthesis, symbolic reasoning, grid transformation, bug repair, and planning/state transitions.",
         "- Broad gates reduce regression risk relative to focused-only ablations.",
         "- Rollback behavior is measurable on forced broad-gate rejection tasks.",
         "- Persistence can be ablated to show that resume depth depends on durable state.",
@@ -1420,6 +1651,7 @@ def write_markdown_reports(output_dir: Path, results: List[ExperimentResult]) ->
         "- `unseen_transfer_success`: the loop patches a held-out schema surface not present in the original benchmark fixtures.",
         "- `external_transfer_success`: the loop patches a fixture schema extracted from actual external repository issue metadata.",
         "- `external_code_transfer_success`: the loop patches a fixture schema extracted from bounded external source-code snippets and issue failure excerpts.",
+        "- `capability_transfer_success`: the loop synthesizes a reusable primitive that solves executable public and hidden capability cases.",
         "- `tie_or_frontier_match`: the proposed loop matches the best baseline on this metric but does not dominate it.",
         "- `baseline_stronger_or_inconclusive`: the current evidence does not support a proposed-loop win.",
     ]

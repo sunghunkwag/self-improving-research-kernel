@@ -1,12 +1,7 @@
 Repository: hypothesisworks/hypothesis
-Issue: https://github.com/HypothesisWorks/hypothesis/issues/4744
-Task: github:hypothesisworks/hypothesis#4744
+Issue: https://github.com/HypothesisWorks/hypothesis/issues/4729
+Task: github:hypothesisworks/hypothesis#4729
 Safety: bounded failure excerpt only; not executed.
 
 [python]
-from hypothesis.strategies import integers from hypothesis import given @given(integers()) def test_two_failures(a): assert a < 0 # note, no newline
-
----
-
-[diff]
-... --- --- ./test_one.py +++ ./test_one.py @@ -2,5 +2,6 @@ from hypothesis import given @given(integers()) +@example(a=0).via("discovered failure") def test_two_failures(a): assert a < 0 # note, no newline +\ No newline at end of file
+import time from abc import ABC, abstractmethod from dataclasses import dataclass import hypothesis.strategies as st class Stmt(ABC): @abstractmethod def f(self) -> str: ... @dataclass class Block(Stmt): stmts: list[Stmt] def f(self) -> str: return "" for i in range(30): exec( f"@dataclass\n" f"class S{i}(Stmt):\n" f" a: Stmt\n" f" b: Stmt | None\n" f" def f(self) -> str: return ''\n" ) t0 = time.perf_counter() st.from_type(Block) print(f"{time.perf_counter() - t0:.3f}s")

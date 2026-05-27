@@ -2,6 +2,96 @@
   "repeats": 1,
   "repositories": [
     {
+      "description": "Full OMEGA-THDSE checkout with root tests and THDSE core gates available.",
+      "name": "omega_full_repo",
+      "split": "seen",
+      "transfer_origin": ""
+    },
+    {
+      "description": "Minimal repository fixture containing only the closed loop, policy registry, local corpus module, and smoke tests.",
+      "name": "compact_kernel_repo",
+      "split": "seen",
+      "transfer_origin": ""
+    },
+    {
+      "description": "Executable algorithm-synthesis fixture requiring a reusable run-length encoder primitive.",
+      "name": "capability_algorithm_synthesis_repo",
+      "split": "capability_unseen",
+      "transfer_origin": "algorithm_synthesis"
+    },
+    {
+      "description": "Executable symbolic-reasoning fixture requiring linear rule inference.",
+      "name": "capability_symbolic_reasoning_repo",
+      "split": "capability_unseen",
+      "transfer_origin": "symbolic_reasoning"
+    },
+    {
+      "description": "Executable grid-transformation fixture requiring ARC-like rotation.",
+      "name": "capability_grid_transformation_repo",
+      "split": "capability_unseen",
+      "transfer_origin": "grid_transformation"
+    },
+    {
+      "description": "Executable bug-repair fixture requiring a corrected stable de-duplication primitive.",
+      "name": "capability_bug_repair_repo",
+      "split": "capability_unseen",
+      "transfer_origin": "bug_repair"
+    },
+    {
+      "description": "Executable planning fixture requiring deterministic state transition updates.",
+      "name": "capability_planning_state_transition_repo",
+      "split": "capability_unseen",
+      "transfer_origin": "planning_state_transition"
+    },
+    {
+      "description": "Held-out compact fixture with an unseen tuple-valued record field that tests schema transfer beyond the original task distribution.",
+      "name": "unseen_schema_transfer_repo",
+      "split": "unseen",
+      "transfer_origin": "compact_kernel_repo"
+    },
+    {
+      "description": "Held-out security-oriented fixture with a threat-label schema absent from the seen benchmark repositories.",
+      "name": "unseen_security_transfer_repo",
+      "split": "unseen",
+      "transfer_origin": "compact_kernel_repo"
+    },
+    {
+      "description": "Held-out science-oriented fixture with evidence-source schema absent from the seen benchmark repositories.",
+      "name": "unseen_science_transfer_repo",
+      "split": "unseen",
+      "transfer_origin": "compact_kernel_repo"
+    },
+    {
+      "description": "Held-out control-oriented fixture with controller-mode schema absent from the seen benchmark repositories.",
+      "name": "unseen_control_transfer_repo",
+      "split": "unseen",
+      "transfer_origin": "compact_kernel_repo"
+    },
+    {
+      "description": "Actual psf/requests issue-label fixture extracted from public GitHub issue metadata.",
+      "name": "external_requests_issue_transfer_repo",
+      "split": "external_unseen",
+      "transfer_origin": "psf/requests"
+    },
+    {
+      "description": "Actual Hypothesis issue-title fixture extracted from public GitHub issue metadata.",
+      "name": "external_hypothesis_issue_transfer_repo",
+      "split": "external_unseen",
+      "transfer_origin": "hypothesisworks/hypothesis"
+    },
+    {
+      "description": "Actual pandas issue-title fixture extracted from public GitHub issue metadata.",
+      "name": "external_pandas_issue_transfer_repo",
+      "split": "external_unseen",
+      "transfer_origin": "pandas-dev/pandas"
+    },
+    {
+      "description": "Actual dask issue-label fixture extracted from public GitHub issue metadata.",
+      "name": "external_dask_issue_transfer_repo",
+      "split": "external_unseen",
+      "transfer_origin": "dask/dask"
+    },
+    {
       "description": "Actual psf/requests source-code and issue-failure sandbox fixture.",
       "name": "external_requests_code_transfer_repo",
       "split": "external_code_unseen",
@@ -202,30 +292,6 @@
       "persistence": true,
       "rollback": true,
       "run_loop": true,
-      "thdse_core_gate": true
-    },
-    {
-      "broad_gate": true,
-      "description": "Baseline: single-pass automated coding loop with validation but without persistent recursive depth.",
-      "family": "baseline_agent_coding_loop",
-      "max_candidates_override": 1,
-      "max_generations_override": 1,
-      "name": "agent_coding_loop",
-      "persistence": false,
-      "rollback": true,
-      "run_loop": true,
-      "thdse_core_gate": true
-    },
-    {
-      "broad_gate": true,
-      "description": "Baseline: run validation without candidate generation or code patching.",
-      "family": "baseline_ci_only",
-      "max_candidates_override": null,
-      "max_generations_override": null,
-      "name": "ci_only_validation",
-      "persistence": true,
-      "rollback": true,
-      "run_loop": false,
       "thdse_core_gate": true
     }
   ]

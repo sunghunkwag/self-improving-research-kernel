@@ -36,7 +36,7 @@ def test_build_issue_query_url_bounds_limit_and_encodes_label():
 def test_issue_to_task_preserves_provenance_and_safety_controls():
     task = issue_to_task("example/project", SAMPLE_ISSUE)
 
-    assert task is not None
+    assert getattr(task, "repository", "") == "example/project"
     assert task.task_id == "github:example/project#123"
     assert task.task_kind == "external_regression_repair"
     assert "no_remote_code_execution" in task.safety_controls
