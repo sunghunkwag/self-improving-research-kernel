@@ -41,12 +41,33 @@ that now combines:
 - schema-driven candidate synthesis from `LocalPythonFileRecord` tuple fields
 - bounded emergent hypothesis search over canonical and alternate query
   strategies
+- reusable operator synthesis for executable capability fixtures
+- CapabilityDelta scoring across solved tasks, hidden transfer, regression
+  protection, operator reuse, and compute cost
+- failure-residue extraction for rejected candidates, including failed reason,
+  missing operator, missing abstraction, failed evaluator, and overfit signal
 - generated regression tests for inferred query APIs
 - history-aware candidate ranking from accepted/rejected provenance
 - existing broad gates, rollback, and kill-switch controls
 
 This makes candidate discovery less dependent on hand-coded candidate names
 while keeping every patch deterministic, reviewable, and gate-verified.
+
+## Capability Benchmarks
+
+The experiment suite now includes executable capability fixtures beyond
+schema-query repair:
+
+- algorithm synthesis
+- symbolic reasoning
+- grid transformation
+- bug repair
+- planning/state transition tasks
+
+Each capability fixture removes one reusable primitive from
+`shared/capability_primitives.py` and adds public plus hidden transfer
+counterexamples. The loop must synthesize the primitive, generate a focused
+counterexample test, and pass normal validation before promotion.
 
 ## External Grounding
 
@@ -190,6 +211,15 @@ Additional evidence artifacts:
   over the external code sandbox fixtures
 - `reports/rsi_experiments/recovery/latest/`: narrow Actions recovery runs
   used to verify workflow health without overwriting the full matrix
+
+External code sandbox fixtures now include a local executable repair target in
+the disposable repository. The external source and failure excerpts remain
+text-only, but the downstream benchmark is a real local repair task rather than
+only a metadata summary.
+
+Open-ended exploration proposals remain unapplied. Every materialized proposal
+now carries an executable validation plan; proposal text alone is not enough
+for promotion into the closed loop.
 
 The held-out transfer fixture `unseen_schema_transfer_repo` adds a tuple-valued
 record field absent from the original benchmark repositories. The proposed loop

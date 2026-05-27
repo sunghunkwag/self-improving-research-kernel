@@ -50,6 +50,24 @@ def default_policy_capabilities() -> Tuple[PolicyCapability, ...]:
             risk_control="hypothesis count is capped and every selected hypothesis still passes the same gates",
         ),
         PolicyCapability(
+            name="operator_synthesis_surface",
+            category="generator",
+            evidence="capability repair candidates generate solver primitives, search heuristics, evaluator mutations, and counterexample tests",
+            risk_control="each synthesized operator carries an executable validation plan before promotion",
+        ),
+        PolicyCapability(
+            name="capability_delta_scoring",
+            category="validator",
+            evidence="accepted and rejected candidate records include solved task, hidden transfer, regression, reuse, and compute-cost signals",
+            risk_control="promotion evidence separates target success from regression and transfer behavior",
+        ),
+        PolicyCapability(
+            name="failure_residue_extraction",
+            category="validator",
+            evidence="rejected candidates persist failed reason, missing operator, missing abstraction, evaluator, and overfit signal",
+            risk_control="future candidate ranking can use failure residue instead of retrying blind",
+        ),
+        PolicyCapability(
             name="open_ended_cross_domain_proposal_space",
             category="generator",
             evidence="the open exploration layer crosses broad domain seeds with generator, validator, patch, grounding, transfer, and self-limit axes",

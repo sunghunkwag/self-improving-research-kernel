@@ -15,6 +15,7 @@ def test_open_exploration_materializes_bounded_prefix_from_open_space():
     assert len(report.domains) >= 8
     assert len(report.axes) >= 5
     assert all(candidate.closure_state == "open_loop_not_applied" for candidate in report.candidates)
+    assert all(candidate.validation_plan.executable() for candidate in report.candidates)
 
 
 def test_unverified_self_modification_is_recorded_but_not_applied():
@@ -27,6 +28,7 @@ def test_unverified_self_modification_is_recorded_but_not_applied():
 
     assert unverified
     assert all("no_auto_patch" in candidate.safety_controls for candidate in unverified)
+    assert all("proposal_requires_executable_validation_plan" in candidate.safety_controls for candidate in unverified)
     assert all(candidate.proposal_kind == "speculative_unverified_self_modification" for candidate in unverified)
 
 

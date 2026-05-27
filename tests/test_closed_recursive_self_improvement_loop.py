@@ -167,3 +167,64 @@ def test_history_aware_ranking_deprioritizes_rejected_candidates(tmp_path):
         "autonomous_local_corpus_imports_query_v1",
         "emergent_local_corpus_feature_flags_membership_v1",
     ]
+
+
+def test_capability_operator_candidates_include_delta_metadata(tmp_path):
+    repo = tmp_path / "repo"
+    shared = repo / "shared"
+    tests = repo / "tests"
+    shared.mkdir(parents=True)
+    tests.mkdir()
+    (shared / "local_corpus.py").write_text(LOCAL_CORPUS_STUB, encoding="utf-8")
+    (shared / "capability_primitives.py").write_text(
+        '"""fixture primitives"""\n',
+        encoding="utf-8",
+    )
+
+    loop = ClosedRecursiveSelfImprovementLoop(repo, state_dir=tmp_path / "state")
+    candidates = loop.rank_candidates(loop.invent_candidates(generation=1), loop.load_state())
+    first = candidates[0]
+
+    assert first.name.startswith("capability_operator_")
+    assert first.capability_family in {
+        "algorithm_synthesis",
+        "symbolic_reasoning",
+        "grid_transformation",
+        "bug_repair",
+        "planning_state_transition",
+    }
+    assert {spec["kind"] for spec in first.operator_specs} == {
+        "solver_primitive",
+        "search_heuristic",
+        "evaluator_mutation",
+        "counterexample_test",
+    }
+    assert first.generator_improvement["surface"] == "operator synthesis"
+
+
+def test_rejected_candidate_record_contains_failure_residue(tmp_path):
+    repo = tmp_path / "repo"
+    shared = repo / "shared"
+    tests = repo / "tests"
+    shared.mkdir(parents=True)
+    tests.mkdir()
+    (shared / "local_corpus.py").write_text(LOCAL_CORPUS_STUB, encoding="utf-8")
+    (shared / "capability_primitives.py").write_text(
+        "def run_length_encode(items):\n"
+        "    return ()\n",
+        encoding="utf-8",
+    )
+    (tests / "test_forced_broad_failure.py").write_text(
+        "def test_forced_broad_failure():\n"
+        "    assert False\n",
+        encoding="utf-8",
+    )
+
+    loop = ClosedRecursiveSelfImprovementLoop(repo, state_dir=tmp_path / "state", dry_run=False, broad_gate=True)
+    candidate = loop.invent_candidates(generation=1)[0]
+    record = loop.apply_candidate(candidate)
+
+    assert record.accepted is False
+    assert record.failure_residue["failed_candidate_reason"]
+    assert record.operator_synthesis
+    assert record.generator_improvement

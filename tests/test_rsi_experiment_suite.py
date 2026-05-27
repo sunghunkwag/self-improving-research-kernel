@@ -1,4 +1,5 @@
 from scripts.rsi_experiment_suite import (
+    CAPABILITY_FIXTURES,
     DEFAULT_REPOSITORIES,
     DEFAULT_TASKS,
     EXTERNAL_CODE_FIXTURES,
@@ -15,6 +16,7 @@ from scripts.rsi_experiment_suite import (
     repository_fingerprint,
     stable_trial_seed,
     strip_method,
+    strip_top_level_function,
     task_applies_to_repository,
 )
 
@@ -37,6 +39,27 @@ class Example:
     assert "def remove_me" not in rewritten
     assert "def keep(self)" in rewritten
     assert "def keep_too(self)" in rewritten
+
+
+def test_strip_top_level_function_removes_only_named_function():
+    source = '''
+def keep():
+    return 1
+
+
+def remove_me():
+    return 2
+
+
+def keep_too():
+    return 3
+'''
+
+    rewritten = strip_top_level_function(source, "remove_me")
+
+    assert "def remove_me" not in rewritten
+    assert "def keep()" in rewritten
+    assert "def keep_too()" in rewritten
 
 
 def test_changed_files_detects_add_modify_delete():
@@ -199,6 +222,54 @@ def test_unseen_domain_transfer_repositories_add_distinct_tuple_fields(tmp_path)
         assert f"{field_name}: Tuple[str, ...] = ()" in text
 
 
+def test_capability_benchmark_repository_creates_missing_operator_fixture(tmp_path):
+    source = tmp_path / "source"
+    target = tmp_path / "target"
+    (source / "scripts").mkdir(parents=True)
+    (source / "shared").mkdir()
+    (source / "scripts" / "closed_recursive_self_improvement_loop.py").write_text("", encoding="utf-8")
+    (source / "scripts" / "rsi_policy_registry.py").write_text("", encoding="utf-8")
+    (source / "shared" / "__init__.py").write_text("", encoding="utf-8")
+    (source / "shared" / "local_corpus.py").write_text(
+        "from dataclasses import dataclass\n"
+        "from typing import Tuple\n\n"
+        "@dataclass(frozen=True)\n"
+        "class LocalPythonFileRecord:\n"
+        "    feature_flags: Tuple[str, ...] = ()\n",
+        encoding="utf-8",
+    )
+    (source / "shared" / "capability_primitives.py").write_text(
+        "def run_length_encode(items):\n"
+        "    return ()\n\n"
+        "def infer_linear_rule(values):\n"
+        "    return {}\n",
+        encoding="utf-8",
+    )
+    (source / "shared" / "capability_benchmarks.py").write_text("", encoding="utf-8")
+
+    repository = next(
+        item for item in DEFAULT_REPOSITORIES if item.name == "capability_algorithm_synthesis_repo"
+    )
+    build_benchmark_repo(source, target, repository)
+
+    text = (target / "shared" / "capability_primitives.py").read_text(encoding="utf-8")
+    metadata = __import__("json").loads((target / "capability_fixture_metadata.json").read_text(encoding="utf-8"))
+    task = next(item for item in DEFAULT_TASKS if item.name == "capability_algorithm_synthesis")
+
+    assert repository.split == "capability_unseen"
+    assert "def run_length_encode" not in text
+    assert "def infer_linear_rule" in text
+    assert metadata["operator"] == "run_length_encode"
+    assert task.repositories == (repository.name,)
+    assert {spec.family for spec in CAPABILITY_FIXTURES} >= {
+        "algorithm_synthesis",
+        "symbolic_reasoning",
+        "grid_transformation",
+        "bug_repair",
+        "planning_state_transition",
+    }
+
+
 def test_unseen_transfer_task_is_limited_to_unseen_repository():
     unseen_task = next(task for task in DEFAULT_TASKS if task.name == "unseen_static_roles_query")
     compact = next(repository for repository in DEFAULT_REPOSITORIES if repository.name == "compact_kernel_repo")
@@ -353,6 +424,9 @@ def test_external_code_transfer_repository_uses_sandbox_fixture(tmp_path):
     assert metadata["field_values"][:2] == ["response_content", "response"]
     assert (target / "external_sandbox" / "source_snippet.txt").exists()
     assert (target / "external_sandbox" / "failure_excerpt.txt").exists()
+    assert (target / "shared" / "external_repair_target.py").exists()
+    assert (target / "tests" / "test_external_code_repair_task.py").exists()
+    assert "local_executable_repair_task" in metadata["safety_controls"]
 
 
 def test_external_code_fixtures_are_catalogued_as_code_unseen():
@@ -536,3 +610,41 @@ def test_baseline_comparison_marks_external_code_transfer_success():
 
     assert comparison["outcome"] == "external_code_transfer_success"
     assert comparison["external_code_transfer_success"] is True
+
+
+def test_baseline_comparison_marks_capability_transfer_success():
+    aggregates = [
+        {
+            "repository": "capability_algorithm_synthesis_repo",
+            "repository_split": "capability_unseen",
+            "transfer_origin": "algorithm_synthesis",
+            "task": "capability_algorithm_synthesis",
+            "task_claim": "capability transfer",
+            "variant": "verified_closed_loop",
+            "family": "proposed",
+            "accepted_rate_mean": 1.0,
+            "improvement_depth_mean": 1.0,
+            "cost_proxy_seconds_mean": 1.0,
+            "rollback_success_rate": None,
+            "solved_new_tasks_mean": 1.0,
+        },
+        {
+            "repository": "capability_algorithm_synthesis_repo",
+            "repository_split": "capability_unseen",
+            "transfer_origin": "algorithm_synthesis",
+            "task": "capability_algorithm_synthesis",
+            "task_claim": "capability transfer",
+            "variant": "ci_only_validation",
+            "family": "baseline_ci_only",
+            "accepted_rate_mean": 0.0,
+            "improvement_depth_mean": 0.0,
+            "cost_proxy_seconds_mean": 1.0,
+            "rollback_success_rate": None,
+            "solved_new_tasks_mean": 0.0,
+        },
+    ]
+
+    comparison = build_baseline_comparisons(aggregates)[0]
+
+    assert comparison["outcome"] == "capability_transfer_success"
+    assert comparison["capability_transfer_success"] is True

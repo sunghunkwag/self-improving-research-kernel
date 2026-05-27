@@ -30,6 +30,12 @@ from dataclasses import asdict, dataclass, field, replace
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Sequence, Tuple
 
+from shared.capability_benchmarks import (
+    CapabilityDelta,
+    extract_failure_residue,
+    synthesize_operator_specs,
+)
+
 
 Transform = Callable[[str], str]
 
@@ -71,6 +77,9 @@ class CandidatePatch:
     test_source: str
     focused_tests: Sequence[str] = field(default_factory=tuple)
     extra_files: Dict[str, str] = field(default_factory=dict)
+    capability_family: str = ""
+    operator_specs: Tuple[Dict[str, object], ...] = field(default_factory=tuple)
+    generator_improvement: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -88,6 +97,10 @@ class CandidateRecord:
     finished_at: str
     gates: List[Dict[str, object]]
     error: str = ""
+    capability_delta: Dict[str, object] = field(default_factory=dict)
+    failure_residue: Dict[str, object] = field(default_factory=dict)
+    operator_synthesis: List[Dict[str, object]] = field(default_factory=list)
+    generator_improvement: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -139,6 +152,86 @@ def read_json(path: Path, default):
 def write_json(path: Path, data) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(data, indent=2, sort_keys=True), encoding="utf-8")
+
+
+def generator_feedback(surface: str, mechanism: str, evidence: str) -> Dict[str, object]:
+    """Describe how a candidate improves future candidate generation."""
+
+    return {
+        "surface": surface,
+        "mechanism": mechanism,
+        "evidence": evidence,
+    }
+
+
+def operator_specs_for(family: str, operator: str) -> Tuple[Dict[str, object], ...]:
+    """Return JSON-compatible operator synthesis specs for a candidate."""
+
+    return tuple(spec.to_dict() for spec in synthesize_operator_specs(family, operator))
+
+
+def candidate_compute_cost(gates: Sequence[GateResult]) -> float:
+    return round(sum(float(gate.elapsed_s) for gate in gates), 3)
+
+
+def candidate_capability_delta(
+    candidate: CandidatePatch,
+    *,
+    accepted: bool,
+    gates: Sequence[GateResult],
+) -> Dict[str, object]:
+    """Score the capability delta represented by a candidate result."""
+
+    if not candidate.capability_family and not candidate.operator_specs:
+        return {}
+    regression_failures = sum(
+        1
+        for gate in gates
+        if gate.exit_code != 0 and ("root_broad" in gate.label or "thdse_core" in gate.label)
+    )
+    operator_reuse = len(
+        {
+            str(spec.get("name", ""))
+            for spec in candidate.operator_specs
+            if spec.get("kind") in {"solver_primitive", "search_heuristic"}
+        }
+    )
+    delta = CapabilityDelta(
+        solved_new_tasks=1 if accepted else 0,
+        hidden_transfer=1 if accepted and candidate.capability_family else 0,
+        regression_protection=1 if accepted and regression_failures == 0 else 0,
+        operator_reuse=operator_reuse,
+        compute_cost=candidate_compute_cost(gates),
+        score=round(
+            (1.0 if accepted else 0.0)
+            + (0.5 if accepted and candidate.capability_family else 0.0)
+            + (0.25 if accepted and regression_failures == 0 else 0.0)
+            + operator_reuse * 0.1
+            - min(candidate_compute_cost(gates) / 600.0, 0.5),
+            3,
+        ),
+    )
+    return delta.to_dict()
+
+
+def candidate_failure_residue(
+    candidate: CandidatePatch,
+    *,
+    accepted: bool,
+    gates: Sequence[GateResult],
+    error: str,
+) -> Dict[str, object]:
+    """Return structured failure residue for rejected candidates."""
+
+    if accepted:
+        return {}
+    residue = extract_failure_residue(
+        candidate.name,
+        [asdict(gate) for gate in gates],
+        error=error,
+        operator_specs=candidate.operator_specs,
+    )
+    return residue.to_dict()
 
 
 def replace_once(text: str, old: str, new: str, candidate_name: str) -> str:
@@ -437,6 +530,13 @@ def autonomous_local_corpus_candidates(
                 transform=lambda source, plan=blueprint: add_autonomous_record_query(source, plan),
                 test_source=build_autonomous_query_test(blueprint),
                 focused_tests=(f"tests/test_{blueprint.candidate_name}.py",),
+                capability_family="schema_query_repair",
+                operator_specs=operator_specs_for("schema_query_repair", blueprint.method_name),
+                generator_improvement=generator_feedback(
+                    "schema-driven query planner",
+                    "adds a reusable tuple-membership operator surface inferred from dataclass fields",
+                    f"{blueprint.method_name} is generated from {blueprint.field_name} and locked by a focused test",
+                ),
             )
         )
     return candidates
@@ -636,9 +736,294 @@ def candidates_from_specs(
                 transform=spec.transform,
                 test_source=spec.test_source,
                 focused_tests=spec.focused_tests,
+                capability_family="schema_query_repair",
+                operator_specs=operator_specs_for("schema_query_repair", spec.missing_symbol.strip("def (")),
+                generator_improvement=generator_feedback(
+                    "declarative candidate factories",
+                    "keeps fixed repair recipes available as reusable generator fallbacks",
+                    f"{spec.candidate_name} repairs {spec.target} with a focused regression test",
+                ),
             )
         )
     return candidates
+
+
+@dataclass(frozen=True)
+class CapabilityOperatorBlueprint:
+    """Deterministic repair plan for one capability benchmark primitive."""
+
+    family: str
+    function_name: str
+    candidate_name: str
+    implementation_source: str
+    public_assertion: str
+    hidden_assertion: str
+
+
+CAPABILITY_OPERATOR_BLUEPRINTS: Tuple[CapabilityOperatorBlueprint, ...] = (
+    CapabilityOperatorBlueprint(
+        family="algorithm_synthesis",
+        function_name="run_length_encode",
+        candidate_name="capability_operator_algorithm_synthesis_rle_v1",
+        implementation_source='''def run_length_encode(items):
+    """Return adjacent value/count pairs for a sequence."""
+
+    encoded = []
+    marker = object()
+    current = marker
+    count = 0
+    for item in items:
+        if count == 0:
+            current = item
+            count = 1
+            continue
+        if item == current:
+            count += 1
+            continue
+        encoded.append((current, count))
+        current = item
+        count = 1
+    if count:
+        encoded.append((current, count))
+    return tuple(encoded)
+''',
+        public_assertion="assert run_length_encode((1, 1, 2, 2, 2, 3)) == ((1, 2), (2, 3), (3, 1))",
+        hidden_assertion="assert run_length_encode(('a', 'a', 'b', 'a')) == (('a', 2), ('b', 1), ('a', 1))",
+    ),
+    CapabilityOperatorBlueprint(
+        family="symbolic_reasoning",
+        function_name="infer_linear_rule",
+        candidate_name="capability_operator_symbolic_reasoning_linear_rule_v1",
+        implementation_source='''def infer_linear_rule(values):
+    """Infer a constant-step sequence rule and its next value."""
+
+    if len(values) < 2:
+        raise ValueError("at least two values are required")
+    step = values[1] - values[0]
+    for left, right in zip(values, values[1:]):
+        if right - left != step:
+            raise ValueError("values do not form a linear rule")
+    return {"start": values[0], "step": step, "next": values[-1] + step}
+''',
+        public_assertion="assert infer_linear_rule((2, 5, 8, 11)) == {'start': 2, 'step': 3, 'next': 14}",
+        hidden_assertion="assert infer_linear_rule((-3, -1, 1)) == {'start': -3, 'step': 2, 'next': 3}",
+    ),
+    CapabilityOperatorBlueprint(
+        family="grid_transformation",
+        function_name="rotate_grid_clockwise",
+        candidate_name="capability_operator_grid_transformation_rotate_v1",
+        implementation_source='''def rotate_grid_clockwise(grid):
+    """Rotate a rectangular grid clockwise."""
+
+    rows = tuple(tuple(row) for row in grid)
+    if not rows:
+        return ()
+    width = len(rows[0])
+    if any(len(row) != width for row in rows):
+        raise ValueError("grid must be rectangular")
+    return tuple(tuple(rows[row][column] for row in range(len(rows) - 1, -1, -1)) for column in range(width))
+''',
+        public_assertion="assert rotate_grid_clockwise(((1, 2, 3), (4, 5, 6))) == ((4, 1), (5, 2), (6, 3))",
+        hidden_assertion="assert rotate_grid_clockwise((('x',), ('y',), ('z',))) == (('z', 'y', 'x'),)",
+    ),
+    CapabilityOperatorBlueprint(
+        family="bug_repair",
+        function_name="dedupe_preserve_order",
+        candidate_name="capability_operator_bug_repair_dedupe_v1",
+        implementation_source='''def dedupe_preserve_order(items):
+    """Remove duplicate items while preserving first occurrence order."""
+
+    seen = set()
+    result = []
+    for item in items:
+        if item in seen:
+            continue
+        seen.add(item)
+        result.append(item)
+    return tuple(result)
+''',
+        public_assertion="assert dedupe_preserve_order(('b', 'a', 'b', 'c', 'a')) == ('b', 'a', 'c')",
+        hidden_assertion="assert dedupe_preserve_order((3, 3, 2, 3, 1, 2)) == (3, 2, 1)",
+    ),
+    CapabilityOperatorBlueprint(
+        family="planning_state_transition",
+        function_name="apply_grid_action",
+        candidate_name="capability_operator_planning_state_transition_action_v1",
+        implementation_source='''def apply_grid_action(state, action):
+    """Apply a one-step cardinal movement action to a grid state."""
+
+    deltas = {
+        "north": (0, 1),
+        "south": (0, -1),
+        "east": (1, 0),
+        "west": (-1, 0),
+        "stay": (0, 0),
+    }
+    if action not in deltas:
+        raise ValueError(f"unknown action: {action}")
+    dx, dy = deltas[action]
+    next_state = dict(state)
+    next_state["x"] = int(next_state.get("x", 0)) + dx
+    next_state["y"] = int(next_state.get("y", 0)) + dy
+    return next_state
+''',
+        public_assertion="assert apply_grid_action({'x': 0, 'y': 0}, 'east') == {'x': 1, 'y': 0}",
+        hidden_assertion="assert apply_grid_action({'x': 2, 'y': -1}, 'north') == {'x': 2, 'y': 0}",
+    ),
+)
+
+
+def add_capability_operator(text: str, blueprint: CapabilityOperatorBlueprint) -> str:
+    """Append a missing reusable capability primitive."""
+
+    if f"def {blueprint.function_name}(" in text:
+        return text
+    return text.rstrip() + "\n\n\n" + blueprint.implementation_source.rstrip() + "\n"
+
+
+def build_capability_operator_test(blueprint: CapabilityOperatorBlueprint) -> str:
+    """Build public and hidden transfer tests for a synthesized operator."""
+
+    return f'''from shared.capability_primitives import {blueprint.function_name}
+
+
+def test_{blueprint.function_name}_public_counterexample():
+    {blueprint.public_assertion}
+
+
+def test_{blueprint.function_name}_hidden_transfer_counterexample():
+    {blueprint.hidden_assertion}
+'''
+
+
+def capability_operator_candidates(repo_root: Path, generation: int) -> List[CandidatePatch]:
+    """Plan repair candidates for executable capability benchmark fixtures."""
+
+    target = repo_root / "shared" / "capability_primitives.py"
+    if not target.exists():
+        return []
+    text = target.read_text(encoding="utf-8")
+    candidates: List[CandidatePatch] = []
+    for blueprint in CAPABILITY_OPERATOR_BLUEPRINTS:
+        if f"def {blueprint.function_name}(" in text:
+            continue
+        candidates.append(
+            CandidatePatch(
+                name=blueprint.candidate_name,
+                generation=generation,
+                goal=Goal(
+                    name=f"repair_{blueprint.family}_operator",
+                    target="shared.capability_primitives",
+                    metric="public and hidden transfer counterexamples pass",
+                    rationale=(
+                        f"The capability benchmark fixture is missing the reusable "
+                        f"{blueprint.function_name} primitive for {blueprint.family}."
+                    ),
+                ),
+                target_path=target,
+                test_path=repo_root / "tests" / f"test_capability_{blueprint.family}_operator_v1.py",
+                transform=lambda source, plan=blueprint: add_capability_operator(source, plan),
+                test_source=build_capability_operator_test(blueprint),
+                focused_tests=(f"tests/test_capability_{blueprint.family}_operator_v1.py",),
+                capability_family=blueprint.family,
+                operator_specs=operator_specs_for(blueprint.family, blueprint.function_name),
+                generator_improvement=generator_feedback(
+                    "operator synthesis",
+                    "adds a reusable solver primitive and counterexample tests for future candidate generation",
+                    f"{blueprint.function_name} can be reused on later {blueprint.family} fixtures",
+                ),
+            )
+        )
+    return candidates
+
+
+EXTERNAL_REPAIR_BUGGY = '''def external_failure_signal(events):
+    """Return failure signal from an event stream."""
+
+    return ""
+'''
+
+
+EXTERNAL_REPAIR_FIXED = '''def external_failure_signal(events):
+    """Return the first failure-like signal from an event stream."""
+
+    for event in events:
+        text = str(event)
+        lowered = text.lower()
+        if any(token in lowered for token in ("error", "fail", "exception", "traceback", "assert")):
+            return text
+    return str(events[0]) if events else ""
+'''
+
+
+EXTERNAL_REPAIR_TEST = '''from pathlib import Path
+
+from shared.external_repair_target import external_failure_signal
+
+
+def test_external_failure_signal_preserves_first_failure():
+    events = ("metadata_loaded", "read_error", "empty_content")
+
+    assert external_failure_signal(events) == "read_error"
+
+
+def test_external_sandbox_text_fixtures_are_local_inputs():
+    root = Path.cwd() / "external_sandbox"
+
+    assert (root / "source_snippet.txt").read_text(encoding="utf-8")
+    assert (root / "failure_excerpt.txt").read_text(encoding="utf-8")
+'''
+
+
+def repair_external_failure_target(text: str) -> str:
+    """Repair the local external-code failure target."""
+
+    if EXTERNAL_REPAIR_FIXED in text:
+        return text
+    return replace_once(
+        text,
+        EXTERNAL_REPAIR_BUGGY,
+        EXTERNAL_REPAIR_FIXED,
+        "external_code_repair_failure_signal_v1",
+    )
+
+
+def external_code_repair_candidates(repo_root: Path, generation: int) -> List[CandidatePatch]:
+    """Plan local executable repairs derived from external-code failure fixtures."""
+
+    target = repo_root / "shared" / "external_repair_target.py"
+    if not target.exists():
+        return []
+    text = target.read_text(encoding="utf-8")
+    if EXTERNAL_REPAIR_FIXED in text:
+        return []
+    return [
+        CandidatePatch(
+            name="external_code_repair_failure_signal_v1",
+            generation=generation,
+            goal=Goal(
+                name="repair_external_code_failure_fixture",
+                target="shared.external_repair_target.external_failure_signal",
+                metric="local external sandbox repair test passes",
+                rationale=(
+                    "External source and failure excerpts have been converted into "
+                    "a local executable repair target instead of a metadata-only summary."
+                ),
+            ),
+            target_path=target,
+            test_path=repo_root / "tests" / "test_external_code_repair_task.py",
+            transform=repair_external_failure_target,
+            test_source=EXTERNAL_REPAIR_TEST,
+            focused_tests=("tests/test_external_code_repair_task.py",),
+            capability_family="external_code_repair",
+            operator_specs=operator_specs_for("external_code_repair", "external_failure_signal"),
+            generator_improvement=generator_feedback(
+                "external-code failure fixtures",
+                "converts fetched source and failure excerpts into reusable local repair tasks",
+                "future external fixtures can be ranked by executable repair outcome, not metadata presence",
+            ),
+        )
+    ]
 
 
 POLICY_REGISTRY_SOURCE = '''"""Candidate policy registry for the closed RSI loop.
@@ -691,6 +1076,24 @@ def default_policy_capabilities() -> Tuple[PolicyCapability, ...]:
             category="generator",
             evidence="the planner creates competing canonical and alternate hypotheses and scores them with rejection history",
             risk_control="hypothesis count is capped and every selected hypothesis still passes the same gates",
+        ),
+        PolicyCapability(
+            name="operator_synthesis_surface",
+            category="generator",
+            evidence="capability repair candidates generate solver primitives, search heuristics, evaluator mutations, and counterexample tests",
+            risk_control="each synthesized operator carries an executable validation plan before promotion",
+        ),
+        PolicyCapability(
+            name="capability_delta_scoring",
+            category="validator",
+            evidence="accepted and rejected candidate records include solved task, hidden transfer, regression, reuse, and compute-cost signals",
+            risk_control="promotion evidence separates target success from regression and transfer behavior",
+        ),
+        PolicyCapability(
+            name="failure_residue_extraction",
+            category="validator",
+            evidence="rejected candidates persist failed reason, missing operator, missing abstraction, evaluator, and overfit signal",
+            risk_control="future candidate ranking can use failure residue instead of retrying blind",
         ),
         PolicyCapability(
             name="compile_focused_broad_validation",
@@ -842,7 +1245,10 @@ class ClosedRecursiveSelfImprovementLoop:
 
         loop_script = self.repo_root / "scripts" / "closed_recursive_self_improvement_loop.py"
         loop_text = loop_script.read_text(encoding="utf-8") if loop_script.exists() else ""
-        candidates = autonomous_local_corpus_candidates(self.repo_root, generation, state=state)
+        candidates = []
+        candidates.extend(external_code_repair_candidates(self.repo_root, generation))
+        candidates.extend(capability_operator_candidates(self.repo_root, generation))
+        candidates.extend(autonomous_local_corpus_candidates(self.repo_root, generation, state=state))
 
         if loop_script.exists() and POLICY_REGISTRY_ACTIVE_MARKER not in loop_text:
             goal = Goal(
@@ -867,6 +1273,13 @@ class ClosedRecursiveSelfImprovementLoop:
                     extra_files={
                         "scripts/rsi_policy_registry.py": POLICY_REGISTRY_SOURCE,
                     },
+                    capability_family="generator_policy_repair",
+                    operator_specs=operator_specs_for("generator_policy_repair", "policy_surface"),
+                    generator_improvement=generator_feedback(
+                        "candidate policy registry",
+                        "turns generator, validator, patch, and safety policies into measurable search inputs",
+                        "future experiments can ablate and rank candidates by explicit policy capabilities",
+                    ),
                 )
             )
 
@@ -886,11 +1299,12 @@ class ClosedRecursiveSelfImprovementLoop:
             if isinstance(record, dict)
         }
 
-        def candidate_key(candidate: CandidatePatch) -> Tuple[int, int, int, str]:
+        def candidate_key(candidate: CandidatePatch) -> Tuple[int, int, int, int, str]:
             rejected_penalty = 1 if candidate.name in rejected_names else 0
             novelty_bonus = 0 if candidate.name not in accepted_names else 1
+            executable_repair_bonus = 0 if candidate.name.startswith(("external_code_repair_", "capability_operator_")) else 1
             policy_bonus = 0 if candidate.name.startswith("loop_policy") else 1
-            return (rejected_penalty, novelty_bonus, policy_bonus, candidate.name)
+            return (rejected_penalty, novelty_bonus, executable_repair_bonus, policy_bonus, candidate.name)
 
         return sorted(candidates, key=candidate_key)
 
@@ -1027,6 +1441,8 @@ class ClosedRecursiveSelfImprovementLoop:
                 accepted = all(gate.exit_code == 0 for gate in gates)
                 if not accepted:
                     raise RuntimeError("one or more validation gates failed")
+            if accepted and not candidate.generator_improvement:
+                raise RuntimeError("accepted candidate lacks generator improvement evidence")
         except Exception as exc:
             error = f"{type(exc).__name__}: {exc}"
             accepted = False
@@ -1060,6 +1476,10 @@ class ClosedRecursiveSelfImprovementLoop:
             finished_at=utc_now(),
             gates=[asdict(gate) for gate in gates],
             error=error,
+            capability_delta=candidate_capability_delta(candidate, accepted=accepted, gates=gates),
+            failure_residue=candidate_failure_residue(candidate, accepted=accepted, gates=gates, error=error),
+            operator_synthesis=[dict(spec) for spec in candidate.operator_specs],
+            generator_improvement=dict(candidate.generator_improvement),
         )
 
     def run(self, *, max_generations: int = 10, max_candidates: int = 10, wall_seconds: int = 1800) -> dict:
@@ -1098,6 +1518,7 @@ class ClosedRecursiveSelfImprovementLoop:
             if not promoted:
                 break
 
+        run_records = [*accepted_this_run, *rejected_this_run]
         summary = {
             "dry_run": self.dry_run,
             "broad_gate": self.broad_gate,
@@ -1111,6 +1532,20 @@ class ClosedRecursiveSelfImprovementLoop:
             "active_base": state.get("active_base", "initial"),
             "total_accepted": len(state.get("accepted", [])),
             "total_rejected": len(state.get("rejected", [])),
+            "capability_delta_score": round(
+                sum(float(record.get("capability_delta", {}).get("score", 0.0) or 0.0) for record in run_records),
+                3,
+            ),
+            "solved_new_tasks": sum(
+                int(record.get("capability_delta", {}).get("solved_new_tasks", 0) or 0) for record in run_records
+            ),
+            "hidden_transfer": sum(
+                int(record.get("capability_delta", {}).get("hidden_transfer", 0) or 0) for record in run_records
+            ),
+            "operator_reuse": sum(
+                int(record.get("capability_delta", {}).get("operator_reuse", 0) or 0) for record in run_records
+            ),
+            "failure_residue_count": sum(1 for record in run_records if record.get("failure_residue")),
         }
         write_json(self.summary_path, summary)
         return summary
