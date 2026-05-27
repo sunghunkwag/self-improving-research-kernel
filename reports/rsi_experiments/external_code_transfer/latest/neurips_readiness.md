@@ -13,56 +13,44 @@ This report evaluates a bounded, verified recursive self-improvement loop. It do
 
 | Repository | Split | Task | Variant | Repeat | Accepted | Rejected | Rate | Regression Failures | Rollback Correct | Seconds |
 |---|---|---|---:|---:|---:|---:|---:|---:|---:|---:|
-| external_requests_code_transfer_repo | external_code_unseen | external_requests_code_failure_fixture_query | verified_closed_loop | 0 | 3 | 0 | 1.00 | 0 | n/a | 1.34 |
-| external_requests_code_transfer_repo | external_code_unseen | external_requests_code_failure_fixture_query | agent_coding_loop | 0 | 1 | 0 | 1.00 | 0 | n/a | 0.49 |
-| external_requests_code_transfer_repo | external_code_unseen | external_requests_code_failure_fixture_query | ci_only_validation | 0 | 0 | 0 | 0.00 | 0 | n/a | 0.21 |
-| external_requests_code_transfer_repo | external_code_unseen | external_requests_code_failure_fixture_query | verified_closed_loop | 1 | 3 | 0 | 1.00 | 0 | n/a | 1.33 |
-| external_requests_code_transfer_repo | external_code_unseen | external_requests_code_failure_fixture_query | agent_coding_loop | 1 | 1 | 0 | 1.00 | 0 | n/a | 0.49 |
-| external_requests_code_transfer_repo | external_code_unseen | external_requests_code_failure_fixture_query | ci_only_validation | 1 | 0 | 0 | 0.00 | 0 | n/a | 0.21 |
-| external_hypothesis_code_transfer_repo | external_code_unseen | external_hypothesis_code_failure_fixture_query | verified_closed_loop | 0 | 3 | 0 | 1.00 | 0 | n/a | 1.34 |
-| external_hypothesis_code_transfer_repo | external_code_unseen | external_hypothesis_code_failure_fixture_query | agent_coding_loop | 0 | 1 | 0 | 1.00 | 0 | n/a | 0.49 |
-| external_hypothesis_code_transfer_repo | external_code_unseen | external_hypothesis_code_failure_fixture_query | ci_only_validation | 0 | 0 | 0 | 0.00 | 0 | n/a | 0.21 |
-| external_hypothesis_code_transfer_repo | external_code_unseen | external_hypothesis_code_failure_fixture_query | verified_closed_loop | 1 | 3 | 0 | 1.00 | 0 | n/a | 1.34 |
-| external_hypothesis_code_transfer_repo | external_code_unseen | external_hypothesis_code_failure_fixture_query | agent_coding_loop | 1 | 1 | 0 | 1.00 | 0 | n/a | 0.50 |
-| external_hypothesis_code_transfer_repo | external_code_unseen | external_hypothesis_code_failure_fixture_query | ci_only_validation | 1 | 0 | 0 | 0.00 | 0 | n/a | 0.21 |
-| external_pandas_code_transfer_repo | external_code_unseen | external_pandas_code_failure_fixture_query | verified_closed_loop | 0 | 3 | 0 | 1.00 | 0 | n/a | 1.33 |
-| external_pandas_code_transfer_repo | external_code_unseen | external_pandas_code_failure_fixture_query | agent_coding_loop | 0 | 1 | 0 | 1.00 | 0 | n/a | 0.48 |
-| external_pandas_code_transfer_repo | external_code_unseen | external_pandas_code_failure_fixture_query | ci_only_validation | 0 | 0 | 0 | 0.00 | 0 | n/a | 0.21 |
-| external_pandas_code_transfer_repo | external_code_unseen | external_pandas_code_failure_fixture_query | verified_closed_loop | 1 | 3 | 0 | 1.00 | 0 | n/a | 1.36 |
-| external_pandas_code_transfer_repo | external_code_unseen | external_pandas_code_failure_fixture_query | agent_coding_loop | 1 | 1 | 0 | 1.00 | 0 | n/a | 0.52 |
-| external_pandas_code_transfer_repo | external_code_unseen | external_pandas_code_failure_fixture_query | ci_only_validation | 1 | 0 | 0 | 0.00 | 0 | n/a | 0.21 |
-| external_dask_code_transfer_repo | external_code_unseen | external_dask_code_failure_fixture_query | verified_closed_loop | 0 | 3 | 0 | 1.00 | 0 | n/a | 1.39 |
-| external_dask_code_transfer_repo | external_code_unseen | external_dask_code_failure_fixture_query | agent_coding_loop | 0 | 1 | 0 | 1.00 | 0 | n/a | 0.49 |
-| external_dask_code_transfer_repo | external_code_unseen | external_dask_code_failure_fixture_query | ci_only_validation | 0 | 0 | 0 | 0.00 | 0 | n/a | 0.21 |
-| external_dask_code_transfer_repo | external_code_unseen | external_dask_code_failure_fixture_query | verified_closed_loop | 1 | 3 | 0 | 1.00 | 0 | n/a | 1.34 |
-| external_dask_code_transfer_repo | external_code_unseen | external_dask_code_failure_fixture_query | agent_coding_loop | 1 | 1 | 0 | 1.00 | 0 | n/a | 0.49 |
-| external_dask_code_transfer_repo | external_code_unseen | external_dask_code_failure_fixture_query | ci_only_validation | 1 | 0 | 0 | 0.00 | 0 | n/a | 0.21 |
+| external_requests_code_transfer_repo | external_code_unseen | external_requests_code_failure_fixture_query | verified_closed_loop | 0 | 3 | 0 | 1.00 | 0 | n/a | 1.41 |
+| external_requests_code_transfer_repo | external_code_unseen | external_requests_code_failure_fixture_query | agent_coding_loop | 0 | 1 | 0 | 1.00 | 0 | n/a | 0.51 |
+| external_requests_code_transfer_repo | external_code_unseen | external_requests_code_failure_fixture_query | ci_only_validation | 0 | 0 | 0 | 0.00 | 0 | n/a | 0.24 |
+| external_hypothesis_code_transfer_repo | external_code_unseen | external_hypothesis_code_failure_fixture_query | verified_closed_loop | 0 | 3 | 0 | 1.00 | 0 | n/a | 1.40 |
+| external_hypothesis_code_transfer_repo | external_code_unseen | external_hypothesis_code_failure_fixture_query | agent_coding_loop | 0 | 1 | 0 | 1.00 | 0 | n/a | 0.51 |
+| external_hypothesis_code_transfer_repo | external_code_unseen | external_hypothesis_code_failure_fixture_query | ci_only_validation | 0 | 0 | 0 | 0.00 | 0 | n/a | 0.24 |
+| external_pandas_code_transfer_repo | external_code_unseen | external_pandas_code_failure_fixture_query | verified_closed_loop | 0 | 3 | 0 | 1.00 | 0 | n/a | 1.39 |
+| external_pandas_code_transfer_repo | external_code_unseen | external_pandas_code_failure_fixture_query | agent_coding_loop | 0 | 1 | 0 | 1.00 | 0 | n/a | 0.52 |
+| external_pandas_code_transfer_repo | external_code_unseen | external_pandas_code_failure_fixture_query | ci_only_validation | 0 | 0 | 0 | 0.00 | 0 | n/a | 0.24 |
+| external_dask_code_transfer_repo | external_code_unseen | external_dask_code_failure_fixture_query | verified_closed_loop | 0 | 3 | 0 | 1.00 | 0 | n/a | 1.40 |
+| external_dask_code_transfer_repo | external_code_unseen | external_dask_code_failure_fixture_query | agent_coding_loop | 0 | 1 | 0 | 1.00 | 0 | n/a | 0.52 |
+| external_dask_code_transfer_repo | external_code_unseen | external_dask_code_failure_fixture_query | ci_only_validation | 0 | 0 | 0 | 0.00 | 0 | n/a | 0.24 |
 
 ## Aggregate Metrics
 
 | Repository | Split | Task | Variant | Trials | Accepted Rate Mean | Regression Failures Mean | Rollback Success | Depth Mean | Seconds Mean |
 |---|---|---|---:|---:|---:|---:|---:|---:|---:|
-| external_dask_code_transfer_repo | external_code_unseen | external_dask_code_failure_fixture_query | agent_coding_loop | 2 | 1.00 | 0.00 | n/a | 1.00 | 0.49 |
-| external_dask_code_transfer_repo | external_code_unseen | external_dask_code_failure_fixture_query | ci_only_validation | 2 | 0.00 | 0.00 | n/a | 0.00 | 0.21 |
-| external_dask_code_transfer_repo | external_code_unseen | external_dask_code_failure_fixture_query | verified_closed_loop | 2 | 1.00 | 0.00 | n/a | 3.00 | 1.36 |
-| external_hypothesis_code_transfer_repo | external_code_unseen | external_hypothesis_code_failure_fixture_query | agent_coding_loop | 2 | 1.00 | 0.00 | n/a | 1.00 | 0.49 |
-| external_hypothesis_code_transfer_repo | external_code_unseen | external_hypothesis_code_failure_fixture_query | ci_only_validation | 2 | 0.00 | 0.00 | n/a | 0.00 | 0.21 |
-| external_hypothesis_code_transfer_repo | external_code_unseen | external_hypothesis_code_failure_fixture_query | verified_closed_loop | 2 | 1.00 | 0.00 | n/a | 3.00 | 1.34 |
-| external_pandas_code_transfer_repo | external_code_unseen | external_pandas_code_failure_fixture_query | agent_coding_loop | 2 | 1.00 | 0.00 | n/a | 1.00 | 0.50 |
-| external_pandas_code_transfer_repo | external_code_unseen | external_pandas_code_failure_fixture_query | ci_only_validation | 2 | 0.00 | 0.00 | n/a | 0.00 | 0.21 |
-| external_pandas_code_transfer_repo | external_code_unseen | external_pandas_code_failure_fixture_query | verified_closed_loop | 2 | 1.00 | 0.00 | n/a | 3.00 | 1.35 |
-| external_requests_code_transfer_repo | external_code_unseen | external_requests_code_failure_fixture_query | agent_coding_loop | 2 | 1.00 | 0.00 | n/a | 1.00 | 0.49 |
-| external_requests_code_transfer_repo | external_code_unseen | external_requests_code_failure_fixture_query | ci_only_validation | 2 | 0.00 | 0.00 | n/a | 0.00 | 0.21 |
-| external_requests_code_transfer_repo | external_code_unseen | external_requests_code_failure_fixture_query | verified_closed_loop | 2 | 1.00 | 0.00 | n/a | 3.00 | 1.33 |
+| external_dask_code_transfer_repo | external_code_unseen | external_dask_code_failure_fixture_query | agent_coding_loop | 1 | 1.00 | 0.00 | n/a | 1.00 | 0.52 |
+| external_dask_code_transfer_repo | external_code_unseen | external_dask_code_failure_fixture_query | ci_only_validation | 1 | 0.00 | 0.00 | n/a | 0.00 | 0.24 |
+| external_dask_code_transfer_repo | external_code_unseen | external_dask_code_failure_fixture_query | verified_closed_loop | 1 | 1.00 | 0.00 | n/a | 3.00 | 1.40 |
+| external_hypothesis_code_transfer_repo | external_code_unseen | external_hypothesis_code_failure_fixture_query | agent_coding_loop | 1 | 1.00 | 0.00 | n/a | 1.00 | 0.51 |
+| external_hypothesis_code_transfer_repo | external_code_unseen | external_hypothesis_code_failure_fixture_query | ci_only_validation | 1 | 0.00 | 0.00 | n/a | 0.00 | 0.24 |
+| external_hypothesis_code_transfer_repo | external_code_unseen | external_hypothesis_code_failure_fixture_query | verified_closed_loop | 1 | 1.00 | 0.00 | n/a | 3.00 | 1.40 |
+| external_pandas_code_transfer_repo | external_code_unseen | external_pandas_code_failure_fixture_query | agent_coding_loop | 1 | 1.00 | 0.00 | n/a | 1.00 | 0.52 |
+| external_pandas_code_transfer_repo | external_code_unseen | external_pandas_code_failure_fixture_query | ci_only_validation | 1 | 0.00 | 0.00 | n/a | 0.00 | 0.24 |
+| external_pandas_code_transfer_repo | external_code_unseen | external_pandas_code_failure_fixture_query | verified_closed_loop | 1 | 1.00 | 0.00 | n/a | 3.00 | 1.39 |
+| external_requests_code_transfer_repo | external_code_unseen | external_requests_code_failure_fixture_query | agent_coding_loop | 1 | 1.00 | 0.00 | n/a | 1.00 | 0.51 |
+| external_requests_code_transfer_repo | external_code_unseen | external_requests_code_failure_fixture_query | ci_only_validation | 1 | 0.00 | 0.00 | n/a | 0.00 | 0.24 |
+| external_requests_code_transfer_repo | external_code_unseen | external_requests_code_failure_fixture_query | verified_closed_loop | 1 | 1.00 | 0.00 | n/a | 3.00 | 1.41 |
 
 ## Baseline And Transfer Scorecard
 
-| Repository | Split | Task | Outcome | Proposed Rate | Best Baseline | Baseline Rate | Depth Margin vs Agent | Safety Win | Unseen Transfer | External Transfer | External Code Transfer |
-|---|---|---|---|---:|---|---:|---:|---:|---:|---:|---:|
-| external_dask_code_transfer_repo | external_code_unseen | external_dask_code_failure_fixture_query | external_code_transfer_success | 1.00 | agent_coding_loop | 1.00 | 2.00 | False | False | False | True |
-| external_hypothesis_code_transfer_repo | external_code_unseen | external_hypothesis_code_failure_fixture_query | external_code_transfer_success | 1.00 | agent_coding_loop | 1.00 | 2.00 | False | False | False | True |
-| external_pandas_code_transfer_repo | external_code_unseen | external_pandas_code_failure_fixture_query | external_code_transfer_success | 1.00 | agent_coding_loop | 1.00 | 2.00 | False | False | False | True |
-| external_requests_code_transfer_repo | external_code_unseen | external_requests_code_failure_fixture_query | external_code_transfer_success | 1.00 | agent_coding_loop | 1.00 | 2.00 | False | False | False | True |
+| Repository | Split | Task | Outcome | Proposed Rate | Best Baseline | Baseline Rate | Depth Margin vs Agent | Safety Win | Unseen Transfer | External Transfer | External Code Transfer | Capability Transfer |
+|---|---|---|---|---:|---|---:|---:|---:|---:|---:|---:|---:|
+| external_dask_code_transfer_repo | external_code_unseen | external_dask_code_failure_fixture_query | external_code_transfer_success | 1.00 | agent_coding_loop | 1.00 | 2.00 | False | False | False | True | False |
+| external_hypothesis_code_transfer_repo | external_code_unseen | external_hypothesis_code_failure_fixture_query | external_code_transfer_success | 1.00 | agent_coding_loop | 1.00 | 2.00 | False | False | False | True | False |
+| external_pandas_code_transfer_repo | external_code_unseen | external_pandas_code_failure_fixture_query | external_code_transfer_success | 1.00 | agent_coding_loop | 1.00 | 2.00 | False | False | False | True | False |
+| external_requests_code_transfer_repo | external_code_unseen | external_requests_code_failure_fixture_query | external_code_transfer_success | 1.00 | agent_coding_loop | 1.00 | 2.00 | False | False | False | True | False |
 
 ## Review-Relevant Claims
 
@@ -72,6 +60,9 @@ This report evaluates a bounded, verified recursive self-improvement loop. It do
 - Baseline comparison rows explicitly label wins, ties, safety wins, and inconclusive cases.
 - The generator includes schema-driven candidate synthesis instead of only fixed candidate names.
 - The generator scores bounded competing hypotheses with rejection history before patching.
+- CapabilityDelta scoring records solved tasks, hidden transfer, regression protection, operator reuse, and compute cost.
+- Failure residue extraction records missing operators, missing abstractions, failed evaluators, and overfit signals.
+- Capability fixtures include algorithm synthesis, symbolic reasoning, grid transformation, bug repair, and planning/state transitions.
 - Broad gates reduce regression risk relative to focused-only ablations.
 - Rollback behavior is measurable on forced broad-gate rejection tasks.
 - Persistence can be ablated to show that resume depth depends on durable state.

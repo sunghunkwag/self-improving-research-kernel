@@ -44,9 +44,9 @@
       "source_url": "https://raw.githubusercontent.com/psf/requests/main/src/requests/models.py"
     },
     {
-      "failure_excerpt_line_count": 7,
+      "failure_excerpt_line_count": 2,
       "failure_excerpt_path": "failures/hypothesisworks_hypothesis_failure.txt",
-      "failure_excerpt_sha256": "2be7a665be25204ea26d78717b6319604d321082afe1fa4bc4431a37bbf14aaa",
+      "failure_excerpt_sha256": "f3de306ea46fd820a34840a52547ecbdf7c45af7d276adb23cf4997c4d0774a4",
       "field_name": "external_hypothesis_code_signals",
       "field_values": [
         "pytest_patch",
@@ -59,9 +59,9 @@
         "pytest"
       ],
       "fixture_id": "external-code:hypothesisworks/hypothesis",
-      "issue_task_id": "github:hypothesisworks/hypothesis#4744",
-      "issue_title": "Pytest plugin produces corrupt patch if source file doesn't end in a newline",
-      "issue_url": "https://github.com/HypothesisWorks/hypothesis/issues/4744",
+      "issue_task_id": "github:hypothesisworks/hypothesis#4729",
+      "issue_title": "Time blowup for `from_type` with certain abstract classes",
+      "issue_url": "https://github.com/HypothesisWorks/hypothesis/issues/4729",
       "safety_controls": [
         "text_fixture_only",
         "no_external_code_execution",
@@ -174,7 +174,7 @@
       "source_url": "https://raw.githubusercontent.com/dask/dask/main/dask/array/reductions.py"
     }
   ],
-  "generated_at": "2026-05-26T22:48:07Z",
+  "generated_at": "2026-05-27T03:47:13Z",
   "grounding_path": "reports/external_grounding/external_transfer/latest/external_grounding_tasks.json",
   "safety_model": [
     "External code is fetched only as bounded text excerpts.",
