@@ -61,6 +61,8 @@ class ExperimentVariant:
     run_loop: bool = True
     max_generations_override: Optional[int] = None
     max_candidates_override: Optional[int] = None
+    exploration_policy: str = "conservative"
+    exploration_depth: int = 0
 
 
 @dataclass(frozen=True)
@@ -146,6 +148,8 @@ class ExperimentResult:
     hidden_transfer: int = 0
     operator_reuse: int = 0
     failure_residue_count: int = 0
+    quarantine_exploration_count: int = 0
+    quarantine_failure_residue_count: int = 0
 
 
 EXTERNAL_ISSUE_FIXTURES: Tuple[ExternalIssueFixtureSpec, ...] = (
@@ -423,6 +427,8 @@ DEFAULT_VARIANTS = (
         name="verified_closed_loop",
         family="proposed",
         description="Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",
+        exploration_policy="recursive_quarantine",
+        exploration_depth=2,
     ),
     ExperimentVariant(
         name="agent_coding_loop",
@@ -624,12 +630,23 @@ def build_capability_benchmark_repo(
     text = strip_top_level_function(primitives.read_text(encoding="utf-8"), spec.operator)
     primitives.write_text(text, encoding="utf-8")
     test_path = dst / "tests" / f"test_capability_{spec.family}_fixture.py"
+    dynamic_seed = f"{spec.task_name}:dynamic_hidden_v1"
     test_path.write_text(
+        f"from shared.capability_benchmarks import capability_cases_for_seed, evaluate_capability_cases\n"
         f"from shared.capability_primitives import {spec.operator}\n\n\n"
         f"def test_{spec.operator}_public_case():\n"
         f"    {spec.public_assertion}\n\n\n"
         f"def test_{spec.operator}_hidden_transfer_case():\n"
-        f"    {spec.hidden_assertion}\n",
+        f"    {spec.hidden_assertion}\n\n\n"
+        f"def test_{spec.operator}_dynamic_hidden_cases():\n"
+        f"    cases = tuple(\n"
+        f"        case\n"
+        f"        for case in capability_cases_for_seed('{dynamic_seed}')\n"
+        f"        if case.family == '{spec.family}'\n"
+        f"    )\n"
+        f"    evaluations = evaluate_capability_cases({{'{spec.operator}': {spec.operator}}}, cases)\n"
+        f"    assert cases\n"
+        f"    assert all(result.solved for result in evaluations)\n",
         encoding="utf-8",
     )
     write_json(
@@ -643,8 +660,10 @@ def build_capability_benchmark_repo(
                 "local_fixture_only",
                 "public_counterexample",
                 "hidden_transfer_counterexample",
+                "seeded_dynamic_hidden_counterexamples",
                 "no_external_code_execution",
             ],
+            "dynamic_seed": dynamic_seed,
         },
     )
 
@@ -1235,7 +1254,20 @@ def run_loop_variant(
         str(wall_seconds),
         "--timeout-seconds",
         str(timeout_s),
+        "--capability-seed",
+        stable_trial_seed(repo.name, "capability", variant.name, 0),
     ]
+    if variant.exploration_policy != "conservative":
+        args.extend(
+            [
+                "--exploration-policy",
+                variant.exploration_policy,
+                "--exploration-depth",
+                str(variant.exploration_depth),
+                "--exploration-seed",
+                stable_trial_seed(repo.name, "quarantine", variant.name, 0),
+            ]
+        )
     if variant.broad_gate:
         args.append("--broad-gate")
     if not variant.thdse_core_gate:
@@ -1275,6 +1307,7 @@ def build_result(
     summary = read_json(summary_path, {})
     accepted = list(summary.get("accepted_this_run", []))
     rejected = list(summary.get("rejected_this_run", []))
+    quarantine = list(summary.get("quarantine_exploration", []))
     records = [*accepted, *rejected]
     total_candidates = len(accepted) + len(rejected)
     changed = changed_files(before, after)
@@ -1324,6 +1357,8 @@ def build_result(
             int(record.get("capability_delta", {}).get("operator_reuse", 0) or 0) for record in records
         ),
         failure_residue_count=sum(1 for record in records if record.get("failure_residue")),
+        quarantine_exploration_count=len(quarantine),
+        quarantine_failure_residue_count=sum(1 for record in quarantine if record.get("failure_residue")),
     )
 
 
@@ -1380,6 +1415,12 @@ def aggregate_results(results: Sequence[ExperimentResult]) -> List[Dict[str, obj
                 "hidden_transfer_mean": mean([float(row.hidden_transfer) for row in rows]),
                 "operator_reuse_mean": mean([float(row.operator_reuse) for row in rows]),
                 "failure_residue_count_mean": mean([float(row.failure_residue_count) for row in rows]),
+                "quarantine_exploration_count_mean": mean(
+                    [float(row.quarantine_exploration_count) for row in rows]
+                ),
+                "quarantine_failure_residue_count_mean": mean(
+                    [float(row.quarantine_failure_residue_count) for row in rows]
+                ),
             }
         )
     return aggregates

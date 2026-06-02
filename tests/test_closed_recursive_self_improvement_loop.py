@@ -1,13 +1,16 @@
 from pathlib import Path
 
 from scripts.closed_recursive_self_improvement_loop import (
+    CandidatePatch,
     ClosedRecursiveSelfImprovementLoop,
+    Goal,
     LOCAL_CORPUS_QUERY_SPECS,
     add_autonomous_record_query,
     add_records_importing,
     add_records_with_feature,
     candidates_from_specs,
     discover_local_corpus_query_blueprints,
+    operator_specs_for,
     score_query_blueprints,
 )
 
@@ -228,3 +231,99 @@ def test_rejected_candidate_record_contains_failure_residue(tmp_path):
     assert record.failure_residue["failed_candidate_reason"]
     assert record.operator_synthesis
     assert record.generator_improvement
+
+
+def _fingerprint_files(root: Path):
+    result = {}
+    for path in sorted(root.rglob("*")):
+        if path.is_file():
+            result[str(path.relative_to(root))] = path.read_text(encoding="utf-8")
+    return result
+
+
+def _write_capability_quarantine_repo(repo: Path) -> None:
+    shared = repo / "shared"
+    tests = repo / "tests"
+    shared.mkdir(parents=True)
+    tests.mkdir()
+    (shared / "__init__.py").write_text("", encoding="utf-8")
+    (shared / "capability_primitives.py").write_text('"""fixture primitives"""\n', encoding="utf-8")
+    (tests / "test_forced_broad_failure.py").write_text(
+        "def test_forced_broad_failure():\n"
+        "    assert False, 'force quarantine-only rejection'\n",
+        encoding="utf-8",
+    )
+
+
+def test_recursive_quarantine_explores_deeper_failed_candidate_chain(tmp_path):
+    repo = tmp_path / "repo"
+    _write_capability_quarantine_repo(repo)
+    before = _fingerprint_files(repo)
+
+    loop = ClosedRecursiveSelfImprovementLoop(
+        repo,
+        state_dir=tmp_path / "state",
+        dry_run=False,
+        broad_gate=True,
+        thdse_core_gate=False,
+        exploration_policy="recursive_quarantine",
+        exploration_depth=3,
+        exploration_seed="quarantine-depth-test",
+    )
+    summary = loop.run(max_generations=0, max_candidates=1, wall_seconds=120)
+    quarantine_records = summary["quarantine_exploration"]
+
+    assert summary["quarantine_max_depth"] == 3
+    assert len(quarantine_records) == 3
+    assert all(record["accepted"] is False for record in quarantine_records)
+    assert all(record["quarantine"] is True for record in quarantine_records)
+    assert all(record["promoted"] is False for record in quarantine_records)
+    assert all(record["failure_residue"]["failed_gate"] for record in quarantine_records)
+    assert all(record["failure_residue"]["next_hypothesis"] for record in quarantine_records)
+    assert _fingerprint_files(repo) == before
+
+
+def test_anti_cheat_rejects_hardcoded_candidate_without_main_tree_change(tmp_path):
+    repo = tmp_path / "repo"
+    shared = repo / "shared"
+    tests = repo / "tests"
+    shared.mkdir(parents=True)
+    tests.mkdir()
+    (shared / "__init__.py").write_text("", encoding="utf-8")
+    target = shared / "capability_primitives.py"
+    target.write_text('"""fixture primitives"""\n', encoding="utf-8")
+    before = target.read_text(encoding="utf-8")
+
+    def hardcode_public_case(_source: str) -> str:
+        return (
+            "def run_length_encode(items):\n"
+            "    if items == (1, 1, 2, 2, 2, 3):\n"
+            "        return ((1, 2), (2, 3), (3, 1))\n"
+            "    return ()\n"
+        )
+
+    candidate = CandidatePatch(
+        name="hardcoded_rle_cheat",
+        generation=1,
+        goal=Goal(
+            name="hardcode_public_case",
+            target="shared.capability_primitives.run_length_encode",
+            metric="anti-cheat rejects literal branch",
+            rationale="Fixture candidate intentionally cheats for anti-cheat coverage.",
+        ),
+        target_path=target,
+        test_path=tests / "test_hardcoded_rle_cheat.py",
+        transform=hardcode_public_case,
+        test_source="from shared.capability_primitives import run_length_encode\n",
+        focused_tests=("tests/test_hardcoded_rle_cheat.py",),
+        capability_family="algorithm_synthesis",
+        operator_specs=operator_specs_for("algorithm_synthesis", "run_length_encode"),
+        generator_improvement={"surface": "test", "mechanism": "test", "evidence": "test"},
+    )
+    loop = ClosedRecursiveSelfImprovementLoop(repo, state_dir=tmp_path / "state", dry_run=False)
+    record = loop.apply_candidate(candidate)
+
+    assert record.accepted is False
+    assert record.gates[0]["label"] == "hardcoded_rle_cheat_anti_cheat"
+    assert record.failure_residue["failed_gate"] == "hardcoded_rle_cheat_anti_cheat"
+    assert target.read_text(encoding="utf-8") == before

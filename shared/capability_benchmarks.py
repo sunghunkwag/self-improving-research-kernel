@@ -7,9 +7,11 @@ evidence objects for scoring, failure residue, and synthesized operators.
 
 from __future__ import annotations
 
+import ast
+import hashlib
 import re
 from dataclasses import asdict, dataclass
-from typing import Callable, Dict, Iterable, Mapping, Optional, Sequence, Tuple
+from typing import Callable, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
 
 
 @dataclass(frozen=True)
@@ -65,6 +67,20 @@ class FailureResidue:
     missing_abstraction: str
     failed_evaluator: str
     overfit_signal: str
+    failed_gate: str = ""
+    next_hypothesis: str = ""
+
+    def to_dict(self) -> Dict[str, object]:
+        return asdict(self)
+
+
+@dataclass(frozen=True)
+class AntiCheatFinding:
+    """One deterministic anti-gaming finding for a candidate patch."""
+
+    kind: str
+    path: str
+    detail: str
 
     def to_dict(self) -> Dict[str, object]:
         return asdict(self)
@@ -186,6 +202,205 @@ DEFAULT_CAPABILITY_CASES: Tuple[CapabilityCase, ...] = (
 )
 
 
+CAPABILITY_FAMILIES: Tuple[str, ...] = (
+    "algorithm_synthesis",
+    "symbolic_reasoning",
+    "grid_transformation",
+    "bug_repair",
+    "planning_state_transition",
+)
+
+
+def _seed_digest(seed: str, label: str) -> bytes:
+    payload = f"{seed}:{label}".encode("utf-8")
+    return hashlib.sha256(payload).digest()
+
+
+def _seed_int(seed: str, label: str, modulo: int, *, offset: int = 0) -> int:
+    if modulo <= 0:
+        raise ValueError("modulo must be positive")
+    value = int.from_bytes(_seed_digest(seed, label)[:8], "big")
+    return offset + (value % modulo)
+
+
+def _run_length_expected(items: Sequence[object]) -> Tuple[Tuple[object, int], ...]:
+    result: List[Tuple[object, int]] = []
+    marker = object()
+    current: object = marker
+    count = 0
+    for item in items:
+        if count == 0:
+            current = item
+            count = 1
+        elif item == current:
+            count += 1
+        else:
+            result.append((current, count))
+            current = item
+            count = 1
+    if count:
+        result.append((current, count))
+    return tuple(result)
+
+
+def _rotate_clockwise_expected(grid: Sequence[Sequence[object]]) -> Tuple[Tuple[object, ...], ...]:
+    rows = tuple(tuple(row) for row in grid)
+    if not rows:
+        return ()
+    return tuple(
+        tuple(rows[row][column] for row in range(len(rows) - 1, -1, -1))
+        for column in range(len(rows[0]))
+    )
+
+
+def _dedupe_expected(items: Sequence[object]) -> Tuple[object, ...]:
+    seen = set()
+    result = []
+    for item in items:
+        if item in seen:
+            continue
+        seen.add(item)
+        result.append(item)
+    return tuple(result)
+
+
+def dynamic_hidden_cases(
+    seed: str,
+    families: Sequence[str] = CAPABILITY_FAMILIES,
+) -> Tuple[CapabilityCase, ...]:
+    """Return deterministic seed-derived hidden cases for each capability family."""
+
+    family_set = set(families)
+    digest_prefix = hashlib.sha256(str(seed).encode("utf-8")).hexdigest()[:10]
+    cases: List[CapabilityCase] = []
+
+    if "algorithm_synthesis" in family_set:
+        base = _seed_int(seed, "algorithm_base", 13, offset=3)
+        items = (
+            f"tok_{base}",
+            f"tok_{base}",
+            f"tok_{base + 1}",
+            f"tok_{base + 1}",
+            f"tok_{base + 1}",
+            f"tok_{base + 2}",
+            f"tok_{base}",
+        )
+        cases.append(
+            CapabilityCase(
+                name=f"algorithm_rle_dynamic_hidden_{digest_prefix}",
+                family="algorithm_synthesis",
+                operator="run_length_encode",
+                inputs=(items,),
+                expected=_run_length_expected(items),
+                split="hidden",
+                tags=("dynamic", "seeded", "sequence"),
+                cost=1.25,
+            )
+        )
+
+    if "symbolic_reasoning" in family_set:
+        start = _seed_int(seed, "symbolic_start", 41, offset=-20)
+        step = _seed_int(seed, "symbolic_step", 9, offset=1)
+        if _seed_int(seed, "symbolic_sign", 2) == 1:
+            step *= -1
+        length = _seed_int(seed, "symbolic_length", 3, offset=4)
+        values = tuple(start + step * index for index in range(length))
+        cases.append(
+            CapabilityCase(
+                name=f"symbolic_linear_rule_dynamic_hidden_{digest_prefix}",
+                family="symbolic_reasoning",
+                operator="infer_linear_rule",
+                inputs=(values,),
+                expected={"start": start, "step": step, "next": values[-1] + step},
+                split="hidden",
+                tags=("dynamic", "seeded", "sequence_rule"),
+                cost=1.25,
+            )
+        )
+
+    if "grid_transformation" in family_set:
+        height = _seed_int(seed, "grid_height", 3, offset=2)
+        width = _seed_int(seed, "grid_width", 3, offset=2)
+        base = _seed_int(seed, "grid_base", 50, offset=10)
+        grid = tuple(
+            tuple(base + row * width + column for column in range(width))
+            for row in range(height)
+        )
+        cases.append(
+            CapabilityCase(
+                name=f"grid_rotate_dynamic_hidden_{digest_prefix}",
+                family="grid_transformation",
+                operator="rotate_grid_clockwise",
+                inputs=(grid,),
+                expected=_rotate_clockwise_expected(grid),
+                split="hidden",
+                tags=("dynamic", "seeded", "arc_like"),
+                cost=1.25,
+            )
+        )
+
+    if "bug_repair" in family_set:
+        base = _seed_int(seed, "dedupe_base", 17, offset=5)
+        items = (
+            base,
+            base + 1,
+            base,
+            base + 2,
+            base + 1,
+            base + 3,
+            base + 2,
+        )
+        cases.append(
+            CapabilityCase(
+                name=f"bug_repair_dedupe_dynamic_hidden_{digest_prefix}",
+                family="bug_repair",
+                operator="dedupe_preserve_order",
+                inputs=(items,),
+                expected=_dedupe_expected(items),
+                split="hidden",
+                tags=("dynamic", "seeded", "ordering"),
+                cost=1.25,
+            )
+        )
+
+    if "planning_state_transition" in family_set:
+        actions = ("north", "south", "east", "west", "stay")
+        action = actions[_seed_int(seed, "planning_action", len(actions))]
+        x = _seed_int(seed, "planning_x", 21, offset=-10)
+        y = _seed_int(seed, "planning_y", 21, offset=-10)
+        deltas = {
+            "north": (0, 1),
+            "south": (0, -1),
+            "east": (1, 0),
+            "west": (-1, 0),
+            "stay": (0, 0),
+        }
+        dx, dy = deltas[action]
+        cases.append(
+            CapabilityCase(
+                name=f"planning_transition_dynamic_hidden_{digest_prefix}",
+                family="planning_state_transition",
+                operator="apply_grid_action",
+                inputs=({"x": x, "y": y}, action),
+                expected={"x": x + dx, "y": y + dy},
+                split="hidden",
+                tags=("dynamic", "seeded", "state_update"),
+                cost=1.25,
+            )
+        )
+
+    return tuple(cases)
+
+
+def capability_cases_for_seed(seed: str, *, include_static: bool = True) -> Tuple[CapabilityCase, ...]:
+    """Return static benchmark cases plus deterministic dynamic hidden cases."""
+
+    dynamic = dynamic_hidden_cases(seed)
+    if include_static:
+        return (*DEFAULT_CAPABILITY_CASES, *dynamic)
+    return dynamic
+
+
 def normalize_output(value: object) -> object:
     """Normalize lists and tuples so evaluator comparisons are stable."""
 
@@ -284,6 +499,249 @@ def capability_delta_from_evaluations(
     )
 
 
+def _is_test_path(path: str) -> bool:
+    normalized = path.replace("\\", "/").lower()
+    return normalized.startswith("tests/") or "/tests/" in normalized
+
+
+def _is_doc_report_or_metadata_path(path: str) -> bool:
+    normalized = path.replace("\\", "/").lower()
+    name = normalized.rsplit("/", 1)[-1]
+    return (
+        normalized.startswith("reports/")
+        or normalized.startswith("docs/")
+        or name.startswith("readme")
+        or normalized.endswith(".md")
+        or normalized.endswith("_metadata.json")
+        or normalized.endswith("metadata.json")
+        or normalized.endswith("summary.json")
+    )
+
+
+def _introduced_text(before: Optional[str], after: str) -> str:
+    if before is None:
+        return after
+    before_lines = set(before.splitlines())
+    return "\n".join(line for line in after.splitlines() if line not in before_lines)
+
+
+def _normalized_repr(value: object) -> str:
+    return repr(normalize_output(value))
+
+
+def _case_literal_sets(cases: Sequence[CapabilityCase]) -> Tuple[Tuple[str, ...], Tuple[str, ...]]:
+    input_literals = []
+    output_literals = []
+    for case in cases:
+        input_literals.append(_normalized_repr(case.inputs))
+        input_literals.extend(_normalized_repr(item) for item in case.inputs)
+        output_literals.append(_normalized_repr(case.expected))
+    return tuple(dict.fromkeys(input_literals)), tuple(dict.fromkeys(output_literals))
+
+
+def _literal_branch_findings(
+    path: str,
+    text: str,
+    cases: Sequence[CapabilityCase],
+) -> Tuple[AntiCheatFinding, ...]:
+    case_literals = {
+        _normalized_repr(case.inputs)
+        for case in cases
+    } | {
+        _normalized_repr(item)
+        for case in cases
+        for item in case.inputs
+    }
+    findings: List[AntiCheatFinding] = []
+    try:
+        tree = ast.parse(text)
+    except SyntaxError:
+        return ()
+
+    class ExactBranchVisitor(ast.NodeVisitor):
+        def visit_Compare(self, node: ast.Compare) -> None:  # noqa: N802 - ast API name
+            values = [node.left, *node.comparators]
+            for value_node in values:
+                try:
+                    literal = ast.literal_eval(value_node)
+                except Exception:
+                    continue
+                if _normalized_repr(literal) in case_literals:
+                    findings.append(
+                        AntiCheatFinding(
+                            kind="exact_input_branching",
+                            path=path,
+                            detail="candidate branches on an exact public or hidden benchmark input",
+                        )
+                    )
+                    break
+            self.generic_visit(node)
+
+    ExactBranchVisitor().visit(tree)
+    return tuple(findings[:1])
+
+
+def detect_anti_cheat_findings(
+    changed_files: Mapping[str, Tuple[Optional[str], Optional[str]]],
+    *,
+    cases: Sequence[CapabilityCase] = (),
+) -> Tuple[AntiCheatFinding, ...]:
+    """Detect deterministic benchmark and validation bypass attempts."""
+
+    active_cases = tuple(cases) if cases else capability_cases_for_seed("anti_cheat_default")
+    input_literals, output_literals = _case_literal_sets(active_cases)
+    material_paths = [
+        path
+        for path, (before, after) in changed_files.items()
+        if before != after
+    ]
+    findings: List[AntiCheatFinding] = []
+
+    if material_paths and all(_is_doc_report_or_metadata_path(path) for path in material_paths):
+        findings.append(
+            AntiCheatFinding(
+                kind="readme_report_or_metadata_only",
+                path=",".join(sorted(material_paths)),
+                detail="candidate changes only documentation, reports, or metadata",
+            )
+        )
+
+    executable_paths = [
+        path
+        for path in material_paths
+        if path.endswith(".py") and not _is_test_path(path)
+    ]
+    if not executable_paths and material_paths:
+        fake_success_paths = [
+            path
+            for path, (_before, after) in changed_files.items()
+            if after and re.search(r'"?(accepted|success|capability_delta)"?\s*[:=]\s*(true|True|\{)', after)
+        ]
+        if fake_success_paths:
+            findings.append(
+                AntiCheatFinding(
+                    kind="fake_success_metadata_without_behavior",
+                    path=",".join(sorted(fake_success_paths)),
+                    detail="success metadata changed without executable Python behavior",
+                )
+            )
+
+    for path, (before, after) in changed_files.items():
+        if after is None:
+            if _is_test_path(path):
+                findings.append(
+                    AntiCheatFinding(
+                        kind="test_deletion",
+                        path=path,
+                        detail="candidate deletes a test file",
+                    )
+                )
+            continue
+
+        introduced = _introduced_text(before, after)
+        normalized_path = path.replace("\\", "/").lower()
+
+        if _is_test_path(path):
+            if re.search(r"pytest\.(skip|xfail)|@pytest\.mark\.(skip|xfail)", after):
+                findings.append(
+                    AntiCheatFinding(
+                        kind="pytest_skip_xfail_bypass",
+                        path=path,
+                        detail="candidate bypasses tests with pytest skip or xfail",
+                    )
+                )
+            if re.search(r"assert\s+True\b", after):
+                findings.append(
+                    AntiCheatFinding(
+                        kind="test_weakening",
+                        path=path,
+                        detail="candidate weakens a test to assert True",
+                    )
+                )
+            if before is not None and before.count("assert") > after.count("assert"):
+                findings.append(
+                    AntiCheatFinding(
+                        kind="test_weakening",
+                        path=path,
+                        detail="candidate removes assertions from an existing test",
+                    )
+                )
+
+        if normalized_path == "shared/capability_benchmarks.py" and before is not None:
+            weakening_signals = (
+                ("evaluate_capability_cases" in before and "evaluate_capability_cases" not in after),
+                ("capability_delta_from_evaluations" in before and "capability_delta_from_evaluations" not in after),
+                ("dynamic_hidden_cases" in before and "dynamic_hidden_cases" not in after),
+                (before.count("case.expected") > after.count("case.expected")),
+                bool(re.search(r"solved\s*=\s*True|solved=True", introduced)),
+            )
+            if any(weakening_signals):
+                findings.append(
+                    AntiCheatFinding(
+                        kind="evaluator_weakening",
+                        path=path,
+                        detail="candidate weakens capability evaluator behavior",
+                    )
+                )
+
+        if normalized_path in {
+            "scripts/closed_recursive_self_improvement_loop.py",
+            "scripts/rsi_experiment_suite.py",
+        } and before is not None:
+            broad_removed = (
+                "root_broad" in before and "root_broad" not in after
+            ) or (
+                "if self.broad_gate" in before and "if self.broad_gate" not in after
+            ) or (
+                "--broad-gate" in before and "--broad-gate" not in after
+            )
+            if broad_removed or re.search(r"BYPASS|SKIP|DISABLE", introduced, flags=re.IGNORECASE) and "gate" in introduced.lower():
+                findings.append(
+                    AntiCheatFinding(
+                        kind="broad_gate_bypass",
+                        path=path,
+                        detail="candidate removes or bypasses broad validation gates",
+                    )
+                )
+
+        if re.search(r"os\.(environ|getenv)", introduced) and re.search(
+            r"BYPASS|SKIP|DISABLE|ALLOW|ACCEPT|SUCCESS",
+            introduced,
+            flags=re.IGNORECASE,
+        ):
+            findings.append(
+                AntiCheatFinding(
+                    kind="environment_variable_bypass",
+                    path=path,
+                    detail="candidate introduces an environment-variable validation bypass",
+                )
+            )
+
+        if path.endswith(".py") and not _is_test_path(path):
+            scan_text = introduced if before is not None else after
+            has_input_literal = any(literal and literal in scan_text for literal in input_literals)
+            has_output_literal = any(literal and literal in scan_text for literal in output_literals)
+            if has_input_literal and has_output_literal:
+                findings.append(
+                    AntiCheatFinding(
+                        kind="hardcoded_benchmark_literals",
+                        path=path,
+                        detail="candidate embeds exact benchmark input-output literals in executable code",
+                    )
+                )
+            findings.extend(_literal_branch_findings(path, scan_text, active_cases))
+
+    deduped: List[AntiCheatFinding] = []
+    seen = set()
+    for finding in findings:
+        key = (finding.kind, finding.path, finding.detail)
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped.append(finding)
+    return tuple(deduped)
+
+
 def operator_validation_plan(family: str, operator: str) -> ValidationPlan:
     """Build an executable validation plan for a synthesized operator."""
 
@@ -358,6 +816,7 @@ def extract_failure_residue(
 
     failed = first_failed_gate(gates)
     evaluator = str(failed.get("label", "")) if failed else ""
+    failed_gate = evaluator
     text = " ".join(
         str(part)
         for part in (
@@ -405,6 +864,17 @@ def extract_failure_residue(
         missing_abstraction = "undifferentiated repair abstraction"
         overfit_signal = ""
 
+    if "anti-cheat" in evaluator or "anti-cheat" in text.lower():
+        next_hypothesis = "replace shortcut metadata or literals with executable evaluator-passing behavior"
+    elif broad_failed and focused_passed:
+        next_hypothesis = "generalize the repair beyond focused tests and rerun broad validation"
+    elif missing_operator:
+        next_hypothesis = f"implement or expose {missing_operator} before rerunning the failed evaluator"
+    elif "AssertionError" in text:
+        next_hypothesis = "derive a more general invariant from the counterexample"
+    else:
+        next_hypothesis = "collect a narrower failing gate and synthesize a targeted follow-up candidate"
+
     return FailureResidue(
         candidate_name=candidate_name,
         failed_candidate_reason=reason,
@@ -412,5 +882,7 @@ def extract_failure_residue(
         missing_abstraction=missing_abstraction,
         failed_evaluator=evaluator,
         overfit_signal=overfit_signal,
+        failed_gate=failed_gate,
+        next_hypothesis=next_hypothesis,
     )
 

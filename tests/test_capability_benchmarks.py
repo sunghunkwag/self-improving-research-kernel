@@ -1,6 +1,9 @@
 from shared.capability_benchmarks import (
     DEFAULT_CAPABILITY_CASES,
+    capability_cases_for_seed,
     capability_delta_from_evaluations,
+    detect_anti_cheat_findings,
+    dynamic_hidden_cases,
     evaluate_capability_cases,
     extract_failure_residue,
     synthesize_operator_specs,
@@ -52,6 +55,42 @@ def test_capability_evaluator_scores_public_and_hidden_cases():
     assert delta.score > 10.0
 
 
+def test_dynamic_hidden_cases_are_seed_deterministic_and_variable():
+    first = dynamic_hidden_cases("seed-a")
+    second = dynamic_hidden_cases("seed-a")
+    third = dynamic_hidden_cases("seed-b")
+
+    assert first == second
+    assert first != third
+    assert {case.family for case in first} == {
+        "algorithm_synthesis",
+        "symbolic_reasoning",
+        "grid_transformation",
+        "bug_repair",
+        "planning_state_transition",
+    }
+    assert all(case.split == "hidden" for case in first)
+
+
+def test_capability_delta_uses_actual_evaluator_results():
+    cases = capability_cases_for_seed("actual-evaluator-delta")
+    evaluations = evaluate_capability_cases(
+        {
+            "run_length_encode": lambda items: (),
+            "infer_linear_rule": infer_linear_rule,
+            "rotate_grid_clockwise": rotate_grid_clockwise,
+            "dedupe_preserve_order": dedupe_preserve_order,
+            "apply_grid_action": apply_grid_action,
+        },
+        cases,
+    )
+    delta = capability_delta_from_evaluations(evaluations, compute_cost=0.0)
+
+    assert any(not result.solved for result in evaluations if result.operator == "run_length_encode")
+    assert delta.solved_new_tasks == sum(1 for result in evaluations if result.solved)
+    assert delta.solved_new_tasks < len(cases)
+
+
 def test_operator_synthesis_specs_include_validation_plan_kinds():
     specs = synthesize_operator_specs("algorithm_synthesis", "run_length_encode")
 
@@ -62,6 +101,42 @@ def test_operator_synthesis_specs_include_validation_plan_kinds():
         "counterexample_test",
     }
     assert all(spec.validation_plan.executable() for spec in specs)
+
+
+def test_anti_cheat_catches_hardcoded_literals_and_exact_branching():
+    case = next(case for case in DEFAULT_CAPABILITY_CASES if case.operator == "run_length_encode")
+    source = (
+        "def run_length_encode(items):\n"
+        f"    if items == {case.inputs[0]!r}:\n"
+        f"        return {case.expected!r}\n"
+        "    return ()\n"
+    )
+    findings = detect_anti_cheat_findings(
+        {"shared/capability_primitives.py": ("", source)},
+        cases=DEFAULT_CAPABILITY_CASES,
+    )
+
+    assert {"hardcoded_benchmark_literals", "exact_input_branching"} <= {
+        finding.kind for finding in findings
+    }
+
+
+def test_anti_cheat_catches_test_and_evaluator_tampering():
+    findings = detect_anti_cheat_findings(
+        {
+            "tests/test_capability_benchmarks.py": (
+                "def test_real():\n    assert run() == 1\n",
+                "import pytest\n\npytest.skip('skip benchmark', allow_module_level=True)\n",
+            ),
+            "shared/capability_benchmarks.py": (
+                "def evaluate_capability_cases():\n    solved = output == case.expected\n",
+                "def evaluate_capability_cases():\n    solved = True\n",
+            ),
+        }
+    )
+
+    assert "pytest_skip_xfail_bypass" in {finding.kind for finding in findings}
+    assert "evaluator_weakening" in {finding.kind for finding in findings}
 
 
 def test_failure_residue_extracts_missing_operator_and_overfit_signal():
@@ -86,5 +161,7 @@ def test_failure_residue_extracts_missing_operator_and_overfit_signal():
 
     assert residue.missing_operator == "missing_solver"
     assert residue.failed_evaluator == "candidate_x_root_broad"
+    assert residue.failed_gate == "candidate_x_root_broad"
     assert residue.overfit_signal == "focused_passed_broad_failed"
+    assert residue.next_hypothesis
 

@@ -21,17 +21,26 @@ from __future__ import annotations
 
 import argparse
 import ast
+import hashlib
 import json
 import os
+import shutil
 import subprocess
 import sys
+import tempfile
 import time
 from dataclasses import asdict, dataclass, field, replace
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Sequence, Tuple
 
 from shared.capability_benchmarks import (
+    CAPABILITY_FAMILIES,
     CapabilityDelta,
+    CapabilityEvaluation,
+    capability_cases_for_seed,
+    capability_delta_from_evaluations,
+    detect_anti_cheat_findings,
+    evaluate_capability_cases,
     extract_failure_residue,
     synthesize_operator_specs,
 )
@@ -101,6 +110,9 @@ class CandidateRecord:
     failure_residue: Dict[str, object] = field(default_factory=dict)
     operator_synthesis: List[Dict[str, object]] = field(default_factory=list)
     generator_improvement: Dict[str, object] = field(default_factory=dict)
+    quarantine: bool = False
+    promoted: bool = False
+    chain_depth: int = 0
 
 
 @dataclass(frozen=True)
@@ -179,6 +191,7 @@ def candidate_capability_delta(
     *,
     accepted: bool,
     gates: Sequence[GateResult],
+    evaluations: Sequence[CapabilityEvaluation] = (),
 ) -> Dict[str, object]:
     """Score the capability delta represented by a candidate result."""
 
@@ -196,16 +209,26 @@ def candidate_capability_delta(
             if spec.get("kind") in {"solver_primitive", "search_heuristic"}
         }
     )
+    if evaluations:
+        return capability_delta_from_evaluations(
+            evaluations,
+            reused_operators=(
+                str(spec.get("name", ""))
+                for spec in candidate.operator_specs
+                if spec.get("kind") in {"solver_primitive", "search_heuristic"}
+            ),
+            regression_failures=regression_failures,
+            compute_cost=candidate_compute_cost(gates),
+        ).to_dict()
+
     delta = CapabilityDelta(
-        solved_new_tasks=1 if accepted else 0,
-        hidden_transfer=1 if accepted and candidate.capability_family else 0,
-        regression_protection=1 if accepted and regression_failures == 0 else 0,
+        solved_new_tasks=0,
+        hidden_transfer=0,
+        regression_protection=1 if gates and regression_failures == 0 else 0,
         operator_reuse=operator_reuse,
         compute_cost=candidate_compute_cost(gates),
         score=round(
-            (1.0 if accepted else 0.0)
-            + (0.5 if accepted and candidate.capability_family else 0.0)
-            + (0.25 if accepted and regression_failures == 0 else 0.0)
+            (0.25 if gates and regression_failures == 0 else 0.0)
             + operator_reuse * 0.1
             - min(candidate_compute_cost(gates) / 600.0, 0.5),
             3,
@@ -232,6 +255,60 @@ def candidate_failure_residue(
         operator_specs=candidate.operator_specs,
     )
     return residue.to_dict()
+
+
+def capability_operator_names(candidate: CandidatePatch) -> Tuple[str, ...]:
+    """Return solver primitive names synthesized by a capability candidate."""
+
+    names = [
+        str(spec.get("name", ""))
+        for spec in candidate.operator_specs
+        if spec.get("kind") == "solver_primitive" and spec.get("name")
+    ]
+    if not names and candidate.capability_family in CAPABILITY_FAMILIES:
+        names = [candidate.goal.name.removeprefix("repair_").removesuffix("_operator")]
+    return tuple(dict.fromkeys(names))
+
+
+def load_capability_operators(source_path: Path, operator_names: Sequence[str]) -> Dict[str, Callable[..., object]]:
+    """Load candidate-local primitive callables for evaluator execution."""
+
+    if not source_path.exists() or not operator_names:
+        return {}
+    namespace: Dict[str, object] = {
+        "__builtins__": __builtins__,
+        "__name__": "_closed_rsi_capability_candidate",
+    }
+    source = source_path.read_text(encoding="utf-8")
+    exec(compile(source, str(source_path), "exec"), namespace)
+    return {
+        name: namespace[name]
+        for name in operator_names
+        if callable(namespace.get(name))
+    }
+
+
+def quarantine_ignore(_directory: str, names: List[str]) -> List[str]:
+    """Ignore generated state and cache directories when copying quarantine repos."""
+
+    ignored = []
+    for name in names:
+        if name in {
+            ".git",
+            ".mypy_cache",
+            ".omega_rsi_runs",
+            ".pytest_cache",
+            "__pycache__",
+            "target",
+        }:
+            ignored.append(name)
+    return ignored
+
+
+def copy_repo_to_quarantine(src: Path, dst: Path) -> None:
+    """Copy a repository into a disposable quarantine workspace."""
+
+    shutil.copytree(src, dst, ignore=quarantine_ignore)
 
 
 def replace_once(text: str, old: str, new: str, candidate_name: str) -> str:
@@ -1197,6 +1274,10 @@ class ClosedRecursiveSelfImprovementLoop:
         dry_run: bool = True,
         rollback: bool = True,
         persistence: bool = True,
+        exploration_policy: str = "conservative",
+        exploration_depth: int = 0,
+        exploration_seed: str = "closed_rsi_quarantine_v1",
+        capability_seed: str = "closed_rsi_capability_dynamic_v1",
     ):
         self.repo_root = repo_root.resolve()
         self.thdse_root = self.repo_root / "thdse"
@@ -1217,6 +1298,10 @@ class ClosedRecursiveSelfImprovementLoop:
         self.dry_run = bool(dry_run)
         self.rollback = bool(rollback)
         self.persistence = bool(persistence)
+        self.exploration_policy = str(exploration_policy)
+        self.exploration_depth = max(0, int(exploration_depth))
+        self.exploration_seed = str(exploration_seed)
+        self.capability_seed = str(capability_seed)
         self.env = os.environ.copy()
         self.env["PYTHONPATH"] = str(self.repo_root)
 
@@ -1231,6 +1316,7 @@ class ClosedRecursiveSelfImprovementLoop:
             state = {}
         state.setdefault("accepted", [])
         state.setdefault("rejected", [])
+        state.setdefault("quarantine_exploration", [])
         state.setdefault("active_generation", 0)
         state.setdefault("active_base", "initial")
         return state
@@ -1342,6 +1428,104 @@ class ClosedRecursiveSelfImprovementLoop:
                 timed_out=True,
             )
 
+    def candidate_changed_sources(
+        self,
+        candidate: CandidatePatch,
+        *,
+        rewritten_target: str,
+        original_target: str,
+        original_test: Optional[str],
+        original_extra: Dict[Path, Optional[str]],
+        extra_paths: Dict[Path, str],
+    ) -> Dict[str, Tuple[Optional[str], Optional[str]]]:
+        """Return candidate file changes for anti-cheat inspection."""
+
+        changed: Dict[str, Tuple[Optional[str], Optional[str]]] = {
+            str(candidate.target_path.relative_to(self.repo_root)): (original_target, rewritten_target),
+            str(candidate.test_path.relative_to(self.repo_root)): (original_test, candidate.test_source),
+        }
+        for path, source in extra_paths.items():
+            changed[str(path.relative_to(self.repo_root))] = (original_extra.get(path), source)
+        return changed
+
+    def anti_cheat_gate(
+        self,
+        candidate: CandidatePatch,
+        changed_sources: Dict[str, Tuple[Optional[str], Optional[str]]],
+    ) -> Optional[GateResult]:
+        """Return a failing anti-cheat gate when a candidate bypasses evaluation."""
+
+        start = time.monotonic()
+        findings = detect_anti_cheat_findings(
+            changed_sources,
+            cases=capability_cases_for_seed(self.capability_seed),
+        )
+        if not findings:
+            return None
+        elapsed = round(time.monotonic() - start, 3)
+        payload = {
+            "findings": [finding.to_dict() for finding in findings],
+        }
+        return GateResult(
+            label=f"{candidate.name}_anti_cheat",
+            args=["internal", "anti_cheat"],
+            cwd=str(self.repo_root),
+            exit_code=1,
+            elapsed_s=elapsed,
+            stdout_tail="",
+            stderr_tail=json.dumps(payload, sort_keys=True),
+        )
+
+    def capability_evaluations(self, candidate: CandidatePatch) -> Tuple[CapabilityEvaluation, ...]:
+        """Run dynamic capability evaluator cases for a candidate primitive."""
+
+        if candidate.capability_family not in CAPABILITY_FAMILIES:
+            return ()
+        cases = tuple(
+            case
+            for case in capability_cases_for_seed(self.capability_seed)
+            if case.family == candidate.capability_family
+        )
+        if not cases:
+            return ()
+        operators = load_capability_operators(candidate.target_path, capability_operator_names(candidate))
+        return evaluate_capability_cases(operators, cases)
+
+    def capability_evaluator_gate(self, candidate: CandidatePatch) -> Optional[GateResult]:
+        """Return an executable capability evaluator gate for capability candidates."""
+
+        if candidate.capability_family not in CAPABILITY_FAMILIES:
+            return None
+        start = time.monotonic()
+        try:
+            evaluations = self.capability_evaluations(candidate)
+            exit_code = 0 if evaluations and all(item.solved for item in evaluations) else 1
+            payload = {
+                "seed": self.capability_seed,
+                "evaluations": [asdict(item) for item in evaluations],
+            }
+            elapsed = round(time.monotonic() - start, 3)
+            return GateResult(
+                label=f"{candidate.name}_capability_evaluator",
+                args=["internal", "capability_evaluator", self.capability_seed],
+                cwd=str(self.repo_root),
+                exit_code=exit_code,
+                elapsed_s=elapsed,
+                stdout_tail=json.dumps(payload, sort_keys=True)[-4000:],
+                stderr_tail="" if exit_code == 0 else "one or more capability evaluator cases failed",
+            )
+        except Exception as exc:
+            elapsed = round(time.monotonic() - start, 3)
+            return GateResult(
+                label=f"{candidate.name}_capability_evaluator",
+                args=["internal", "capability_evaluator", self.capability_seed],
+                cwd=str(self.repo_root),
+                exit_code=1,
+                elapsed_s=elapsed,
+                stdout_tail="",
+                stderr_tail=f"{type(exc).__name__}: {exc}",
+            )
+
     def validate(self, candidate: CandidatePatch) -> List[GateResult]:
         py = sys.executable
         compile_targets = [
@@ -1376,6 +1560,9 @@ class ClosedRecursiveSelfImprovementLoop:
                 self.repo_root,
             )
         )
+        capability_gate = self.capability_evaluator_gate(candidate)
+        if capability_gate is not None:
+            gates.append(capability_gate)
         if self.broad_gate:
             gates.append(
                 self.run_command(
@@ -1422,12 +1609,25 @@ class ClosedRecursiveSelfImprovementLoop:
         gates: List[GateResult] = []
         error = ""
         accepted = False
+        capability_delta: Dict[str, object] = {}
 
         try:
             rewritten = candidate.transform(original_target)
             missing_extra = [path for path in extra_paths if not path.exists()]
             if rewritten == original_target and not missing_extra:
                 raise RuntimeError("candidate made no source change")
+            changed_sources = self.candidate_changed_sources(
+                candidate,
+                rewritten_target=rewritten,
+                original_target=original_target,
+                original_test=original_test,
+                original_extra=original_extra,
+                extra_paths=extra_paths,
+            )
+            anti_cheat = self.anti_cheat_gate(candidate, changed_sources)
+            if anti_cheat is not None:
+                gates.append(anti_cheat)
+                raise RuntimeError("anti-cheat validation failed")
             if self.dry_run:
                 accepted = True
             else:
@@ -1438,6 +1638,12 @@ class ClosedRecursiveSelfImprovementLoop:
                     path.parent.mkdir(parents=True, exist_ok=True)
                     path.write_text(source, encoding="utf-8")
                 gates = self.validate(candidate)
+                capability_delta = candidate_capability_delta(
+                    candidate,
+                    accepted=all(gate.exit_code == 0 for gate in gates),
+                    gates=gates,
+                    evaluations=self.capability_evaluations(candidate),
+                )
                 accepted = all(gate.exit_code == 0 for gate in gates)
                 if not accepted:
                     raise RuntimeError("one or more validation gates failed")
@@ -1463,6 +1669,8 @@ class ClosedRecursiveSelfImprovementLoop:
                             pass
                     else:
                         path.write_text(original, encoding="utf-8")
+        if not capability_delta:
+            capability_delta = candidate_capability_delta(candidate, accepted=accepted, gates=gates)
 
         return CandidateRecord(
             name=candidate.name,
@@ -1476,11 +1684,107 @@ class ClosedRecursiveSelfImprovementLoop:
             finished_at=utc_now(),
             gates=[asdict(gate) for gate in gates],
             error=error,
-            capability_delta=candidate_capability_delta(candidate, accepted=accepted, gates=gates),
+            capability_delta=capability_delta,
             failure_residue=candidate_failure_residue(candidate, accepted=accepted, gates=gates, error=error),
             operator_synthesis=[dict(spec) for spec in candidate.operator_specs],
             generator_improvement=dict(candidate.generator_improvement),
+            promoted=accepted,
         )
+
+    def exploration_enabled(self) -> bool:
+        return self.exploration_policy in {"recursive_quarantine", "high_entropy_quarantine"} and self.exploration_depth > 0
+
+    def rank_quarantine_candidates(
+        self,
+        candidates: Sequence[CandidatePatch],
+        state: dict,
+        depth: int,
+    ) -> List[CandidatePatch]:
+        """Rank quarantine candidates by deterministic high-entropy seed order."""
+
+        accepted_names = set(names_from_state(state, "accepted"))
+        rejected_names = set(names_from_state(state, "rejected"))
+
+        def candidate_key(candidate: CandidatePatch) -> Tuple[int, str, str]:
+            seen_penalty = 1 if candidate.name in accepted_names or candidate.name in rejected_names else 0
+            digest = hashlib.sha256(
+                f"{self.exploration_seed}:{depth}:{candidate.name}:{candidate.goal.name}".encode("utf-8")
+            ).hexdigest()
+            return (seen_penalty, digest, candidate.name)
+
+        return sorted(candidates, key=candidate_key)
+
+    def run_quarantine_exploration(
+        self,
+        state: dict,
+        *,
+        max_candidates: int,
+        started: float,
+        wall_seconds: int,
+    ) -> List[dict]:
+        """Explore deeper candidate chains in a disposable quarantine copy."""
+
+        if not self.exploration_enabled():
+            return []
+        records: List[dict] = []
+        self.state_dir.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(prefix="closed_rsi_quarantine_", dir=str(self.state_dir)) as tmp:
+            quarantine_root = Path(tmp) / "repo"
+            copy_repo_to_quarantine(self.repo_root, quarantine_root)
+            quarantine_loop = ClosedRecursiveSelfImprovementLoop(
+                quarantine_root,
+                state_dir=Path(tmp) / "state",
+                broad_gate=self.broad_gate,
+                thdse_core_gate=self.thdse_core_gate,
+                timeout_s=self.timeout_s,
+                dry_run=False,
+                rollback=False,
+                persistence=False,
+                exploration_policy="conservative",
+                exploration_depth=0,
+                exploration_seed=self.exploration_seed,
+                capability_seed=self.capability_seed,
+            )
+            quarantine_state = {
+                "accepted": [],
+                "rejected": [],
+                "quarantine_exploration": [],
+                "active_generation": int(state.get("active_generation", 0)),
+                "active_base": state.get("active_base", "initial"),
+            }
+            attempted = set()
+            for depth in range(1, self.exploration_depth + 1):
+                if self.kill_switch_path.exists() or time.monotonic() - started > wall_seconds:
+                    break
+                generation = int(quarantine_state.get("active_generation", 0)) + 1
+                candidates = quarantine_loop.invent_candidates(generation, quarantine_state)
+                ranked = self.rank_quarantine_candidates(candidates, quarantine_state, depth)
+                if not ranked:
+                    break
+                tried_at_depth = 0
+                for candidate in ranked:
+                    if tried_at_depth >= max_candidates:
+                        break
+                    if candidate.name in attempted:
+                        continue
+                    record = quarantine_loop.apply_candidate(candidate)
+                    record.quarantine = True
+                    record.promoted = False
+                    record.chain_depth = depth
+                    payload = asdict(record)
+                    records.append(payload)
+                    attempted.add(candidate.name)
+                    tried_at_depth += 1
+                    if record.accepted:
+                        quarantine_state["accepted"].append(payload)
+                        quarantine_state["active_generation"] = generation
+                        quarantine_state["active_base"] = candidate.name
+                    else:
+                        quarantine_state["rejected"].append(payload)
+                    quarantine_state["quarantine_exploration"].append(payload)
+                if tried_at_depth == 0:
+                    break
+        return records
 
     def run(self, *, max_generations: int = 10, max_candidates: int = 10, wall_seconds: int = 1800) -> dict:
         """Run the closed loop until budget, kill switch, or no candidates."""
@@ -1489,6 +1793,7 @@ class ClosedRecursiveSelfImprovementLoop:
         started = time.monotonic()
         accepted_this_run: List[dict] = []
         rejected_this_run: List[dict] = []
+        quarantine_exploration: List[dict] = []
 
         for _ in range(max_generations):
             if self.kill_switch_path.exists():
@@ -1518,6 +1823,17 @@ class ClosedRecursiveSelfImprovementLoop:
             if not promoted:
                 break
 
+        if not self.kill_switch_path.exists() and time.monotonic() - started <= wall_seconds:
+            quarantine_exploration = self.run_quarantine_exploration(
+                state,
+                max_candidates=max_candidates,
+                started=started,
+                wall_seconds=wall_seconds,
+            )
+            if quarantine_exploration:
+                state.setdefault("quarantine_exploration", []).extend(quarantine_exploration)
+                self.save_state(state)
+
         run_records = [*accepted_this_run, *rejected_this_run]
         summary = {
             "dry_run": self.dry_run,
@@ -1525,13 +1841,21 @@ class ClosedRecursiveSelfImprovementLoop:
             "thdse_core_gate": self.thdse_core_gate,
             "rollback": self.rollback,
             "persistence": self.persistence,
+            "exploration_policy": self.exploration_policy,
+            "exploration_depth": self.exploration_depth,
             "state_path": str(self.state_path),
             "accepted_this_run": accepted_this_run,
             "rejected_this_run": rejected_this_run,
+            "quarantine_exploration": quarantine_exploration,
             "active_generation": state.get("active_generation", 0),
             "active_base": state.get("active_base", "initial"),
             "total_accepted": len(state.get("accepted", [])),
             "total_rejected": len(state.get("rejected", [])),
+            "total_quarantine_exploration": len(state.get("quarantine_exploration", [])),
+            "quarantine_max_depth": max(
+                (int(record.get("chain_depth", 0) or 0) for record in quarantine_exploration),
+                default=0,
+            ),
             "capability_delta_score": round(
                 sum(float(record.get("capability_delta", {}).get("score", 0.0) or 0.0) for record in run_records),
                 3,
@@ -1546,6 +1870,9 @@ class ClosedRecursiveSelfImprovementLoop:
                 int(record.get("capability_delta", {}).get("operator_reuse", 0) or 0) for record in run_records
             ),
             "failure_residue_count": sum(1 for record in run_records if record.get("failure_residue")),
+            "quarantine_failure_residue_count": sum(
+                1 for record in quarantine_exploration if record.get("failure_residue")
+            ),
         }
         write_json(self.summary_path, summary)
         return summary
@@ -1572,6 +1899,15 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     parser.add_argument("--max-candidates", type=int, default=10)
     parser.add_argument("--wall-seconds", type=int, default=1800)
     parser.add_argument("--timeout-seconds", type=int, default=300)
+    parser.add_argument(
+        "--exploration-policy",
+        choices=("conservative", "recursive_quarantine", "high_entropy_quarantine"),
+        default="conservative",
+        help="Run deeper recursive exploration in a disposable quarantine copy.",
+    )
+    parser.add_argument("--exploration-depth", type=int, default=0)
+    parser.add_argument("--exploration-seed", default="closed_rsi_quarantine_v1")
+    parser.add_argument("--capability-seed", default="closed_rsi_capability_dynamic_v1")
     args = parser.parse_args(argv)
 
     repo_root = args.repo_root or find_repo_root(Path.cwd())
@@ -1584,6 +1920,10 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         dry_run=not args.apply,
         rollback=not args.no_rollback,
         persistence=not args.no_persistence,
+        exploration_policy=args.exploration_policy,
+        exploration_depth=args.exploration_depth,
+        exploration_seed=args.exploration_seed,
+        capability_seed=args.capability_seed,
     )
     summary = loop.run(
         max_generations=args.max_generations,

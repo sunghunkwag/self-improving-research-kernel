@@ -137,6 +137,8 @@ def test_experiment_variant_defaults_to_safe_controls():
     assert variant.persistence is True
     assert variant.max_generations_override is None
     assert variant.max_candidates_override is None
+    assert variant.exploration_policy == "conservative"
+    assert variant.exploration_depth == 0
 
 
 def test_stable_trial_seed_changes_by_repeat():
@@ -260,6 +262,11 @@ def test_capability_benchmark_repository_creates_missing_operator_fixture(tmp_pa
     assert "def run_length_encode" not in text
     assert "def infer_linear_rule" in text
     assert metadata["operator"] == "run_length_encode"
+    assert metadata["dynamic_seed"] == "capability_algorithm_synthesis:dynamic_hidden_v1"
+    assert "seeded_dynamic_hidden_counterexamples" in metadata["safety_controls"]
+    assert "capability_cases_for_seed" in (target / "tests" / "test_capability_algorithm_synthesis_fixture.py").read_text(
+        encoding="utf-8"
+    )
     assert task.repositories == (repository.name,)
     assert {spec.family for spec in CAPABILITY_FIXTURES} >= {
         "algorithm_synthesis",
