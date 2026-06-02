@@ -129,4 +129,5 @@ class StdlibCorpus:
         return self.ingester.ingest_directory(
             stdlib_path,
             project_prefix="stdlib",
+            max_files=max_files,
         )

@@ -149,12 +149,14 @@ class BatchIngester:
         self,
         root_dir: str,
         project_prefix: str = "",
+        max_files: int = 0,
     ) -> IngestionStats:
         """Ingest all eligible Python files from a directory tree.
 
         Args:
             root_dir: Root directory to walk.
             project_prefix: Optional prefix for source IDs (e.g., project name).
+            max_files: Maximum files to ingest (0 = unlimited).
 
         Returns:
             IngestionStats with counts and timing.
@@ -164,6 +166,8 @@ class BatchIngester:
 
         all_files = self._collect_python_files(root_dir)
         stats.total_found = len(all_files)
+        if max_files > 0:
+            all_files = all_files[:max_files]
 
         for i, fpath in enumerate(all_files):
             # Check file size

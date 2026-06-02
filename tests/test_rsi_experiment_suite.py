@@ -1,19 +1,24 @@
+from subprocess import CompletedProcess
+
 from scripts.rsi_experiment_suite import (
     CAPABILITY_FIXTURES,
     DEFAULT_REPOSITORIES,
     DEFAULT_TASKS,
+    DEFAULT_VARIANTS,
     EXTERNAL_CODE_FIXTURES,
     EXTERNAL_ISSUE_FIXTURES,
     ExperimentVariant,
     aggregate_results,
     build_baseline_comparisons,
     build_benchmark_repo,
+    build_result,
     changed_files,
     external_code_values,
     external_issue_values,
     normalize_fixture_token,
     remove_policy_registry_surface,
     repository_fingerprint,
+    run_ci_only,
     stable_trial_seed,
     strip_method,
     strip_top_level_function,
@@ -139,6 +144,7 @@ def test_experiment_variant_defaults_to_safe_controls():
     assert variant.max_candidates_override is None
     assert variant.exploration_policy == "conservative"
     assert variant.exploration_depth == 0
+    assert variant.full_test_required is True
 
 
 def test_stable_trial_seed_changes_by_repeat():
@@ -149,22 +155,29 @@ def test_stable_trial_seed_changes_by_repeat():
     assert first != second
 
 
-def test_compact_benchmark_repository_builder_creates_minimal_repo(tmp_path):
+def test_compact_benchmark_repository_builder_creates_full_test_capable_repo_without_smoke(tmp_path):
     source = tmp_path / "source"
     target = tmp_path / "target"
     (source / "scripts").mkdir(parents=True)
     (source / "shared").mkdir()
+    (source / "tests").mkdir()
     (source / "scripts" / "closed_recursive_self_improvement_loop.py").write_text("", encoding="utf-8")
     (source / "scripts" / "rsi_policy_registry.py").write_text("", encoding="utf-8")
     (source / "shared" / "__init__.py").write_text("", encoding="utf-8")
     (source / "shared" / "local_corpus.py").write_text("", encoding="utf-8")
+    (source / "tests" / "test_full_fixture_validation.py").write_text(
+        "def test_full_fixture_validation():\n"
+        "    assert 1 + 1 == 2\n",
+        encoding="utf-8",
+    )
 
     compact = next(repository for repository in DEFAULT_REPOSITORIES if repository.name == "compact_kernel_repo")
     build_benchmark_repo(source, target, compact)
 
     assert (target / "scripts" / "closed_recursive_self_improvement_loop.py").exists()
     assert (target / "shared" / "local_corpus.py").exists()
-    assert (target / "tests" / "test_fixture_smoke.py").exists()
+    assert (target / "tests" / "test_full_fixture_validation.py").exists()
+    assert not (target / "tests" / "test_fixture_smoke.py").exists()
 
 
 def test_unseen_schema_transfer_repository_adds_held_out_tuple_field(tmp_path):
@@ -450,6 +463,64 @@ def test_external_code_fixtures_are_catalogued_as_code_unseen():
     assert external_code_values({"field_values": ["Response Content"]}, spec) == ("response_content",)
 
 
+def test_ci_only_runs_exact_full_pytest_command(tmp_path):
+    (tmp_path / "tests").mkdir()
+    (tmp_path / "tests" / "test_full.py").write_text(
+        "def test_full():\n"
+        "    assert 2 * 3 == 6\n",
+        encoding="utf-8",
+    )
+
+    proc = run_ci_only(tmp_path, timeout_s=30)
+
+    assert proc.args[-3:] == ["-m", "pytest", "-q"]
+    assert proc.returncode == 0
+
+
+def test_build_result_does_not_count_accepted_record_without_full_pytest(tmp_path):
+    state_dir = tmp_path / ".omega_rsi_runs"
+    state_dir.mkdir()
+    (state_dir / "closed_rsi_summary.json").write_text(
+        """{
+  "accepted_this_run": [
+    {
+      "name": "fake_smoke_success",
+      "accepted": true,
+      "gates": [
+        {"label": "fake_smoke_success_focused", "args": ["python", "-m", "pytest", "-q", "tests/test_fake.py"], "exit_code": 0}
+      ]
+    }
+  ],
+  "rejected_this_run": [],
+  "full_test_required": true,
+  "full_test_command": "python -m pytest -q"
+}
+""",
+        encoding="utf-8",
+    )
+    repository = next(item for item in DEFAULT_REPOSITORIES if item.name == "omega_full_repo")
+    task = next(item for item in DEFAULT_TASKS if item.name == "local_corpus_queries_clean")
+    variant = next(item for item in DEFAULT_VARIANTS if item.name == "verified_closed_loop")
+
+    result = build_result(
+        repository,
+        task,
+        variant,
+        CompletedProcess(args=["python", "-m", "pytest", "-q"], returncode=0, stdout="", stderr=""),
+        tmp_path,
+        before={},
+        after={},
+        elapsed_s=1.0,
+        repeat_index=0,
+        seed="seed",
+    )
+
+    assert result.accepted_count == 0
+    assert result.accepted_rate == 0.0
+    assert result.full_test_required is True
+    assert result.full_test_exit_code is None
+
+
 def test_aggregate_results_groups_repeated_trials():
     from scripts.rsi_experiment_suite import ExperimentResult
 
@@ -525,6 +596,7 @@ def test_baseline_comparison_marks_unseen_transfer_success():
             "improvement_depth_mean": 1.0,
             "cost_proxy_seconds_mean": 1.0,
             "rollback_success_rate": None,
+            "full_test_success_rate": 1.0,
         },
         {
             "repository": "unseen_schema_transfer_repo",
@@ -538,6 +610,7 @@ def test_baseline_comparison_marks_unseen_transfer_success():
             "improvement_depth_mean": 0.0,
             "cost_proxy_seconds_mean": 1.0,
             "rollback_success_rate": None,
+            "full_test_success_rate": 1.0,
         },
     ]
 
@@ -561,6 +634,7 @@ def test_baseline_comparison_marks_external_transfer_success():
             "improvement_depth_mean": 3.0,
             "cost_proxy_seconds_mean": 1.0,
             "rollback_success_rate": None,
+            "full_test_success_rate": 1.0,
         },
         {
             "repository": "external_requests_issue_transfer_repo",
@@ -574,6 +648,7 @@ def test_baseline_comparison_marks_external_transfer_success():
             "improvement_depth_mean": 1.0,
             "cost_proxy_seconds_mean": 1.0,
             "rollback_success_rate": None,
+            "full_test_success_rate": 1.0,
         },
     ]
 
@@ -597,6 +672,7 @@ def test_baseline_comparison_marks_external_code_transfer_success():
             "improvement_depth_mean": 3.0,
             "cost_proxy_seconds_mean": 1.0,
             "rollback_success_rate": None,
+            "full_test_success_rate": 1.0,
         },
         {
             "repository": "external_requests_code_transfer_repo",
@@ -610,6 +686,7 @@ def test_baseline_comparison_marks_external_code_transfer_success():
             "improvement_depth_mean": 1.0,
             "cost_proxy_seconds_mean": 1.0,
             "rollback_success_rate": None,
+            "full_test_success_rate": 1.0,
         },
     ]
 
@@ -634,6 +711,7 @@ def test_baseline_comparison_marks_capability_transfer_success():
             "cost_proxy_seconds_mean": 1.0,
             "rollback_success_rate": None,
             "solved_new_tasks_mean": 1.0,
+            "full_test_success_rate": 1.0,
         },
         {
             "repository": "capability_algorithm_synthesis_repo",
@@ -648,6 +726,7 @@ def test_baseline_comparison_marks_capability_transfer_success():
             "cost_proxy_seconds_mean": 1.0,
             "rollback_success_rate": None,
             "solved_new_tasks_mean": 0.0,
+            "full_test_success_rate": 1.0,
         },
     ]
 

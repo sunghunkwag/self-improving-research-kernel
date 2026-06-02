@@ -233,6 +233,89 @@ def test_rejected_candidate_record_contains_failure_residue(tmp_path):
     assert record.generator_improvement
 
 
+def test_final_promotion_requires_full_pytest_even_when_focused_passes(tmp_path):
+    repo = tmp_path / "repo"
+    shared = repo / "shared"
+    tests = repo / "tests"
+    shared.mkdir(parents=True)
+    tests.mkdir()
+    (shared / "__init__.py").write_text("", encoding="utf-8")
+    target = shared / "full_gate_target.py"
+    target.write_text("VALUE = 0\n", encoding="utf-8")
+    (tests / "test_full_suite_guard.py").write_text(
+        "def test_full_suite_guard_blocks_promotion():\n"
+        "    assert False, 'full suite must run'\n",
+        encoding="utf-8",
+    )
+
+    candidate = CandidatePatch(
+        name="focused_pass_full_fails",
+        generation=1,
+        goal=Goal(
+            name="prove_full_pytest_required",
+            target="shared.full_gate_target",
+            metric="focused diagnostic passes but full pytest fails",
+            rationale="Regression coverage for full-test-only promotion.",
+        ),
+        target_path=target,
+        test_path=tests / "test_focused_pass_full_fails.py",
+        transform=lambda _source: "VALUE = 1\n",
+        test_source="from shared.full_gate_target import VALUE\n\n\ndef test_value_changed():\n    assert VALUE == 1\n",
+        focused_tests=("tests/test_focused_pass_full_fails.py",),
+        generator_improvement={"surface": "test", "mechanism": "test", "evidence": "test"},
+    )
+
+    loop = ClosedRecursiveSelfImprovementLoop(repo, state_dir=tmp_path / "state", dry_run=False)
+    record = loop.apply_candidate(candidate)
+
+    focused_gate = next(gate for gate in record.gates if gate["label"] == "focused_pass_full_fails_focused")
+    full_gate = next(gate for gate in record.gates if gate["label"] == "focused_pass_full_fails_full_pytest")
+    assert focused_gate["exit_code"] == 0
+    assert full_gate["args"][-3:] == ["-m", "pytest", "-q"]
+    assert full_gate["exit_code"] != 0
+    assert record.full_test_exit_code == full_gate["exit_code"]
+    assert record.accepted is False
+    assert target.read_text(encoding="utf-8") == "VALUE = 0\n"
+
+
+def test_candidate_promotion_records_passing_full_pytest(tmp_path):
+    repo = tmp_path / "repo"
+    shared = repo / "shared"
+    tests = repo / "tests"
+    shared.mkdir(parents=True)
+    tests.mkdir()
+    (shared / "__init__.py").write_text("", encoding="utf-8")
+    target = shared / "full_gate_target.py"
+    target.write_text("VALUE = 0\n", encoding="utf-8")
+
+    candidate = CandidatePatch(
+        name="full_pytest_acceptance",
+        generation=1,
+        goal=Goal(
+            name="prove_full_pytest_acceptance",
+            target="shared.full_gate_target",
+            metric="full pytest gate passes",
+            rationale="Regression coverage for full-test-only promotion.",
+        ),
+        target_path=target,
+        test_path=tests / "test_full_pytest_acceptance.py",
+        transform=lambda _source: "VALUE = 1\n",
+        test_source="from shared.full_gate_target import VALUE\n\n\ndef test_value_changed():\n    assert VALUE == 1\n",
+        focused_tests=("tests/test_full_pytest_acceptance.py",),
+        generator_improvement={"surface": "test", "mechanism": "test", "evidence": "test"},
+    )
+
+    loop = ClosedRecursiveSelfImprovementLoop(repo, state_dir=tmp_path / "state", dry_run=False)
+    record = loop.apply_candidate(candidate)
+
+    full_gate = next(gate for gate in record.gates if gate["label"] == "full_pytest_acceptance_full_pytest")
+    assert full_gate["args"][-3:] == ["-m", "pytest", "-q"]
+    assert full_gate["exit_code"] == 0
+    assert record.full_test_command == "python -m pytest -q"
+    assert record.full_test_required is True
+    assert record.accepted is True
+
+
 def _fingerprint_files(root: Path):
     result = {}
     for path in sorted(root.rglob("*")):

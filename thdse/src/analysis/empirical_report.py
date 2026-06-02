@@ -16,6 +16,58 @@ from typing import Any, Dict, List, Optional, Tuple
 import numpy as np
 
 
+def _bounded_resonance_cliques(
+    ids: List[str],
+    matrix: np.ndarray,
+    *,
+    threshold: float,
+    min_size: int = 3,
+    limit: int = 20,
+) -> List[List[str]]:
+    """Return deterministic resonance cliques without exhaustive enumeration."""
+
+    if len(ids) < min_size:
+        return []
+    cliques: List[List[str]] = []
+    seen = set()
+    for seed_idx, seed in enumerate(ids):
+        neighbours = [
+            idx
+            for idx, _sid in enumerate(ids)
+            if idx != seed_idx and float(matrix[seed_idx, idx]) > threshold
+        ]
+        ranked = sorted(
+            neighbours,
+            key=lambda idx: (-float(matrix[seed_idx, idx]), ids[idx]),
+        )
+        clique_indices = [seed_idx]
+        for idx in ranked:
+            if all(float(matrix[idx, existing]) > threshold for existing in clique_indices):
+                clique_indices.append(idx)
+            if len(clique_indices) >= min_size:
+                break
+        if len(clique_indices) < min_size:
+            continue
+        clique = tuple(sorted(ids[idx] for idx in clique_indices))
+        if clique in seen:
+            continue
+        seen.add(clique)
+        cliques.append(list(clique))
+        if len(cliques) >= limit:
+            break
+
+    if not cliques:
+        pair_scores: List[Tuple[float, int, int]] = []
+        for i in range(len(ids)):
+            for j in range(i + 1, len(ids)):
+                pair_scores.append((float(matrix[i, j]), i, j))
+        pair_scores.sort(reverse=True)
+        chosen = sorted({idx for _score, i, j in pair_scores[:min_size] for idx in (i, j)})
+        if len(chosen) >= min_size:
+            cliques.append([ids[idx] for idx in chosen[:min_size]])
+    return cliques
+
+
 def generate_empirical_report(
     output_path: str,
     max_files: int = 300,
@@ -91,10 +143,28 @@ def generate_empirical_report(
 
     # Step 3: Extract cliques of size >= 3
     try:
-        fingerprints = analyzer.interpret_cliques(min_size=3)
+        ids = analyzer.get_ids()
+        raw_cliques = _bounded_resonance_cliques(
+            ids,
+            mat,
+            threshold=synthesizer.tau,
+            min_size=3,
+            limit=20,
+        )
+        from src.analysis.resonance_analyzer import CliqueFingerpint
+        fingerprints = [
+            CliqueFingerpint(
+                clique=list(c),
+                node_types=[],
+                cfg_summary="bounded report sampler",
+                data_dep_summary="bounded report sampler",
+                description=f"Bounded resonance clique of {len(c)} members",
+            )
+            for c in raw_cliques
+        ]
     except ValueError:
         # Arena exhausted during clique interpretation — use raw cliques
-        raw_cliques = synthesizer.extract_cliques(min_size=3)
+        raw_cliques = []
         from src.analysis.resonance_analyzer import CliqueFingerpint
         fingerprints = [
             CliqueFingerpint(

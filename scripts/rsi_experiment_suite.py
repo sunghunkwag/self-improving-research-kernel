@@ -36,6 +36,8 @@ EXCLUDED_FILES = {
     "shared/atom_bank.json",
 }
 
+FULL_TEST_COMMAND: Tuple[str, ...] = ("python", "-m", "pytest", "-q")
+
 
 @dataclass(frozen=True)
 class BenchmarkRepository:
@@ -63,6 +65,7 @@ class ExperimentVariant:
     max_candidates_override: Optional[int] = None
     exploration_policy: str = "conservative"
     exploration_depth: int = 0
+    full_test_required: bool = True
 
 
 @dataclass(frozen=True)
@@ -150,6 +153,9 @@ class ExperimentResult:
     failure_residue_count: int = 0
     quarantine_exploration_count: int = 0
     quarantine_failure_residue_count: int = 0
+    full_test_command: str = " ".join(FULL_TEST_COMMAND)
+    full_test_exit_code: Optional[int] = None
+    full_test_required: bool = True
 
 
 EXTERNAL_ISSUE_FIXTURES: Tuple[ExternalIssueFixtureSpec, ...] = (
@@ -284,7 +290,7 @@ DEFAULT_REPOSITORIES = (
     ),
     BenchmarkRepository(
         name="compact_kernel_repo",
-        description="Minimal repository fixture containing only the closed loop, policy registry, local corpus module, and smoke tests.",
+        description="Full-test-capable disposable repository fixture used for compact task labels.",
     ),
     *(
         BenchmarkRepository(
@@ -343,7 +349,7 @@ DEFAULT_REPOSITORIES = (
 DEFAULT_TASKS = (
     ExperimentTask(
         name="local_corpus_queries_clean",
-        description="Remove accepted local corpus query APIs and measure whether the loop recovers them.",
+        description="Remove accepted local corpus query APIs and measure whether the loop recreates them under full pytest.",
         repositories=("omega_full_repo", "compact_kernel_repo"),
     ),
     ExperimentTask(
@@ -441,7 +447,7 @@ DEFAULT_VARIANTS = (
     ExperimentVariant(
         name="evolutionary_repair_loop",
         family="baseline_evolutionary_repair_loop",
-        description="Baseline: retry candidate repair loop using focused validation without broad gates or persistent self-policy depth.",
+        description="Baseline: retry candidate repair loop without extra broad gates or persistent self-policy depth; final full pytest is still required.",
         broad_gate=False,
         thdse_core_gate=False,
         persistence=False,
@@ -449,9 +455,9 @@ DEFAULT_VARIANTS = (
         max_candidates_override=3,
     ),
     ExperimentVariant(
-        name="focused_only_loop",
+        name="full_suite_no_broad_gate",
         family="ablation_no_broad_gate",
-        description="Ablation: focused tests only, no broad regression gate.",
+        description="Ablation: no extra broad gate; final full pytest remains the promotion gate.",
         broad_gate=False,
         thdse_core_gate=False,
     ),
@@ -528,33 +534,9 @@ def copy_optional_file(src: Path, dst: Path, relative_path: str) -> None:
 
 
 def build_compact_kernel_repo(src: Path, dst: Path) -> None:
-    """Build a small benchmark repository fixture for fast repeated trials."""
+    """Build a full-test-capable disposable repository fixture."""
 
-    dst.mkdir(parents=True, exist_ok=True)
-    for relative_path in (
-        "scripts/closed_recursive_self_improvement_loop.py",
-        "scripts/rsi_policy_registry.py",
-        "shared/__init__.py",
-        "shared/local_corpus.py",
-    ):
-        copy_required_file(src, dst, relative_path)
-    for relative_path in (
-        "shared/capability_benchmarks.py",
-        "shared/capability_primitives.py",
-    ):
-        copy_optional_file(src, dst, relative_path)
-    tests_dir = dst / "tests"
-    tests_dir.mkdir(parents=True, exist_ok=True)
-    (tests_dir / "test_fixture_smoke.py").write_text(
-        "from pathlib import Path\n\n"
-        "from scripts.closed_recursive_self_improvement_loop import ClosedRecursiveSelfImprovementLoop\n"
-        "from shared.local_corpus import LocalCorpusIndex\n\n\n"
-        "def test_compact_fixture_imports_core_surfaces():\n"
-        "    assert LocalCorpusIndex.__name__ == 'LocalCorpusIndex'\n"
-        "    loop = ClosedRecursiveSelfImprovementLoop(Path.cwd())\n"
-        "    assert loop.policy_surface()['available'] is True\n",
-        encoding="utf-8",
-    )
+    copy_repo(src, dst)
 
 
 def build_unseen_schema_transfer_repo(
@@ -581,8 +563,9 @@ def build_unseen_schema_transfer_repo(
     if field_declaration not in text:
         text = text.replace(marker, marker + field_declaration, 1)
     local_corpus.write_text(text, encoding="utf-8")
-    smoke = dst / "tests" / test_name
-    smoke.write_text(
+    fixture_test = dst / "tests" / test_name
+    fixture_test.parent.mkdir(parents=True, exist_ok=True)
+    fixture_test.write_text(
         "from shared.local_corpus import LocalPythonFileRecord\n\n\n"
         "def test_unseen_schema_field_is_present_before_transfer_patch():\n"
         "    record = LocalPythonFileRecord(\n"
@@ -630,6 +613,7 @@ def build_capability_benchmark_repo(
     text = strip_top_level_function(primitives.read_text(encoding="utf-8"), spec.operator)
     primitives.write_text(text, encoding="utf-8")
     test_path = dst / "tests" / f"test_capability_{spec.family}_fixture.py"
+    test_path.parent.mkdir(parents=True, exist_ok=True)
     dynamic_seed = f"{spec.task_name}:dynamic_hidden_v1"
     test_path.write_text(
         f"from shared.capability_benchmarks import capability_cases_for_seed, evaluate_capability_cases\n"
@@ -997,8 +981,10 @@ def build_external_code_transfer_repo(
         "failure_excerpt.txt",
     )
     repair_target = dst / "shared" / "external_repair_target.py"
+    repair_target.parent.mkdir(parents=True, exist_ok=True)
     repair_target.write_text(EXTERNAL_REPAIR_TARGET_SOURCE, encoding="utf-8")
     repair_test = dst / "tests" / "test_external_code_repair_task.py"
+    repair_test.parent.mkdir(parents=True, exist_ok=True)
     repair_test.write_text(EXTERNAL_REPAIR_FIXTURE_TEST, encoding="utf-8")
     metadata = {
         "fixture_kind": "external_code_sandbox_transfer",
@@ -1157,6 +1143,7 @@ def prepare_task(repo: Path, task: ExperimentTask) -> None:
         remove_policy_registry_surface(repo)
     if task.name == "forced_broad_regression":
         failing_test = repo / "tests" / "test_forced_broad_regression_gate.py"
+        failing_test.parent.mkdir(parents=True, exist_ok=True)
         failing_test.write_text(
             "def test_forced_broad_regression_gate():\n"
             "    assert False, 'intentional broad-gate regression for rollback ablation'\n",
@@ -1211,16 +1198,7 @@ def run_command(args: Sequence[str], cwd: Path, timeout_s: int) -> subprocess.Co
 def run_ci_only(repo: Path, timeout_s: int) -> subprocess.CompletedProcess[str]:
     py = sys.executable
     return run_command(
-        [
-            py,
-            "-m",
-            "pytest",
-            "-q",
-            "--import-mode=importlib",
-            "--maxfail=20",
-            "--disable-warnings",
-            "tests",
-        ],
+        [py, "-m", "pytest", "-q"],
         repo,
         timeout_s,
     )
@@ -1285,10 +1263,28 @@ def summarize_gates(records: Iterable[dict]) -> int:
         for gate in record.get("gates", []):
             label = str(gate.get("label", ""))
             if gate.get("exit_code") != 0 and (
-                "root_broad" in label or "thdse_core" in label
+                "root_broad" in label or "thdse_full" in label or "full_pytest" in label
             ):
                 failures += 1
     return failures
+
+
+def record_full_test_exit_code(record: dict) -> Optional[int]:
+    """Return the full pytest exit code from a candidate record."""
+
+    direct = record.get("full_test_exit_code")
+    if direct is not None:
+        return int(direct)
+    for gate in reversed(record.get("gates", [])):
+        label = str(gate.get("label", ""))
+        args = list(gate.get("args", []))
+        if label.endswith("_full_pytest") and len(args) >= 4 and args[-3:] == ["-m", "pytest", "-q"]:
+            return int(gate.get("exit_code", 1))
+    return None
+
+
+def record_has_passing_full_test(record: dict) -> bool:
+    return record_full_test_exit_code(record) == 0
 
 
 def build_result(
@@ -1305,11 +1301,20 @@ def build_result(
 ) -> ExperimentResult:
     summary_path = repo / ".omega_rsi_runs" / "closed_rsi_summary.json"
     summary = read_json(summary_path, {})
-    accepted = list(summary.get("accepted_this_run", []))
+    raw_accepted = list(summary.get("accepted_this_run", []))
+    accepted = [record for record in raw_accepted if record_has_passing_full_test(record)]
     rejected = list(summary.get("rejected_this_run", []))
     quarantine = list(summary.get("quarantine_exploration", []))
     records = [*accepted, *rejected]
-    total_candidates = len(accepted) + len(rejected)
+    total_candidates = len(raw_accepted) + len(rejected)
+    full_test_required = bool(summary.get("full_test_required", variant.full_test_required))
+    full_test_exit_codes = [
+        code
+        for code in (record_full_test_exit_code(record) for record in [*raw_accepted, *rejected])
+        if code is not None
+    ]
+    if not full_test_exit_codes and variant.run_loop is False:
+        full_test_exit_codes = [int(proc.returncode)]
     changed = changed_files(before, after)
     rollback_correct: Optional[bool] = None
     if variant.rollback and rejected and not accepted:
@@ -1359,6 +1364,9 @@ def build_result(
         failure_residue_count=sum(1 for record in records if record.get("failure_residue")),
         quarantine_exploration_count=len(quarantine),
         quarantine_failure_residue_count=sum(1 for record in quarantine if record.get("failure_residue")),
+        full_test_command=str(summary.get("full_test_command") or " ".join(FULL_TEST_COMMAND)),
+        full_test_exit_code=full_test_exit_codes[-1] if full_test_exit_codes else None,
+        full_test_required=full_test_required,
     )
 
 
@@ -1421,6 +1429,15 @@ def aggregate_results(results: Sequence[ExperimentResult]) -> List[Dict[str, obj
                 "quarantine_failure_residue_count_mean": mean(
                     [float(row.quarantine_failure_residue_count) for row in rows]
                 ),
+                "full_test_required": all(row.full_test_required for row in rows),
+                "full_test_success_rate": mean(
+                    [
+                        1.0 if row.full_test_exit_code == 0 else 0.0
+                        for row in rows
+                        if row.full_test_exit_code is not None
+                    ]
+                ),
+                "full_test_command": rows[0].full_test_command,
             }
         )
     return aggregates
@@ -1486,10 +1503,11 @@ def build_baseline_comparisons(aggregates: Sequence[Dict[str, object]]) -> List[
         agent = next((row for row in baselines if row.get("variant") == "agent_coding_loop"), None)
         ci_only = next((row for row in baselines if row.get("variant") == "ci_only_validation"), None)
         no_rollback = next((row for row in ablations if row.get("variant") == "no_rollback"), None)
-        no_broad = next((row for row in ablations if row.get("variant") == "focused_only_loop"), None)
+        no_broad = next((row for row in ablations if row.get("variant") == "full_suite_no_broad_gate"), None)
 
         proposed_acceptance = _float_value(proposed, "accepted_rate_mean")
         proposed_depth = _float_value(proposed, "improvement_depth_mean")
+        proposed_full_test_success = _float_value(proposed, "full_test_success_rate")
         best_baseline_acceptance = (
             _float_value(best_baseline, "accepted_rate_mean") if best_baseline else 0.0
         )
@@ -1516,15 +1534,18 @@ def build_baseline_comparisons(aggregates: Sequence[Dict[str, object]]) -> List[
             proposed.get("repository_split") == "unseen"
             and proposed_acceptance > 0.0
             and proposed_depth > 0.0
+            and proposed_full_test_success > 0.0
         )
         external_transfer_success = (
             proposed.get("repository_split") == "external_unseen"
             and proposed_acceptance > 0.0
             and proposed_depth > agent_depth
+            and proposed_full_test_success > 0.0
         )
         external_code_transfer_success = (
             proposed.get("repository_split") == "external_code_unseen"
             and proposed_acceptance > 0.0
+            and proposed_full_test_success > 0.0
             and (
                 _float_value(proposed, "solved_new_tasks_mean") > 0.0
                 or proposed_depth > agent_depth
@@ -1533,6 +1554,7 @@ def build_baseline_comparisons(aggregates: Sequence[Dict[str, object]]) -> List[
         capability_transfer_success = (
             proposed.get("repository_split") == "capability_unseen"
             and proposed_acceptance > 0.0
+            and proposed_full_test_success > 0.0
             and _float_value(proposed, "solved_new_tasks_mean") > 0.0
         )
 
@@ -1595,26 +1617,28 @@ def write_markdown_reports(output_dir: Path, results: List[ExperimentResult]) ->
     aggregates = aggregate_results(results)
     comparisons = build_baseline_comparisons(aggregates)
     table_lines = [
-        "| Repository | Split | Task | Variant | Repeat | Accepted | Rejected | Rate | Regression Failures | Rollback Correct | Seconds |",
-        "|---|---|---|---:|---:|---:|---:|---:|---:|---:|---:|",
+        "| Repository | Split | Task | Variant | Repeat | Accepted | Rejected | Rate | Full Test | Regression Failures | Rollback Correct | Seconds |",
+        "|---|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
     ]
     for result in results:
         rollback = "n/a" if result.rollback_correct is None else str(result.rollback_correct)
+        full_test = "n/a" if result.full_test_exit_code is None else str(result.full_test_exit_code)
         table_lines.append(
             f"| {result.repository} | {result.repository_split} | {result.task} | {result.variant} | {result.repeat_index} | {result.accepted_count} | "
             f"{result.rejected_count} | {result.accepted_rate:.2f} | "
-            f"{result.regression_gate_failures} | {rollback} | {result.elapsed_s:.2f} |"
+            f"{full_test} | {result.regression_gate_failures} | {rollback} | {result.elapsed_s:.2f} |"
         )
 
     aggregate_lines = [
-        "| Repository | Split | Task | Variant | Trials | Accepted Rate Mean | Regression Failures Mean | Rollback Success | Depth Mean | Seconds Mean |",
-        "|---|---|---|---:|---:|---:|---:|---:|---:|---:|",
+        "| Repository | Split | Task | Variant | Trials | Accepted Rate Mean | Full Test Success | Regression Failures Mean | Rollback Success | Depth Mean | Seconds Mean |",
+        "|---|---|---|---:|---:|---:|---:|---:|---:|---:|---:|",
     ]
     for row in aggregates:
         rollback = "n/a" if row["rollback_success_rate"] is None else f"{float(row['rollback_success_rate']):.2f}"
         aggregate_lines.append(
             f"| {row['repository']} | {row['repository_split']} | {row['task']} | {row['variant']} | {row['trial_count']} | "
-            f"{float(row['accepted_rate_mean']):.2f} | {float(row['regression_gate_failures_mean']):.2f} | "
+            f"{float(row['accepted_rate_mean']):.2f} | {float(row['full_test_success_rate']):.2f} | "
+            f"{float(row['regression_gate_failures_mean']):.2f} | "
             f"{rollback} | {float(row['improvement_depth_mean']):.2f} | {float(row['cost_proxy_seconds_mean']):.2f} |"
         )
 
@@ -1670,7 +1694,8 @@ def write_markdown_reports(output_dir: Path, results: List[ExperimentResult]) ->
         "- CapabilityDelta scoring records solved tasks, hidden transfer, regression protection, operator reuse, and compute cost.",
         "- Failure residue extraction records missing operators, missing abstractions, failed evaluators, and overfit signals.",
         "- Capability fixtures include algorithm synthesis, symbolic reasoning, grid transformation, bug repair, and planning/state transitions.",
-        "- Broad gates reduce regression risk relative to focused-only ablations.",
+        "- Candidate promotion and success accounting require the full `python -m pytest -q` suite.",
+        "- Focused diagnostics and extra broad gates cannot mark a candidate successful without full pytest.",
         "- Rollback behavior is measurable on forced broad-gate rejection tasks.",
         "- Persistence can be ablated to show that resume depth depends on durable state.",
         "- The policy registry candidate turns the loop's generator, validator, patch, and safety policies into a measurable surface.",
@@ -1693,6 +1718,7 @@ def write_markdown_reports(output_dir: Path, results: List[ExperimentResult]) ->
         "- `external_transfer_success`: the loop patches a fixture schema extracted from actual external repository issue metadata.",
         "- `external_code_transfer_success`: the loop patches a fixture schema extracted from bounded external source-code snippets and issue failure excerpts.",
         "- `capability_transfer_success`: the loop synthesizes a reusable primitive that solves executable public and hidden capability cases.",
+        "- All success outcomes require a recorded passing full `python -m pytest -q` result.",
         "- `tie_or_frontier_match`: the proposed loop matches the best baseline on this metric but does not dominate it.",
         "- `baseline_stronger_or_inconclusive`: the current evidence does not support a proposed-loop win.",
     ]
@@ -1731,7 +1757,7 @@ def write_markdown_reports(output_dir: Path, results: List[ExperimentResult]) ->
         "- Accepted and rejected records are persisted as JSON provenance.",
         "- Benchmark trials run inside isolated disposable repository fixtures.",
         "- Dangerous ablations such as no rollback run only in disposable experiment copies.",
-        "- The main workflow commits only accepted state and validated source changes.",
+        "- The main workflow commits only accepted state and source changes validated by full pytest.",
     ]
     (output_dir / "safety_model.md").write_text("\n".join(safety) + "\n", encoding="utf-8")
 

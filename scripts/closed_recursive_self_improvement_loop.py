@@ -8,7 +8,7 @@ OMEGA-THDSE source tree:
 2. Invent a measurable improvement goal from missing project capability.
 3. Generate a concrete source patch and matching regression test.
 4. Apply the patch to real files.
-5. Run compile, focused tests, and optional broader gates.
+5. Run compile, focused diagnostics, and the full pytest suite.
 6. Promote only passing candidates; rollback failures.
 7. Persist accepted/rejected records so the next generation starts from
    the latest accepted base.
@@ -47,6 +47,7 @@ from shared.capability_benchmarks import (
 
 
 Transform = Callable[[str], str]
+FULL_TEST_COMMAND: Tuple[str, ...] = ("python", "-m", "pytest", "-q")
 
 
 @dataclass(frozen=True)
@@ -113,6 +114,9 @@ class CandidateRecord:
     quarantine: bool = False
     promoted: bool = False
     chain_depth: int = 0
+    full_test_command: str = " ".join(FULL_TEST_COMMAND)
+    full_test_exit_code: Optional[int] = None
+    full_test_required: bool = True
 
 
 @dataclass(frozen=True)
@@ -186,6 +190,28 @@ def candidate_compute_cost(gates: Sequence[GateResult]) -> float:
     return round(sum(float(gate.elapsed_s) for gate in gates), 3)
 
 
+def is_full_test_gate(gate: GateResult | Dict[str, object]) -> bool:
+    """Return whether a gate ran the required full repository pytest command."""
+
+    label = str(gate.label if isinstance(gate, GateResult) else gate.get("label", ""))
+    args = list(gate.args if isinstance(gate, GateResult) else gate.get("args", []))
+    return label.endswith("_full_pytest") and len(args) >= 4 and args[-3:] == ["-m", "pytest", "-q"]
+
+
+def full_test_exit_code(gates: Sequence[GateResult]) -> Optional[int]:
+    """Return the final full pytest exit code from a candidate gate list."""
+
+    for gate in reversed(gates):
+        if is_full_test_gate(gate):
+            return int(gate.exit_code)
+    return None
+
+
+def full_test_passed(gates: Sequence[GateResult]) -> bool:
+    exit_code = full_test_exit_code(gates)
+    return exit_code == 0
+
+
 def candidate_capability_delta(
     candidate: CandidatePatch,
     *,
@@ -200,7 +226,12 @@ def candidate_capability_delta(
     regression_failures = sum(
         1
         for gate in gates
-        if gate.exit_code != 0 and ("root_broad" in gate.label or "thdse_core" in gate.label)
+        if gate.exit_code != 0
+        and (
+            "root_broad" in gate.label
+            or "thdse_full" in gate.label
+            or is_full_test_gate(gate)
+        )
     )
     operator_reuse = len(
         {
@@ -1173,10 +1204,10 @@ def default_policy_capabilities() -> Tuple[PolicyCapability, ...]:
             risk_control="future candidate ranking can use failure residue instead of retrying blind",
         ),
         PolicyCapability(
-            name="compile_focused_broad_validation",
+            name="compile_diagnostic_full_pytest_validation",
             category="validator",
-            evidence="candidates must pass py_compile, focused pytest, root pytest, and THDSE core gates",
-            risk_control="failed gates prevent promotion",
+            evidence="candidates may run focused diagnostics, but promotion requires the full python -m pytest -q suite",
+            risk_control="diagnostic-only checks and selected-file subsets cannot mark a candidate successful",
         ),
         PolicyCapability(
             name="atomic_patch_with_extra_files",
@@ -1544,51 +1575,46 @@ class ClosedRecursiveSelfImprovementLoop:
                 self.repo_root,
             )
         ]
-        gates.append(
-            self.run_command(
-                f"{candidate.name}_focused",
-                [
-                    py,
-                    "-m",
-                    "pytest",
-                    "-q",
-                    "--import-mode=importlib",
-                    "--maxfail=5",
-                    "--disable-warnings",
-                    *candidate.focused_tests,
-                ],
-                self.repo_root,
+        if candidate.focused_tests:
+            gates.append(
+                self.run_command(
+                    f"{candidate.name}_focused",
+                    [
+                        py,
+                        "-m",
+                        "pytest",
+                        "-q",
+                        "--import-mode=importlib",
+                        "--maxfail=5",
+                        "--disable-warnings",
+                        *candidate.focused_tests,
+                    ],
+                    self.repo_root,
+                )
             )
-        )
         capability_gate = self.capability_evaluator_gate(candidate)
         if capability_gate is not None:
             gates.append(capability_gate)
+        gates.append(
+            self.run_command(
+                f"{candidate.name}_full_pytest",
+                [py, "-m", "pytest", "-q"],
+                self.repo_root,
+            )
+        )
         if self.broad_gate:
             gates.append(
                 self.run_command(
                     f"{candidate.name}_root_broad",
-                    [py, "-m", "pytest", "-q", "--import-mode=importlib", "--maxfail=20", "--disable-warnings", "tests"],
+                    [py, "-m", "pytest", "-q"],
                     self.repo_root,
                 )
             )
             if self.thdse_core_gate and self.thdse_root.exists():
                 gates.append(
                     self.run_command(
-                        f"{candidate.name}_thdse_core",
-                        [
-                            py,
-                            "-m",
-                            "pytest",
-                            "-q",
-                            "--import-mode=importlib",
-                            "--maxfail=20",
-                            "--disable-warnings",
-                            "tests/test_execution_sandbox.py",
-                            "tests/test_adaptive_threshold.py",
-                            "tests/test_direct_io_scoring.py",
-                            "tests/test_structural_diff.py",
-                            "tests/test_batch_correlation.py",
-                        ],
+                        f"{candidate.name}_thdse_full",
+                        [py, "-m", "pytest", "-q"],
                         self.thdse_root,
                     )
                 )
@@ -1629,7 +1655,7 @@ class ClosedRecursiveSelfImprovementLoop:
                 gates.append(anti_cheat)
                 raise RuntimeError("anti-cheat validation failed")
             if self.dry_run:
-                accepted = True
+                raise RuntimeError("dry run cannot promote without full pytest")
             else:
                 candidate.target_path.write_text(rewritten, encoding="utf-8")
                 candidate.test_path.parent.mkdir(parents=True, exist_ok=True)
@@ -1638,14 +1664,17 @@ class ClosedRecursiveSelfImprovementLoop:
                     path.parent.mkdir(parents=True, exist_ok=True)
                     path.write_text(source, encoding="utf-8")
                 gates = self.validate(candidate)
+                full_exit = full_test_exit_code(gates)
                 capability_delta = candidate_capability_delta(
                     candidate,
-                    accepted=all(gate.exit_code == 0 for gate in gates),
+                    accepted=full_exit == 0 and all(gate.exit_code == 0 for gate in gates),
                     gates=gates,
                     evaluations=self.capability_evaluations(candidate),
                 )
-                accepted = all(gate.exit_code == 0 for gate in gates)
+                accepted = full_exit == 0 and all(gate.exit_code == 0 for gate in gates)
                 if not accepted:
+                    if full_exit is None:
+                        raise RuntimeError("full pytest gate did not run")
                     raise RuntimeError("one or more validation gates failed")
             if accepted and not candidate.generator_improvement:
                 raise RuntimeError("accepted candidate lacks generator improvement evidence")
@@ -1689,6 +1718,7 @@ class ClosedRecursiveSelfImprovementLoop:
             operator_synthesis=[dict(spec) for spec in candidate.operator_specs],
             generator_improvement=dict(candidate.generator_improvement),
             promoted=accepted,
+            full_test_exit_code=full_test_exit_code(gates),
         )
 
     def exploration_enabled(self) -> bool:
@@ -1835,6 +1865,11 @@ class ClosedRecursiveSelfImprovementLoop:
                 self.save_state(state)
 
         run_records = [*accepted_this_run, *rejected_this_run]
+        full_test_exit_codes = [
+            int(record["full_test_exit_code"])
+            for record in run_records
+            if record.get("full_test_exit_code") is not None
+        ]
         summary = {
             "dry_run": self.dry_run,
             "broad_gate": self.broad_gate,
@@ -1843,6 +1878,10 @@ class ClosedRecursiveSelfImprovementLoop:
             "persistence": self.persistence,
             "exploration_policy": self.exploration_policy,
             "exploration_depth": self.exploration_depth,
+            "full_test_command": " ".join(FULL_TEST_COMMAND),
+            "full_test_required": True,
+            "full_test_exit_code": full_test_exit_codes[-1] if full_test_exit_codes else None,
+            "full_test_ran": bool(full_test_exit_codes),
             "state_path": str(self.state_path),
             "accepted_this_run": accepted_this_run,
             "rejected_this_run": rejected_this_run,

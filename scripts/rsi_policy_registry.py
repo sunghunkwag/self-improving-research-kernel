@@ -80,10 +80,10 @@ def default_policy_capabilities() -> Tuple[PolicyCapability, ...]:
             risk_control="self-limit layers are descriptive evidence requests, not automatic patch approvals",
         ),
         PolicyCapability(
-            name="compile_focused_broad_validation",
+            name="compile_diagnostic_full_pytest_validation",
             category="validator",
-            evidence="candidates must pass py_compile, focused pytest, root pytest, and THDSE core gates",
-            risk_control="failed gates prevent promotion",
+            evidence="candidates may run focused diagnostics, but promotion requires the full python -m pytest -q suite",
+            risk_control="diagnostic-only checks and selected-file subsets cannot mark a candidate successful",
         ),
         PolicyCapability(
             name="atomic_patch_with_extra_files",

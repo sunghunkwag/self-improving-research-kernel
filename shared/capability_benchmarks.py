@@ -694,6 +694,10 @@ def detect_anti_cheat_findings(
                 "if self.broad_gate" in before and "if self.broad_gate" not in after
             ) or (
                 "--broad-gate" in before and "--broad-gate" not in after
+            ) or (
+                "full_pytest" in before and "full_pytest" not in after
+            ) or (
+                "full_test_required" in before and "full_test_required" not in after
             )
             if broad_removed or re.search(r"BYPASS|SKIP|DISABLE", introduced, flags=re.IGNORECASE) and "gate" in introduced.lower():
                 findings.append(
@@ -847,7 +851,11 @@ def extract_failure_residue(
         for gate in gates
     )
     broad_failed = any(
-        ("root_broad" in str(gate.get("label", "")) or "thdse_core" in str(gate.get("label", "")))
+        (
+            "root_broad" in str(gate.get("label", ""))
+            or "thdse_full" in str(gate.get("label", ""))
+            or "full_pytest" in str(gate.get("label", ""))
+        )
         and int(gate.get("exit_code", 0) or 0) != 0
         for gate in gates
     )
@@ -873,7 +881,7 @@ def extract_failure_residue(
     elif "AssertionError" in text:
         next_hypothesis = "derive a more general invariant from the counterexample"
     else:
-        next_hypothesis = "collect a narrower failing gate and synthesize a targeted follow-up candidate"
+        next_hypothesis = "collect a specific failing gate and synthesize a targeted follow-up candidate"
 
     return FailureResidue(
         candidate_name=candidate_name,
