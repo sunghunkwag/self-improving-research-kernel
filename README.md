@@ -12,8 +12,8 @@ and testable:
    history.
 4. Generate real source patches and matching regression tests.
 5. Apply one candidate at a time.
-6. Verify candidates with compile checks, pytest, and Z3-backed gates where
-   the test suite requires Z3.
+6. Verify candidates with compile diagnostics, evaluator gates, and the full
+   executable pytest suite.
 7. Keep only accepted candidates in the working tree.
 8. Roll back rejected candidates.
 9. Persist accepted and rejected JSON records.
@@ -33,6 +33,20 @@ The loop writes persistent state under `.omega_rsi_runs/`:
 - `closed_rsi_summary.json`: summary for the latest run
 - `STOP_CLOSED_RSI`: optional kill-switch file
 
+## Full-Test-Only Validation
+
+Closed-loop success requires the full repository test command:
+
+```bash
+python -m pytest -q
+```
+
+Focused tests may run earlier as diagnostics, but they cannot accept a
+candidate, promote a patch, or count as experiment success. Broad validation
+also runs the same full pytest command. Rejected candidates are rolled back and
+record structured failure residue; only candidates with executable behavior and
+a passing full suite can remain in the working tree.
+
 ## Autonomous Generator Surface
 
 The generator is not an unbounded code-writing agent. It is a bounded planner
@@ -48,7 +62,7 @@ that now combines:
   missing operator, missing abstraction, failed evaluator, and overfit signal
 - generated regression tests for inferred query APIs
 - history-aware candidate ranking from accepted/rejected provenance
-- existing broad gates, rollback, and kill-switch controls
+- full-suite validation, rollback, and kill-switch controls
 
 This makes candidate discovery less dependent on hand-coded candidate names
 while keeping every patch deterministic, reviewable, and gate-verified.
@@ -65,9 +79,10 @@ schema-query repair:
 - planning/state transition tasks
 
 Each capability fixture removes one reusable primitive from
-`shared/capability_primitives.py` and adds public plus hidden transfer
-counterexamples. The loop must synthesize the primitive, generate a focused
-counterexample test, and pass normal validation before promotion.
+`shared/capability_primitives.py` and adds public plus seed-derived hidden
+transfer counterexamples. The loop must synthesize the primitive, generate
+diagnostic counterexample tests where useful, and pass the full repository
+pytest suite before promotion.
 
 ## External Grounding
 
@@ -160,7 +175,7 @@ Default cloud settings:
 - Python 3.11
 - 90 minute wall-clock budget
 - 130 minute job timeout
-- broad pytest gate enabled
+- full pytest promotion gate enabled
 - candidate rollback on failure
 - commit and push only when the loop leaves validated changes or JSON state
 
@@ -177,7 +192,7 @@ repository fixtures and repeated trials:
 - baseline and ablation metrics
 - accepted/rejected candidate rates
 - rollback correctness checks
-- broad-gate regression counts
+- full-suite regression counts
 - wall-clock cost proxies
 - improvement depth
 - per-trial seeds and aggregate metrics
@@ -198,7 +213,7 @@ Additional evidence artifacts:
 - `reports/rsi_experiments/evidence_index.md`: index of repeated, transfer,
   baseline, ablation, and failure-analysis evidence
 - `reports/rsi_experiments/unseen_transfer/latest/`: held-out schema-transfer
-  smoke matrix with three repeated trials per variant
+  matrix with three repeated trials per variant
 - `reports/rsi_experiments/unseen_multi_transfer/latest/`: four held-out
   schema-transfer fixtures across generic, security, science, and control
   domains
@@ -209,8 +224,7 @@ Additional evidence artifacts:
   failure-excerpt sandbox fixtures from the same real external repositories
 - `reports/rsi_experiments/external_code_transfer/latest/`: transfer matrix
   over the external code sandbox fixtures
-- `reports/rsi_experiments/recovery/latest/`: narrow Actions recovery runs
-  used to verify workflow health without overwriting the full matrix
+- full-test command and exit-code evidence for every counted successful result
 
 External code sandbox fixtures now include a local executable repair target in
 the disposable repository. The external source and failure excerpts remain
