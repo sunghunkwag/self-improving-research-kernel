@@ -19,6 +19,7 @@ from scripts.rsi_experiment_suite import (
     remove_policy_registry_surface,
     repository_fingerprint,
     run_ci_only,
+    stable_paired_seed,
     stable_trial_seed,
     strip_method,
     strip_top_level_function,
@@ -155,6 +156,15 @@ def test_stable_trial_seed_changes_by_repeat():
     assert first != second
 
 
+def test_stable_paired_seed_is_shared_across_variants():
+    first = stable_paired_seed("repo", "task", 0)
+    second = stable_paired_seed("repo", "task", 1)
+
+    assert first == stable_paired_seed("repo", "task", 0)
+    assert first != second
+    assert first != stable_trial_seed("repo", "task", "verified_closed_loop", 0)
+
+
 def test_compact_benchmark_repository_builder_creates_full_test_capable_repo_without_smoke(tmp_path):
     source = tmp_path / "source"
     target = tmp_path / "target"
@@ -237,6 +247,43 @@ def test_unseen_domain_transfer_repositories_add_distinct_tuple_fields(tmp_path)
         assert f"{field_name}: Tuple[str, ...] = ()" in text
 
 
+def test_composite_unseen_transfer_repository_requires_multiple_query_surfaces(tmp_path):
+    source = tmp_path / "source"
+    target = tmp_path / "target"
+    (source / "scripts").mkdir(parents=True)
+    (source / "shared").mkdir()
+    (source / "scripts" / "closed_recursive_self_improvement_loop.py").write_text("", encoding="utf-8")
+    (source / "scripts" / "rsi_policy_registry.py").write_text("", encoding="utf-8")
+    (source / "shared" / "__init__.py").write_text("", encoding="utf-8")
+    (source / "shared" / "local_corpus.py").write_text(
+        "from dataclasses import dataclass\n"
+        "from typing import Tuple\n\n"
+        "@dataclass(frozen=True)\n"
+        "class LocalPythonFileRecord:\n"
+        "    feature_flags: Tuple[str, ...] = ()\n",
+        encoding="utf-8",
+    )
+
+    repository = next(
+        item for item in DEFAULT_REPOSITORIES if item.name == "composite_unseen_schema_transfer_repo"
+    )
+    build_benchmark_repo(source, target, repository)
+
+    text = (target / "shared" / "local_corpus.py").read_text(encoding="utf-8")
+    manifest = __import__("json").loads((target / "schema_transfer_manifest.json").read_text(encoding="utf-8"))
+    test_text = (target / "tests" / "test_composite_unseen_schema_transfer_repo.py").read_text(
+        encoding="utf-8"
+    )
+
+    assert repository.split == "unseen"
+    assert "static_roles: Tuple[str, ...] = ()" in text
+    assert "threat_labels: Tuple[str, ...] = ()" in text
+    assert manifest["fixture_kind"] == "composite_schema_transfer"
+    assert len(manifest["fields"]) == 4
+    assert "records_with_static_role" in test_text
+    assert "records_with_controller_mode" in test_text
+
+
 def test_capability_benchmark_repository_creates_missing_operator_fixture(tmp_path):
     source = tmp_path / "source"
     target = tmp_path / "target"
@@ -275,8 +322,10 @@ def test_capability_benchmark_repository_creates_missing_operator_fixture(tmp_pa
     assert "def run_length_encode" not in text
     assert "def infer_linear_rule" in text
     assert metadata["operator"] == "run_length_encode"
+    assert metadata["held_out_reference_sha256"]
     assert metadata["dynamic_seed"] == "capability_algorithm_synthesis:dynamic_hidden_v1"
     assert "seeded_dynamic_hidden_counterexamples" in metadata["safety_controls"]
+    assert "held_out_reference_hash_rejection" in metadata["safety_controls"]
     assert "capability_cases_for_seed" in (target / "tests" / "test_capability_algorithm_synthesis_fixture.py").read_text(
         encoding="utf-8"
     )

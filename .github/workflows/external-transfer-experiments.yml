@@ -6,7 +6,7 @@ on:
       repeats:
         description: Repeated trials per external repository/task/variant cell.
         required: true
-        default: "2"
+        default: "10"
       max_generations:
         description: Maximum loop generations per experiment run.
         required: true
@@ -14,7 +14,7 @@ on:
       max_candidates:
         description: Maximum candidates per generation.
         required: true
-        default: "3"
+        default: "4"
 
 permissions:
   contents: write
@@ -26,9 +26,9 @@ concurrency:
 
 jobs:
   external-transfer:
-    name: Actual external issue transfer matrix
+    name: Powered external issue transfer cell
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 90
 
     env:
       OMEGA_THDSE_ENABLE_RUST: "0"
@@ -86,18 +86,14 @@ jobs:
           python scripts/rsi_experiment_suite.py \
             --repo-root "$GITHUB_WORKSPACE" \
             --output-dir "$GITHUB_WORKSPACE/reports/rsi_experiments/external_transfer/latest" \
-            --repository external_requests_issue_transfer_repo \
-            --repository external_hypothesis_issue_transfer_repo \
-            --repository external_pandas_issue_transfer_repo \
-            --repository external_dask_issue_transfer_repo \
+            --repository composite_external_issue_transfer_repo \
             --variant verified_closed_loop \
-            --variant agent_coding_loop \
-            --variant ci_only_validation \
+            --variant evolutionary_repair_loop \
             --repeats "${{ inputs.repeats }}" \
             --max-generations "${{ inputs.max_generations }}" \
             --max-candidates "${{ inputs.max_candidates }}" \
-            --wall-seconds 120 \
-            --timeout-seconds 60
+            --wall-seconds 240 \
+            --timeout-seconds 180
 
       - name: Show external transfer scorecard
         if: always()

@@ -90,6 +90,7 @@ class CandidatePatch:
     capability_family: str = ""
     operator_specs: Tuple[Dict[str, object], ...] = field(default_factory=tuple)
     generator_improvement: Dict[str, object] = field(default_factory=dict)
+    schema_fields: Tuple[str, ...] = field(default_factory=tuple)
 
 
 @dataclass
@@ -317,6 +318,27 @@ def load_capability_operators(source_path: Path, operator_names: Sequence[str]) 
         for name in operator_names
         if callable(namespace.get(name))
     }
+
+
+def top_level_function_source(text: str, function_name: str) -> str:
+    """Return source for one top-level function, or an empty string."""
+
+    try:
+        tree = ast.parse(text)
+    except SyntaxError:
+        return ""
+    lines = text.splitlines()
+    for node in tree.body if isinstance(tree, ast.Module) else []:
+        if isinstance(node, ast.FunctionDef) and node.name == function_name:
+            end_lineno = getattr(node, "end_lineno", None)
+            if end_lineno is None:
+                return ""
+            return "\n".join(lines[node.lineno - 1 : end_lineno]).rstrip() + "\n"
+    return ""
+
+
+def source_sha256(text: str) -> str:
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
 def quarantine_ignore(_directory: str, names: List[str]) -> List[str]:
@@ -609,6 +631,135 @@ def test_{blueprint.method_name}_filters_{blueprint.field_name}():
 '''
 
 
+def canonical_query_blueprints_for_schema(
+    text: str,
+    *,
+    state: Optional[dict] = None,
+) -> Tuple[AutonomousQueryBlueprint, ...]:
+    """Return one canonical missing query blueprint per tuple-valued field."""
+
+    candidates = discover_local_corpus_query_blueprints(text, state=state, max_hypotheses=64)
+    selected: Dict[str, AutonomousQueryBlueprint] = {}
+    for blueprint in candidates:
+        if blueprint.strategy != "tuple_membership":
+            continue
+        selected.setdefault(blueprint.field_name, blueprint)
+    return tuple(selected[field] for field in sorted(selected))
+
+
+def build_schema_batch_query_test(blueprints: Sequence[AutonomousQueryBlueprint]) -> str:
+    """Build a focused regression test for a multi-field schema query patch."""
+
+    field_lines = []
+    assertion_lines = []
+    for index, blueprint in enumerate(blueprints):
+        field_lines.append(
+            f"            {blueprint.field_name}=(\"{blueprint.sample_value}\",),"
+        )
+        assertion_lines.append(
+            f"    assert tuple(record.path for record in index.{blueprint.method_name}(\"{blueprint.sample_value}\")) == (\"record_{index}.py\",)"
+        )
+    records = []
+    for index, blueprint in enumerate(blueprints):
+        records.append(
+            "\n".join(
+                [
+                    "        LocalPythonFileRecord(",
+                    f"            path=\"record_{index}.py\",",
+                    f"            sha256=\"{index}\",",
+                    "            size_bytes=1,",
+                    "            line_count=1,",
+                    "            syntax_ok=True,",
+                    f"            {blueprint.field_name}=(\"{blueprint.sample_value}\",),",
+                    "        ),",
+                ]
+            )
+        )
+    return f'''from shared.local_corpus import LocalCorpusIndex, LocalCorpusSummary, LocalPythonFileRecord
+
+
+def test_recursive_schema_batch_queries_filter_all_declared_fields():
+    records = (
+{chr(10).join(records)}
+    )
+    index = LocalCorpusIndex(
+        summary=LocalCorpusSummary(
+            file_count=len(records),
+            syntax_ok_count=len(records),
+            syntax_error_count=0,
+            unique_sha256_count=len(records),
+            duplicate_file_instances=0,
+            feature_counts={{}},
+            import_edge_count=0,
+            definition_count=0,
+        ),
+        records=records,
+        import_edges=(),
+    )
+
+{chr(10).join(assertion_lines)}
+'''
+
+
+def add_schema_batch_record_queries(text: str, blueprints: Sequence[AutonomousQueryBlueprint]) -> str:
+    """Insert every missing canonical query method for a schema-transfer fixture."""
+
+    rewritten = text
+    for blueprint in blueprints:
+        rewritten = add_autonomous_record_query(rewritten, blueprint)
+    return rewritten
+
+
+def schema_batch_query_candidates(
+    repo_root: Path,
+    generation: int,
+    *,
+    state: Optional[dict] = None,
+) -> List[CandidatePatch]:
+    """Plan a general multi-field schema-transfer patch when a fixture demands it."""
+
+    manifest = repo_root / "schema_transfer_manifest.json"
+    if not manifest.exists():
+        return []
+    local_corpus = repo_root / "shared" / "local_corpus.py"
+    if not local_corpus.exists():
+        return []
+    text = local_corpus.read_text(encoding="utf-8")
+    blueprints = canonical_query_blueprints_for_schema(text, state=state)
+    if len(blueprints) < 2:
+        return []
+    field_names = tuple(blueprint.field_name for blueprint in blueprints)
+    method_names = ", ".join(blueprint.method_name for blueprint in blueprints)
+    return [
+        CandidatePatch(
+            name="recursive_schema_batch_query_transfer_v1",
+            generation=generation,
+            goal=Goal(
+                name="repair_composite_schema_transfer_surface",
+                target="shared.local_corpus.LocalCorpusIndex",
+                metric="all held-out tuple fields gain general membership queries in one full-suite patch",
+                rationale=(
+                    "A composite transfer fixture requires a general schema-level repair; "
+                    "single-field partial repairs cannot pass the unmodified full test suite."
+                ),
+            ),
+            target_path=local_corpus,
+            test_path=repo_root / "tests" / "test_recursive_schema_batch_query_transfer_v1.py",
+            transform=lambda source, plans=blueprints: add_schema_batch_record_queries(source, plans),
+            test_source=build_schema_batch_query_test(blueprints),
+            focused_tests=("tests/test_recursive_schema_batch_query_transfer_v1.py",),
+            capability_family="schema_query_batch_repair",
+            operator_specs=operator_specs_for("schema_query_batch_repair", "schema_tuple_membership_batch"),
+            generator_improvement=generator_feedback(
+                "schema-level transfer planner",
+                "synthesizes a reusable batch of tuple-membership query operators from dataclass schema",
+                f"one candidate repairs {len(blueprints)} missing query surfaces: {method_names}",
+            ),
+            schema_fields=field_names,
+        )
+    ]
+
+
 def autonomous_local_corpus_candidates(
     repo_root: Path,
     generation: int,
@@ -645,6 +796,7 @@ def autonomous_local_corpus_candidates(
                     "adds a reusable tuple-membership operator surface inferred from dataclass fields",
                     f"{blueprint.method_name} is generated from {blueprint.field_name} and locked by a focused test",
                 ),
+                schema_fields=(blueprint.field_name,),
             )
         )
     return candidates
@@ -876,15 +1028,14 @@ CAPABILITY_OPERATOR_BLUEPRINTS: Tuple[CapabilityOperatorBlueprint, ...] = (
         implementation_source='''def run_length_encode(items):
     """Return adjacent value/count pairs for a sequence."""
 
+    iterator = iter(items)
+    try:
+        current = next(iterator)
+    except StopIteration:
+        return ()
     encoded = []
-    marker = object()
-    current = marker
-    count = 0
-    for item in items:
-        if count == 0:
-            current = item
-            count = 1
-            continue
+    count = 1
+    for item in iterator:
         if item == current:
             count += 1
             continue
@@ -905,13 +1056,14 @@ CAPABILITY_OPERATOR_BLUEPRINTS: Tuple[CapabilityOperatorBlueprint, ...] = (
         implementation_source='''def infer_linear_rule(values):
     """Infer a constant-step sequence rule and its next value."""
 
-    if len(values) < 2:
+    sequence = tuple(values)
+    if len(sequence) < 2:
         raise ValueError("at least two values are required")
-    step = values[1] - values[0]
-    for left, right in zip(values, values[1:]):
-        if right - left != step:
-            raise ValueError("values do not form a linear rule")
-    return {"start": values[0], "step": step, "next": values[-1] + step}
+    deltas = tuple(right - left for left, right in zip(sequence, sequence[1:]))
+    step = deltas[0]
+    if any(delta != step for delta in deltas):
+        raise ValueError("values do not form a linear rule")
+    return {"start": sequence[0], "step": step, "next": sequence[-1] + step}
 ''',
         public_assertion="assert infer_linear_rule((2, 5, 8, 11)) == {'start': 2, 'step': 3, 'next': 14}",
         hidden_assertion="assert infer_linear_rule((-3, -1, 1)) == {'start': -3, 'step': 2, 'next': 3}",
@@ -929,7 +1081,7 @@ CAPABILITY_OPERATOR_BLUEPRINTS: Tuple[CapabilityOperatorBlueprint, ...] = (
     width = len(rows[0])
     if any(len(row) != width for row in rows):
         raise ValueError("grid must be rectangular")
-    return tuple(tuple(rows[row][column] for row in range(len(rows) - 1, -1, -1)) for column in range(width))
+    return tuple(tuple(row[column] for row in reversed(rows)) for column in range(width))
 ''',
         public_assertion="assert rotate_grid_clockwise(((1, 2, 3), (4, 5, 6))) == ((4, 1), (5, 2), (6, 3))",
         hidden_assertion="assert rotate_grid_clockwise((('x',), ('y',), ('z',))) == (('z', 'y', 'x'),)",
@@ -942,13 +1094,12 @@ CAPABILITY_OPERATOR_BLUEPRINTS: Tuple[CapabilityOperatorBlueprint, ...] = (
     """Remove duplicate items while preserving first occurrence order."""
 
     seen = set()
-    result = []
+    ordered = []
     for item in items:
-        if item in seen:
-            continue
-        seen.add(item)
-        result.append(item)
-    return tuple(result)
+        if item not in seen:
+            seen.add(item)
+            ordered.append(item)
+    return tuple(ordered)
 ''',
         public_assertion="assert dedupe_preserve_order(('b', 'a', 'b', 'c', 'a')) == ('b', 'a', 'c')",
         hidden_assertion="assert dedupe_preserve_order((3, 3, 2, 3, 1, 2)) == (3, 2, 1)",
@@ -960,19 +1111,23 @@ CAPABILITY_OPERATOR_BLUEPRINTS: Tuple[CapabilityOperatorBlueprint, ...] = (
         implementation_source='''def apply_grid_action(state, action):
     """Apply a one-step cardinal movement action to a grid state."""
 
-    deltas = {
-        "north": (0, 1),
-        "south": (0, -1),
-        "east": (1, 0),
-        "west": (-1, 0),
-        "stay": (0, 0),
-    }
-    if action not in deltas:
-        raise ValueError(f"unknown action: {action}")
-    dx, dy = deltas[action]
     next_state = dict(state)
-    next_state["x"] = int(next_state.get("x", 0)) + dx
-    next_state["y"] = int(next_state.get("y", 0)) + dy
+    x = int(next_state.get("x", 0))
+    y = int(next_state.get("y", 0))
+    if action == "north":
+        y += 1
+    elif action == "south":
+        y -= 1
+    elif action == "east":
+        x += 1
+    elif action == "west":
+        x -= 1
+    elif action == "stay":
+        pass
+    else:
+        raise ValueError(f"unknown action: {action}")
+    next_state["x"] = x
+    next_state["y"] = y
     return next_state
 ''',
         public_assertion="assert apply_grid_action({'x': 0, 'y': 0}, 'east') == {'x': 1, 'y': 0}",
@@ -1365,6 +1520,8 @@ class ClosedRecursiveSelfImprovementLoop:
         candidates = []
         candidates.extend(external_code_repair_candidates(self.repo_root, generation))
         candidates.extend(capability_operator_candidates(self.repo_root, generation))
+        if self.exploration_policy == "recursive_quarantine":
+            candidates.extend(schema_batch_query_candidates(self.repo_root, generation, state=state))
         candidates.extend(autonomous_local_corpus_candidates(self.repo_root, generation, state=state))
 
         if loop_script.exists() and POLICY_REGISTRY_ACTIVE_MARKER not in loop_text:
@@ -1419,7 +1576,17 @@ class ClosedRecursiveSelfImprovementLoop:
         def candidate_key(candidate: CandidatePatch) -> Tuple[int, int, int, int, str]:
             rejected_penalty = 1 if candidate.name in rejected_names else 0
             novelty_bonus = 0 if candidate.name not in accepted_names else 1
-            executable_repair_bonus = 0 if candidate.name.startswith(("external_code_repair_", "capability_operator_")) else 1
+            executable_repair_bonus = (
+                0
+                if candidate.name.startswith(
+                    (
+                        "external_code_repair_",
+                        "capability_operator_",
+                        "recursive_schema_batch_",
+                    )
+                )
+                else 1
+            )
             policy_bonus = 0 if candidate.name.startswith("loop_policy") else 1
             return (rejected_penalty, novelty_bonus, executable_repair_bonus, policy_bonus, candidate.name)
 
@@ -1458,6 +1625,81 @@ class ClosedRecursiveSelfImprovementLoop:
                 stderr_tail=(exc.stderr or "")[-2000:] if isinstance(exc.stderr, str) else "",
                 timed_out=True,
             )
+
+    def collect_test_nodeids(self, label: str) -> Tuple[GateResult, Tuple[str, ...]]:
+        """Collect pytest node ids so candidates cannot narrow the suite."""
+
+        py = sys.executable
+        args = [py, "-m", "pytest", "--collect-only", "-q"]
+        start = time.monotonic()
+        stdout = ""
+        stderr = ""
+        exit_code = 1
+        timed_out = False
+        try:
+            proc = subprocess.run(
+                args,
+                cwd=str(self.repo_root),
+                env=self.env,
+                text=True,
+                capture_output=True,
+                timeout=self.timeout_s,
+            )
+            stdout = proc.stdout
+            stderr = proc.stderr
+            exit_code = proc.returncode
+        except subprocess.TimeoutExpired as exc:
+            stdout = exc.stdout if isinstance(exc.stdout, str) else ""
+            stderr = exc.stderr if isinstance(exc.stderr, str) else "collection timed out"
+            exit_code = 124
+            timed_out = True
+        if exit_code == 5 and "no tests collected" in f"{stdout}\n{stderr}".lower():
+            exit_code = 0
+        elapsed = round(time.monotonic() - start, 3)
+        gate = GateResult(
+            label=label,
+            args=args,
+            cwd=str(self.repo_root),
+            exit_code=exit_code,
+            elapsed_s=elapsed,
+            stdout_tail=stdout[-4000:],
+            stderr_tail=stderr[-2000:],
+            timed_out=timed_out,
+        )
+        nodeids: List[str] = []
+        if gate.exit_code == 0:
+            for raw_line in stdout.splitlines():
+                line = raw_line.strip()
+                if not line or line.startswith("=") or "collected" in line:
+                    continue
+                if "::" in line:
+                    nodeids.append(line)
+        return gate, tuple(dict.fromkeys(nodeids))
+
+    def test_collection_superset_gate(
+        self,
+        before: Sequence[str],
+        after: Sequence[str],
+    ) -> Optional[GateResult]:
+        """Return a failing gate if a candidate removes collected tests."""
+
+        missing = sorted(set(before) - set(after))
+        if not missing:
+            return None
+        payload = {
+            "before_count": len(before),
+            "after_count": len(after),
+            "missing_nodeids": missing[:25],
+        }
+        return GateResult(
+            label="candidate_test_collection_superset",
+            args=["internal", "pytest_collect_superset"],
+            cwd=str(self.repo_root),
+            exit_code=1,
+            elapsed_s=0.0,
+            stdout_tail="",
+            stderr_tail=json.dumps(payload, sort_keys=True),
+        )
 
     def candidate_changed_sources(
         self,
@@ -1503,6 +1745,41 @@ class ClosedRecursiveSelfImprovementLoop:
             cwd=str(self.repo_root),
             exit_code=1,
             elapsed_s=elapsed,
+            stdout_tail="",
+            stderr_tail=json.dumps(payload, sort_keys=True),
+        )
+
+    def held_out_reference_gate(
+        self,
+        candidate: CandidatePatch,
+        changed_sources: Dict[str, Tuple[Optional[str], Optional[str]]],
+    ) -> Optional[GateResult]:
+        """Reject a candidate that pastes the held-out primitive reference."""
+
+        metadata = read_json(self.repo_root / "capability_fixture_metadata.json", {})
+        reference_hash = str(metadata.get("held_out_reference_sha256", "") or "")
+        operator = str(metadata.get("operator", "") or "")
+        if not reference_hash or not operator:
+            return None
+        relative_target = str(candidate.target_path.relative_to(self.repo_root)).replace("\\", "/")
+        if relative_target != "shared/capability_primitives.py":
+            return None
+        _before, after = changed_sources.get(relative_target, (None, None))
+        if not after:
+            return None
+        candidate_source = top_level_function_source(after, operator)
+        if not candidate_source or source_sha256(candidate_source) != reference_hash:
+            return None
+        payload = {
+            "operator": operator,
+            "held_out_reference_sha256": reference_hash,
+        }
+        return GateResult(
+            label=f"{candidate.name}_held_out_reference",
+            args=["internal", "held_out_reference_hash"],
+            cwd=str(self.repo_root),
+            exit_code=1,
+            elapsed_s=0.0,
             stdout_tail="",
             stderr_tail=json.dumps(payload, sort_keys=True),
         )
@@ -1557,6 +1834,64 @@ class ClosedRecursiveSelfImprovementLoop:
                 stderr_tail=f"{type(exc).__name__}: {exc}",
             )
 
+    def schema_transfer_evaluator_gate(self, candidate: CandidatePatch) -> Optional[GateResult]:
+        """Run freshly seeded hidden schema-query probes after candidate patching."""
+
+        if not candidate.schema_fields:
+            return None
+        fields = tuple(dict.fromkeys(candidate.schema_fields))
+        hidden_inputs = {
+            field: (
+                f"hidden_{field}_"
+                f"{hashlib.sha256(f'{self.capability_seed}:{field}'.encode('utf-8')).hexdigest()[:10]}"
+            )
+            for field in fields
+        }
+        methods = {field: query_blueprint_for_field(field).method_name for field in fields}
+        probe = f'''
+from shared.local_corpus import LocalCorpusIndex, LocalCorpusSummary, LocalPythonFileRecord
+
+hidden_inputs = {hidden_inputs!r}
+methods = {methods!r}
+records = []
+for offset, (field, value) in enumerate(hidden_inputs.items()):
+    kwargs = dict(
+        path=f"hidden_{{offset}}.py",
+        sha256=str(offset),
+        size_bytes=1,
+        line_count=1,
+        syntax_ok=True,
+    )
+    kwargs[field] = (value,)
+    records.append(LocalPythonFileRecord(**kwargs))
+
+index = LocalCorpusIndex(
+    summary=LocalCorpusSummary(
+        file_count=len(records),
+        syntax_ok_count=len(records),
+        syntax_error_count=0,
+        unique_sha256_count=len(records),
+        duplicate_file_instances=0,
+        feature_counts={{}},
+        import_edge_count=0,
+        definition_count=0,
+    ),
+    records=tuple(records),
+    import_edges=(),
+)
+
+for offset, (field, value) in enumerate(hidden_inputs.items()):
+    method = getattr(index, methods[field])
+    assert tuple(record.path for record in method(value)) == (f"hidden_{{offset}}.py",)
+print({{"seed": {self.capability_seed!r}, "hidden_inputs": hidden_inputs, "methods": methods}})
+'''
+        py = sys.executable
+        return self.run_command(
+            f"{candidate.name}_schema_transfer_evaluator",
+            [py, "-c", probe],
+            self.repo_root,
+        )
+
     def validate(self, candidate: CandidatePatch) -> List[GateResult]:
         py = sys.executable
         compile_targets = [
@@ -1595,9 +1930,19 @@ class ClosedRecursiveSelfImprovementLoop:
         capability_gate = self.capability_evaluator_gate(candidate)
         if capability_gate is not None:
             gates.append(capability_gate)
+        schema_gate = self.schema_transfer_evaluator_gate(candidate)
+        if schema_gate is not None:
+            gates.append(schema_gate)
         gates.append(
             self.run_command(
                 f"{candidate.name}_full_pytest",
+                [py, "-m", "pytest", "-q"],
+                self.repo_root,
+            )
+        )
+        gates.append(
+            self.run_command(
+                f"{candidate.name}_repeat_full_pytest",
                 [py, "-m", "pytest", "-q"],
                 self.repo_root,
             )
@@ -1654,6 +1999,14 @@ class ClosedRecursiveSelfImprovementLoop:
             if anti_cheat is not None:
                 gates.append(anti_cheat)
                 raise RuntimeError("anti-cheat validation failed")
+            reference_gate = self.held_out_reference_gate(candidate, changed_sources)
+            if reference_gate is not None:
+                gates.append(reference_gate)
+                raise RuntimeError("held-out reference validation failed")
+            pre_collect_gate, pre_nodeids = self.collect_test_nodeids(f"{candidate.name}_pre_collect")
+            gates.append(pre_collect_gate)
+            if pre_collect_gate.exit_code != 0:
+                raise RuntimeError("pre-candidate pytest collection failed")
             if self.dry_run:
                 raise RuntimeError("dry run cannot promote without full pytest")
             else:
@@ -1663,7 +2016,15 @@ class ClosedRecursiveSelfImprovementLoop:
                 for path, source in extra_paths.items():
                     path.parent.mkdir(parents=True, exist_ok=True)
                     path.write_text(source, encoding="utf-8")
-                gates = self.validate(candidate)
+                post_collect_gate, post_nodeids = self.collect_test_nodeids(f"{candidate.name}_post_collect")
+                gates.append(post_collect_gate)
+                if post_collect_gate.exit_code != 0:
+                    raise RuntimeError("post-candidate pytest collection failed")
+                superset_gate = self.test_collection_superset_gate(pre_nodeids, post_nodeids)
+                if superset_gate is not None:
+                    gates.append(superset_gate)
+                    raise RuntimeError("candidate reduced collected test set")
+                gates.extend(self.validate(candidate))
                 full_exit = full_test_exit_code(gates)
                 capability_delta = candidate_capability_delta(
                     candidate,

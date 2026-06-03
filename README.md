@@ -208,23 +208,35 @@ The experiment suite writes both raw and aggregate artifacts under
 - `baseline_comparison.md`: proposed-loop vs baseline scorecard
 - `evidence_scorecard.json`: machine-readable win/tie/inconclusive labels
 
+Powered experiment cells use at least ten paired repeats per
+repository/task/variant. The same seed is recorded for proposed and baseline
+variants in each repeat, and aggregate rows report mean, variance, and
+bootstrap confidence intervals for accepted rate and improvement depth. A win
+is counted only when the paired margin or confidence-bound comparison clears
+the baseline; otherwise the scorecard keeps `tie_or_frontier_match` or
+`baseline_stronger_or_inconclusive`.
+
 Additional evidence artifacts:
 
 - `reports/rsi_experiments/evidence_index.md`: index of repeated, transfer,
   baseline, ablation, and failure-analysis evidence
 - `reports/rsi_experiments/unseen_transfer/latest/`: held-out schema-transfer
-  matrix with three repeated trials per variant
+  matrix with ten paired repeated trials per variant
 - `reports/rsi_experiments/unseen_multi_transfer/latest/`: four held-out
   schema-transfer fixtures across generic, security, science, and control
-  domains
+  domains, plus a composite held-out fixture that requires one general
+  multi-field schema patch
 - `reports/rsi_experiments/external_transfer/latest/`: fixtures extracted from
   actual external GitHub issue metadata for `psf/requests`,
-  `hypothesisworks/hypothesis`, `pandas-dev/pandas`, and `dask/dask`
+  `hypothesisworks/hypothesis`, `pandas-dev/pandas`, and `dask/dask`, plus a
+  composite external fixture over all four metadata-derived schema fields
 - `reports/external_code_fixtures/latest/`: bounded source-code and
   failure-excerpt sandbox fixtures from the same real external repositories
 - `reports/rsi_experiments/external_code_transfer/latest/`: transfer matrix
   over the external code sandbox fixtures
 - full-test command and exit-code evidence for every counted successful result
+- counted success provenance: seed, held-out input set, full-test command,
+  full-test exit code, and provenance hash
 
 External code sandbox fixtures now include a local executable repair target in
 the disposable repository. The external source and failure excerpts remain
@@ -241,12 +253,15 @@ must infer and patch the missing query surface from schema structure, then
 record the result as an unseen transfer cell rather than as another seen-repo
 repair.
 
-The workflow `Unseen Transfer Experiments` runs the multi-domain unseen matrix
-without running the heavier full repository matrix.
+The workflow `Unseen Transfer Experiments` runs a powered composite held-out
+schema cell without running the heavier full repository matrix. Local smoke checks can use
+`--allow-low-repeats`, but reported transfer wins should come from the Actions
+path with at least ten repeats and full-pytest evidence.
 
 The workflow `External Transfer Experiments` refreshes bounded external GitHub
-issue metadata, builds external issue-derived fixtures, and runs the external
-transfer matrix without executing external repository code.
+issue metadata, builds an issue-derived composite fixture over the allowlisted
+repositories, and runs the external transfer cell without executing external
+repository code.
 
 The workflow `External Code Sandbox Experiments` refreshes the issue metadata,
 fetches bounded external source excerpts as text fixtures, pairs them with

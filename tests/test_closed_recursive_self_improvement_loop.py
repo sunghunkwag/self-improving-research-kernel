@@ -172,6 +172,35 @@ def test_history_aware_ranking_deprioritizes_rejected_candidates(tmp_path):
     ]
 
 
+def test_recursive_schema_batch_candidate_ranks_before_partial_transfer_repairs(tmp_path):
+    repo = tmp_path / "repo"
+    shared = repo / "shared"
+    tests = repo / "tests"
+    shared.mkdir(parents=True)
+    tests.mkdir()
+    (shared / "local_corpus.py").write_text(
+        LOCAL_CORPUS_STUB.replace(
+            "    feature_flags: Tuple[str, ...] = ()\n",
+            "    feature_flags: Tuple[str, ...] = ()\n"
+            "    static_roles: Tuple[str, ...] = ()\n"
+            "    threat_labels: Tuple[str, ...] = ()\n",
+        ),
+        encoding="utf-8",
+    )
+    (repo / "schema_transfer_manifest.json").write_text("{}", encoding="utf-8")
+
+    loop = ClosedRecursiveSelfImprovementLoop(
+        repo,
+        state_dir=tmp_path / "state",
+        exploration_policy="recursive_quarantine",
+        exploration_depth=2,
+    )
+    ranked = loop.rank_candidates(loop.invent_candidates(generation=1), loop.load_state())
+
+    assert ranked[0].name == "recursive_schema_batch_query_transfer_v1"
+    assert {"static_roles", "threat_labels"} <= set(ranked[0].schema_fields)
+
+
 def test_capability_operator_candidates_include_delta_metadata(tmp_path):
     repo = tmp_path / "repo"
     shared = repo / "shared"

@@ -8,10 +8,12 @@ failure analysis, and an explicit safety model.
 from __future__ import annotations
 
 import argparse
+import ast
 import csv
 import hashlib
 import json
 import os
+import random
 import re
 import shutil
 import subprocess
@@ -116,6 +118,19 @@ class CapabilityFixtureSpec:
     description: str
 
 
+@dataclass(frozen=True)
+class CompositeSchemaFixtureSpec:
+    """One multi-field schema-transfer fixture requiring a general patch."""
+
+    repository_name: str
+    task_name: str
+    fields: Tuple[Tuple[str, str], ...]
+    split: str
+    transfer_origin: str
+    description: str
+    claim: str
+
+
 @dataclass
 class ExperimentResult:
     """JSON-compatible experiment outcome."""
@@ -156,6 +171,10 @@ class ExperimentResult:
     full_test_command: str = " ".join(FULL_TEST_COMMAND)
     full_test_exit_code: Optional[int] = None
     full_test_required: bool = True
+    paired_seed: str = ""
+    provenance_hash: str = ""
+    held_out_input_set: str = ""
+    comparable_to_verified_config: bool = True
 
 
 EXTERNAL_ISSUE_FIXTURES: Tuple[ExternalIssueFixtureSpec, ...] = (
@@ -283,6 +302,48 @@ CAPABILITY_FIXTURES: Tuple[CapabilityFixtureSpec, ...] = (
 )
 
 
+COMPOSITE_SCHEMA_FIXTURES: Tuple[CompositeSchemaFixtureSpec, ...] = (
+    CompositeSchemaFixtureSpec(
+        repository_name="composite_unseen_schema_transfer_repo",
+        task_name="composite_unseen_schema_transfer",
+        fields=(
+            ("static_roles", "moderator"),
+            ("threat_labels", "sandbox_escape"),
+            ("evidence_sources", "ablation_table"),
+            ("controller_modes", "stabilizing_feedback"),
+        ),
+        split="unseen",
+        transfer_origin="compact_kernel_repo",
+        description=(
+            "Composite held-out schema fixture with four tuple-valued record fields absent "
+            "from the original benchmark repositories."
+        ),
+        claim=(
+            "Unseen transfer succeeds only when one general schema patch repairs all held-out "
+            "tuple-membership query surfaces under full pytest."
+        ),
+    ),
+    CompositeSchemaFixtureSpec(
+        repository_name="composite_external_issue_transfer_repo",
+        task_name="composite_external_issue_transfer",
+        fields=tuple(
+            (spec.field_name, spec.fallback_value)
+            for spec in EXTERNAL_ISSUE_FIXTURES
+        ),
+        split="external_unseen",
+        transfer_origin="psf/requests,hypothesisworks/hypothesis,pandas-dev/pandas,dask/dask",
+        description=(
+            "Composite external issue fixture whose schema fields are derived from real "
+            "GitHub issue metadata across the allowlisted repositories."
+        ),
+        claim=(
+            "External transfer succeeds only when one general schema patch repairs all "
+            "issue-metadata-derived query surfaces under full pytest."
+        ),
+    ),
+)
+
+
 DEFAULT_REPOSITORIES = (
     BenchmarkRepository(
         name="omega_full_repo",
@@ -342,6 +403,15 @@ DEFAULT_REPOSITORIES = (
             transfer_origin=spec.source_repository,
         )
         for spec in EXTERNAL_CODE_FIXTURES
+    ),
+    *(
+        BenchmarkRepository(
+            name=spec.repository_name,
+            description=spec.description,
+            split=spec.split,
+            transfer_origin=spec.transfer_origin,
+        )
+        for spec in COMPOSITE_SCHEMA_FIXTURES
     ),
 )
 
@@ -425,6 +495,15 @@ DEFAULT_TASKS = (
         )
         for spec in EXTERNAL_CODE_FIXTURES
     ),
+    *(
+        ExperimentTask(
+            name=spec.task_name,
+            description=spec.description,
+            repositories=(spec.repository_name,),
+            claim=spec.claim,
+        )
+        for spec in COMPOSITE_SCHEMA_FIXTURES
+    ),
 )
 
 
@@ -447,9 +526,7 @@ DEFAULT_VARIANTS = (
     ExperimentVariant(
         name="evolutionary_repair_loop",
         family="baseline_evolutionary_repair_loop",
-        description="Baseline: retry candidate repair loop without extra broad gates or persistent self-policy depth; final full pytest is still required.",
-        broad_gate=False,
-        thdse_core_gate=False,
+        description="Baseline: retry candidate repair loop with the same safety gates but without recursive quarantine search or persistent self-policy depth.",
         persistence=False,
         max_generations_override=3,
         max_candidates_override=3,
@@ -581,6 +658,110 @@ def build_unseen_schema_transfer_repo(
     )
 
 
+def composite_schema_fixture_for_repository(repository_name: str) -> Optional[CompositeSchemaFixtureSpec]:
+    """Return a composite schema fixture spec for a benchmark repository."""
+
+    return next(
+        (spec for spec in COMPOSITE_SCHEMA_FIXTURES if spec.repository_name == repository_name),
+        None,
+    )
+
+
+def build_composite_schema_transfer_repo(
+    src: Path,
+    dst: Path,
+    spec: CompositeSchemaFixtureSpec,
+) -> None:
+    """Build a multi-field transfer fixture that requires one general schema repair."""
+
+    build_compact_kernel_repo(src, dst)
+    local_corpus = dst / "shared" / "local_corpus.py"
+    text = local_corpus.read_text(encoding="utf-8")
+    marker = "    feature_flags: Tuple[str, ...] = ()\n"
+    declarations = []
+    for field_name, _sample_value in spec.fields:
+        declaration = f"    {field_name}: Tuple[str, ...] = ()\n"
+        if declaration not in text:
+            declarations.append(declaration)
+    if declarations:
+        text = text.replace(marker, marker + "".join(declarations), 1)
+    local_corpus.write_text(text, encoding="utf-8")
+
+    record_blocks = []
+    assertion_lines = []
+    for index, (field_name, sample_value) in enumerate(spec.fields):
+        method_name = (
+            "records_with_" + field_name[:-1]
+            if field_name.endswith("s") and not field_name.endswith("ies")
+            else "records_with_" + field_name
+        )
+        if field_name.endswith("ies"):
+            method_name = "records_with_" + field_name[:-3] + "y"
+        record_blocks.append(
+            "\n".join(
+                [
+                    "        LocalPythonFileRecord(",
+                    f"            path='transfer_{index}.py',",
+                    f"            sha256='{index}',",
+                    "            size_bytes=1,",
+                    "            line_count=1,",
+                    "            syntax_ok=True,",
+                    f"            {field_name}=('{sample_value}',),",
+                    "        ),",
+                ]
+            )
+        )
+        assertion_lines.append(
+            f"    assert tuple(record.path for record in index.{method_name}('{sample_value}')) == ('transfer_{index}.py',)"
+        )
+
+    test_path = dst / "tests" / f"test_{spec.repository_name}.py"
+    test_path.parent.mkdir(parents=True, exist_ok=True)
+    test_path.write_text(
+        "from shared.local_corpus import LocalCorpusIndex, LocalCorpusSummary, LocalPythonFileRecord\n\n\n"
+        f"def test_{spec.task_name}_requires_all_transfer_queries():\n"
+        "    records = (\n"
+        f"{chr(10).join(record_blocks)}\n"
+        "    )\n"
+        "    index = LocalCorpusIndex(\n"
+        "        summary=LocalCorpusSummary(\n"
+        "            file_count=len(records),\n"
+        "            syntax_ok_count=len(records),\n"
+        "            syntax_error_count=0,\n"
+        "            unique_sha256_count=len(records),\n"
+        "            duplicate_file_instances=0,\n"
+        "            feature_counts={},\n"
+        "            import_edge_count=0,\n"
+        "            definition_count=0,\n"
+        "        ),\n"
+        "        records=records,\n"
+        "        import_edges=(),\n"
+        "    )\n\n"
+        f"{chr(10).join(assertion_lines)}\n",
+        encoding="utf-8",
+    )
+    write_json(
+        dst / "schema_transfer_manifest.json",
+        {
+            "fixture_kind": "composite_schema_transfer",
+            "repository": spec.repository_name,
+            "task": spec.task_name,
+            "split": spec.split,
+            "transfer_origin": spec.transfer_origin,
+            "fields": [
+                {"field_name": field_name, "sample_value": sample_value}
+                for field_name, sample_value in spec.fields
+            ],
+            "safety_controls": [
+                "held_out_schema_fields",
+                "single_general_patch_required",
+                "seeded_hidden_schema_evaluator",
+                "full_pytest_required",
+            ],
+        },
+    )
+
+
 def strip_top_level_function(text: str, function_name: str) -> str:
     """Remove one top-level function from a source string."""
 
@@ -588,6 +769,23 @@ def strip_top_level_function(text: str, function_name: str) -> str:
     prefixed = "\n" + text
     rewritten = re.sub(pattern, "\n", prefixed, count=1, flags=re.DOTALL)
     return rewritten[1:]
+
+
+def top_level_function_source(text: str, function_name: str) -> str:
+    """Return exact source text for one top-level function."""
+
+    try:
+        tree = ast.parse(text)
+    except SyntaxError:
+        return ""
+    lines = text.splitlines()
+    for node in tree.body if isinstance(tree, ast.Module) else []:
+        if isinstance(node, ast.FunctionDef) and node.name == function_name:
+            end_lineno = getattr(node, "end_lineno", None)
+            if end_lineno is None:
+                return ""
+            return "\n".join(lines[node.lineno - 1 : end_lineno]).rstrip() + "\n"
+    return ""
 
 
 def capability_fixture_for_repository(repository_name: str) -> Optional[CapabilityFixtureSpec]:
@@ -610,7 +808,9 @@ def build_capability_benchmark_repo(
     primitives = dst / "shared" / "capability_primitives.py"
     if not primitives.exists():
         primitives.write_text('"""Fixture-local capability primitives."""\n', encoding="utf-8")
-    text = strip_top_level_function(primitives.read_text(encoding="utf-8"), spec.operator)
+    original_text = primitives.read_text(encoding="utf-8")
+    held_out_reference = top_level_function_source(original_text, spec.operator)
+    text = strip_top_level_function(original_text, spec.operator)
     primitives.write_text(text, encoding="utf-8")
     test_path = dst / "tests" / f"test_capability_{spec.family}_fixture.py"
     test_path.parent.mkdir(parents=True, exist_ok=True)
@@ -639,12 +839,16 @@ def build_capability_benchmark_repo(
             "fixture_kind": "capability_operator_repair",
             "family": spec.family,
             "operator": spec.operator,
+            "held_out_reference_sha256": hashlib.sha256(held_out_reference.encode("utf-8")).hexdigest()
+            if held_out_reference
+            else "",
             "task_name": spec.task_name,
             "safety_controls": [
                 "local_fixture_only",
                 "public_counterexample",
                 "hidden_transfer_counterexample",
                 "seeded_dynamic_hidden_counterexamples",
+                "held_out_reference_hash_rejection",
                 "no_external_code_execution",
             ],
             "dynamic_seed": dynamic_seed,
@@ -1067,6 +1271,10 @@ def build_benchmark_repo(src: Path, dst: Path, repository: BenchmarkRepository) 
     if external_code_spec is not None:
         build_external_code_transfer_repo(src, dst, external_code_spec)
         return
+    composite_spec = composite_schema_fixture_for_repository(repository.name)
+    if composite_spec is not None:
+        build_composite_schema_transfer_repo(src, dst, composite_spec)
+        return
     raise ValueError(f"unknown benchmark repository: {repository.name}")
 
 
@@ -1185,10 +1393,24 @@ def stable_trial_seed(repository: str, task: str, variant: str, repeat_index: in
     return hashlib.sha256(payload).hexdigest()[:12]
 
 
+def stable_paired_seed(repository: str, task: str, repeat_index: int) -> str:
+    """Return the shared seed used by all variants in one paired trial."""
+
+    payload = f"{repository}:{task}:paired:{repeat_index}".encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()[:12]
+
+
 def run_command(args: Sequence[str], cwd: Path, timeout_s: int) -> subprocess.CompletedProcess[str]:
+    env = os.environ.copy()
+    existing = env.get("PYTHONPATH", "")
+    paths = [str(cwd), str(cwd / "thdse"), str(cwd / "thdse" / "src")]
+    if existing:
+        paths.append(existing)
+    env["PYTHONPATH"] = os.pathsep.join(paths)
     return subprocess.run(
         list(args),
         cwd=str(cwd),
+        env=env,
         text=True,
         capture_output=True,
         timeout=timeout_s,
@@ -1208,6 +1430,7 @@ def run_loop_variant(
     repo: Path,
     variant: ExperimentVariant,
     *,
+    seed: str,
     max_generations: int,
     max_candidates: int,
     wall_seconds: int,
@@ -1233,7 +1456,7 @@ def run_loop_variant(
         "--timeout-seconds",
         str(timeout_s),
         "--capability-seed",
-        stable_trial_seed(repo.name, "capability", variant.name, 0),
+        seed,
     ]
     if variant.exploration_policy != "conservative":
         args.extend(
@@ -1243,7 +1466,7 @@ def run_loop_variant(
                 "--exploration-depth",
                 str(variant.exploration_depth),
                 "--exploration-seed",
-                stable_trial_seed(repo.name, "quarantine", variant.name, 0),
+                seed,
             ]
         )
     if variant.broad_gate:
@@ -1287,6 +1510,60 @@ def record_has_passing_full_test(record: dict) -> bool:
     return record_full_test_exit_code(record) == 0
 
 
+def variant_comparable_to_verified_config(variant: ExperimentVariant) -> bool:
+    """Return whether a variant keeps the safety gates needed for direct comparison."""
+
+    return (
+        variant.broad_gate is True
+        and variant.thdse_core_gate is True
+        and variant.rollback is True
+        and variant.full_test_required is True
+    )
+
+
+def load_held_out_input_set(repo: Path) -> Dict[str, object]:
+    """Return held-out or external fixture inputs used by a disposable repo."""
+
+    for name in (
+        "schema_transfer_manifest.json",
+        "external_fixture_metadata.json",
+        "external_code_sandbox_fixture.json",
+        "capability_fixture_metadata.json",
+    ):
+        path = repo / name
+        if path.exists():
+            payload = read_json(path, {})
+            if isinstance(payload, dict):
+                return payload
+    return {}
+
+
+def result_provenance_hash(
+    *,
+    repository: BenchmarkRepository,
+    task: ExperimentTask,
+    variant: ExperimentVariant,
+    seed: str,
+    full_test_command: str,
+    full_test_exit_code: Optional[int],
+    held_out_input_set: str,
+    accepted_count: int,
+    improvement_depth: int,
+) -> str:
+    payload = {
+        "repository": repository.name,
+        "task": task.name,
+        "variant": variant.name,
+        "seed": seed,
+        "full_test_command": full_test_command,
+        "full_test_exit_code": full_test_exit_code,
+        "held_out_input_set": held_out_input_set,
+        "accepted_count": accepted_count,
+        "improvement_depth": improvement_depth,
+    }
+    return hashlib.sha256(json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest()
+
+
 def build_result(
     repository: BenchmarkRepository,
     task: ExperimentTask,
@@ -1321,6 +1598,23 @@ def build_result(
         rollback_correct = changed == []
     elif not variant.rollback and rejected:
         rollback_correct = False
+    full_test_command = str(summary.get("full_test_command") or " ".join(FULL_TEST_COMMAND))
+    final_full_test_exit_code = full_test_exit_codes[-1] if full_test_exit_codes else None
+    held_out_payload = load_held_out_input_set(repo)
+    held_out_input_set = json.dumps(held_out_payload, sort_keys=True)
+    accepted_count = len(accepted)
+    improvement_depth = int(summary.get("active_generation", 0))
+    provenance_hash = result_provenance_hash(
+        repository=repository,
+        task=task,
+        variant=variant,
+        seed=seed,
+        full_test_command=full_test_command,
+        full_test_exit_code=final_full_test_exit_code,
+        held_out_input_set=held_out_input_set,
+        accepted_count=accepted_count,
+        improvement_depth=improvement_depth,
+    )
     return ExperimentResult(
         repository=repository.name,
         repository_description=repository.description,
@@ -1332,13 +1626,13 @@ def build_result(
         seed=seed,
         exit_code=proc.returncode,
         elapsed_s=round(elapsed_s, 3),
-        accepted_count=len(accepted),
+        accepted_count=accepted_count,
         rejected_count=len(rejected),
-        accepted_rate=(len(accepted) / total_candidates) if total_candidates else 0.0,
+        accepted_rate=(accepted_count / total_candidates) if total_candidates else 0.0,
         regression_gate_failures=summarize_gates([*accepted, *rejected]),
         rollback_correct=rollback_correct,
         persistence_file_exists=(repo / ".omega_rsi_runs" / "closed_rsi_state.json").exists(),
-        improvement_depth=int(summary.get("active_generation", 0)),
+        improvement_depth=improvement_depth,
         cost_proxy_seconds=round(elapsed_s, 3),
         changed_files_count=len(changed),
         summary_path=str(summary_path),
@@ -1364,9 +1658,13 @@ def build_result(
         failure_residue_count=sum(1 for record in records if record.get("failure_residue")),
         quarantine_exploration_count=len(quarantine),
         quarantine_failure_residue_count=sum(1 for record in quarantine if record.get("failure_residue")),
-        full_test_command=str(summary.get("full_test_command") or " ".join(FULL_TEST_COMMAND)),
-        full_test_exit_code=full_test_exit_codes[-1] if full_test_exit_codes else None,
+        full_test_command=full_test_command,
+        full_test_exit_code=final_full_test_exit_code,
         full_test_required=full_test_required,
+        paired_seed=seed,
+        provenance_hash=provenance_hash,
+        held_out_input_set=held_out_input_set,
+        comparable_to_verified_config=variant_comparable_to_verified_config(variant),
     )
 
 
@@ -1383,6 +1681,61 @@ def mean(values: Sequence[float]) -> float:
     return sum(values) / len(values) if values else 0.0
 
 
+def variance(values: Sequence[float]) -> float:
+    """Return sample variance for repeated-trial values."""
+
+    if len(values) < 2:
+        return 0.0
+    center = mean(values)
+    return sum((value - center) ** 2 for value in values) / (len(values) - 1)
+
+
+def bootstrap_ci(
+    values: Sequence[float],
+    *,
+    seed: str,
+    iterations: int = 1000,
+    alpha: float = 0.05,
+) -> Tuple[float, float]:
+    """Return a deterministic percentile bootstrap confidence interval."""
+
+    if not values:
+        return (0.0, 0.0)
+    if len(values) == 1:
+        return (float(values[0]), float(values[0]))
+    rng = random.Random(int(hashlib.sha256(seed.encode("utf-8")).hexdigest()[:16], 16))
+    samples = []
+    for _ in range(iterations):
+        draw = [values[rng.randrange(len(values))] for _ in values]
+        samples.append(mean(draw))
+    samples.sort()
+    lower_index = max(0, int((alpha / 2.0) * iterations) - 1)
+    upper_index = min(iterations - 1, int((1.0 - alpha / 2.0) * iterations) - 1)
+    return (round(samples[lower_index], 6), round(samples[upper_index], 6))
+
+
+def paired_margin_ci(
+    proposed: Sequence[ExperimentResult],
+    baseline: Sequence[ExperimentResult],
+    metric: str,
+    *,
+    seed: str,
+) -> Tuple[float, float, float]:
+    """Return mean and bootstrap CI for same-seed proposed-baseline margins."""
+
+    baseline_by_seed = {row.paired_seed or row.seed: row for row in baseline}
+    margins = []
+    for row in proposed:
+        match = baseline_by_seed.get(row.paired_seed or row.seed)
+        if match is None:
+            continue
+        margins.append(float(getattr(row, metric)) - float(getattr(match, metric)))
+    if not margins:
+        return (0.0, 0.0, 0.0)
+    lower, upper = bootstrap_ci(margins, seed=seed)
+    return (round(mean(margins), 6), lower, upper)
+
+
 def aggregate_results(results: Sequence[ExperimentResult]) -> List[Dict[str, object]]:
     """Aggregate repeated trials by repository, task, and variant."""
 
@@ -1393,6 +1746,16 @@ def aggregate_results(results: Sequence[ExperimentResult]) -> List[Dict[str, obj
     aggregates: List[Dict[str, object]] = []
     for (repository, task, variant), rows in sorted(groups.items()):
         rollback_rows = [row for row in rows if row.rollback_correct is not None]
+        accepted_rate_values = [float(row.accepted_rate) for row in rows]
+        improvement_depth_values = [float(row.improvement_depth) for row in rows]
+        accepted_rate_ci = bootstrap_ci(
+            accepted_rate_values,
+            seed=f"{repository}:{task}:{variant}:accepted_rate",
+        )
+        improvement_depth_ci = bootstrap_ci(
+            improvement_depth_values,
+            seed=f"{repository}:{task}:{variant}:improvement_depth",
+        )
         rollback_success_rate = (
             mean([1.0 if row.rollback_correct else 0.0 for row in rollback_rows])
             if rollback_rows
@@ -1412,10 +1775,16 @@ def aggregate_results(results: Sequence[ExperimentResult]) -> List[Dict[str, obj
                 "exit_success_rate": mean([1.0 if row.exit_code == 0 else 0.0 for row in rows]),
                 "accepted_count_mean": mean([float(row.accepted_count) for row in rows]),
                 "rejected_count_mean": mean([float(row.rejected_count) for row in rows]),
-                "accepted_rate_mean": mean([float(row.accepted_rate) for row in rows]),
+                "accepted_rate_mean": mean(accepted_rate_values),
+                "accepted_rate_variance": variance(accepted_rate_values),
+                "accepted_rate_ci_lower": accepted_rate_ci[0],
+                "accepted_rate_ci_upper": accepted_rate_ci[1],
                 "regression_gate_failures_mean": mean([float(row.regression_gate_failures) for row in rows]),
                 "rollback_success_rate": rollback_success_rate,
-                "improvement_depth_mean": mean([float(row.improvement_depth) for row in rows]),
+                "improvement_depth_mean": mean(improvement_depth_values),
+                "improvement_depth_variance": variance(improvement_depth_values),
+                "improvement_depth_ci_lower": improvement_depth_ci[0],
+                "improvement_depth_ci_upper": improvement_depth_ci[1],
                 "cost_proxy_seconds_mean": mean([float(row.cost_proxy_seconds) for row in rows]),
                 "changed_files_count_mean": mean([float(row.changed_files_count) for row in rows]),
                 "capability_delta_score_mean": mean([float(row.capability_delta_score) for row in rows]),
@@ -1430,6 +1799,8 @@ def aggregate_results(results: Sequence[ExperimentResult]) -> List[Dict[str, obj
                     [float(row.quarantine_failure_residue_count) for row in rows]
                 ),
                 "full_test_required": all(row.full_test_required for row in rows),
+                "comparable_to_verified_config": all(row.comparable_to_verified_config for row in rows),
+                "seed_registry": ",".join(row.seed for row in rows),
                 "full_test_success_rate": mean(
                     [
                         1.0 if row.full_test_exit_code == 0 else 0.0
@@ -1477,12 +1848,33 @@ def _ablation_rows(rows: Sequence[Dict[str, object]]) -> List[Dict[str, object]]
     ]
 
 
-def build_baseline_comparisons(aggregates: Sequence[Dict[str, object]]) -> List[Dict[str, object]]:
+def _ci_lower(row: Dict[str, object], key: str) -> float:
+    ci_key = f"{key}_ci_lower"
+    if ci_key in row:
+        return _float_value(row, ci_key)
+    return _float_value(row, f"{key}_mean")
+
+
+def _ci_upper(row: Dict[str, object], key: str) -> float:
+    ci_key = f"{key}_ci_upper"
+    if ci_key in row:
+        return _float_value(row, ci_key)
+    return _float_value(row, f"{key}_mean")
+
+
+def build_baseline_comparisons(
+    aggregates: Sequence[Dict[str, object]],
+    *,
+    results: Sequence[ExperimentResult] = (),
+) -> List[Dict[str, object]]:
     """Compare the proposed loop against baselines and ablations."""
 
     groups: Dict[Tuple[str, str], List[Dict[str, object]]] = {}
     for row in aggregates:
         groups.setdefault((str(row["repository"]), str(row["task"])), []).append(row)
+    result_groups: Dict[Tuple[str, str, str], List[ExperimentResult]] = {}
+    for result in results:
+        result_groups.setdefault((result.repository, result.task, result.variant), []).append(result)
 
     comparisons: List[Dict[str, object]] = []
     for (repository, task), rows in sorted(groups.items()):
@@ -1508,11 +1900,69 @@ def build_baseline_comparisons(aggregates: Sequence[Dict[str, object]]) -> List[
         proposed_acceptance = _float_value(proposed, "accepted_rate_mean")
         proposed_depth = _float_value(proposed, "improvement_depth_mean")
         proposed_full_test_success = _float_value(proposed, "full_test_success_rate")
+        proposed_acceptance_ci_lower = _ci_lower(proposed, "accepted_rate")
+        proposed_acceptance_ci_upper = _ci_upper(proposed, "accepted_rate")
+        proposed_depth_ci_lower = _ci_lower(proposed, "improvement_depth")
+        proposed_depth_ci_upper = _ci_upper(proposed, "improvement_depth")
         best_baseline_acceptance = (
             _float_value(best_baseline, "accepted_rate_mean") if best_baseline else 0.0
         )
         best_baseline_depth = (
             _float_value(best_baseline, "improvement_depth_mean") if best_baseline else 0.0
+        )
+        best_baseline_acceptance_ci_upper = (
+            _ci_upper(best_baseline, "accepted_rate") if best_baseline else 0.0
+        )
+        best_baseline_depth_ci_upper = (
+            _ci_upper(best_baseline, "improvement_depth") if best_baseline else 0.0
+        )
+        best_baseline_comparable = bool(
+            best_baseline.get("comparable_to_verified_config", True)
+        ) if best_baseline else False
+        paired_acceptance_margin_mean = proposed_acceptance - best_baseline_acceptance
+        paired_acceptance_margin_ci_lower = paired_acceptance_margin_mean
+        paired_acceptance_margin_ci_upper = paired_acceptance_margin_mean
+        paired_depth_margin_mean = proposed_depth - best_baseline_depth
+        paired_depth_margin_ci_lower = paired_depth_margin_mean
+        paired_depth_margin_ci_upper = paired_depth_margin_mean
+        if best_baseline and results:
+            proposed_rows = result_groups.get((repository, task, "verified_closed_loop"), [])
+            baseline_rows = result_groups.get((repository, task, str(best_baseline.get("variant"))), [])
+            (
+                paired_acceptance_margin_mean,
+                paired_acceptance_margin_ci_lower,
+                paired_acceptance_margin_ci_upper,
+            ) = paired_margin_ci(
+                proposed_rows,
+                baseline_rows,
+                "accepted_rate",
+                seed=f"{repository}:{task}:accepted_rate_margin",
+            )
+            (
+                paired_depth_margin_mean,
+                paired_depth_margin_ci_lower,
+                paired_depth_margin_ci_upper,
+            ) = paired_margin_ci(
+                proposed_rows,
+                baseline_rows,
+                "improvement_depth",
+                seed=f"{repository}:{task}:improvement_depth_margin",
+            )
+        accepted_rate_ci_win = (
+            best_baseline is not None
+            and best_baseline_comparable
+            and (
+                paired_acceptance_margin_ci_lower > 0.0
+                or proposed_acceptance_ci_lower > best_baseline_acceptance_ci_upper
+            )
+        )
+        improvement_depth_ci_win = (
+            best_baseline is not None
+            and best_baseline_comparable
+            and (
+                paired_depth_margin_ci_lower > 0.0
+                or proposed_depth_ci_lower > best_baseline_depth_ci_upper
+            )
         )
         agent_depth = _float_value(agent, "improvement_depth_mean") if agent else 0.0
         ci_depth = _float_value(ci_only, "improvement_depth_mean") if ci_only else 0.0
@@ -1535,12 +1985,13 @@ def build_baseline_comparisons(aggregates: Sequence[Dict[str, object]]) -> List[
             and proposed_acceptance > 0.0
             and proposed_depth > 0.0
             and proposed_full_test_success > 0.0
+            and (accepted_rate_ci_win or improvement_depth_ci_win or best_baseline is None)
         )
         external_transfer_success = (
             proposed.get("repository_split") == "external_unseen"
             and proposed_acceptance > 0.0
-            and proposed_depth > agent_depth
             and proposed_full_test_success > 0.0
+            and (accepted_rate_ci_win or improvement_depth_ci_win)
         )
         external_code_transfer_success = (
             proposed.get("repository_split") == "external_code_unseen"
@@ -1548,7 +1999,8 @@ def build_baseline_comparisons(aggregates: Sequence[Dict[str, object]]) -> List[
             and proposed_full_test_success > 0.0
             and (
                 _float_value(proposed, "solved_new_tasks_mean") > 0.0
-                or proposed_depth > agent_depth
+                or accepted_rate_ci_win
+                or improvement_depth_ci_win
             )
         )
         capability_transfer_success = (
@@ -1556,6 +2008,7 @@ def build_baseline_comparisons(aggregates: Sequence[Dict[str, object]]) -> List[
             and proposed_acceptance > 0.0
             and proposed_full_test_success > 0.0
             and _float_value(proposed, "solved_new_tasks_mean") > 0.0
+            and (accepted_rate_ci_win or improvement_depth_ci_win or best_baseline is None)
         )
 
         if capability_transfer_success:
@@ -1568,7 +2021,7 @@ def build_baseline_comparisons(aggregates: Sequence[Dict[str, object]]) -> List[
             outcome = "unseen_transfer_success"
         elif safety_win:
             outcome = "safety_win_over_ablation"
-        elif proposed_depth > agent_depth and proposed_acceptance >= best_baseline_acceptance:
+        elif improvement_depth_ci_win and proposed_acceptance >= best_baseline_acceptance:
             outcome = "depth_win_over_single_pass"
         elif proposed_acceptance >= best_baseline_acceptance and proposed_depth >= best_baseline_depth:
             outcome = "tie_or_frontier_match"
@@ -1585,9 +2038,23 @@ def build_baseline_comparisons(aggregates: Sequence[Dict[str, object]]) -> List[
                 "proposed_accepted_rate_mean": proposed_acceptance,
                 "proposed_improvement_depth_mean": proposed_depth,
                 "best_baseline_variant": best_baseline.get("variant") if best_baseline else "",
+                "best_baseline_comparable_to_verified_config": best_baseline_comparable,
                 "best_baseline_accepted_rate_mean": best_baseline_acceptance,
                 "best_baseline_improvement_depth_mean": best_baseline_depth,
                 "accepted_rate_margin_vs_best_baseline": proposed_acceptance - best_baseline_acceptance,
+                "accepted_rate_margin_ci_lower": paired_acceptance_margin_ci_lower,
+                "accepted_rate_margin_ci_upper": paired_acceptance_margin_ci_upper,
+                "paired_accepted_rate_margin_mean": paired_acceptance_margin_mean,
+                "improvement_depth_margin": proposed_depth - best_baseline_depth,
+                "improvement_depth_margin_ci_lower": paired_depth_margin_ci_lower,
+                "improvement_depth_margin_ci_upper": paired_depth_margin_ci_upper,
+                "paired_improvement_depth_margin_mean": paired_depth_margin_mean,
+                "accepted_rate_ci_win": accepted_rate_ci_win,
+                "improvement_depth_ci_win": improvement_depth_ci_win,
+                "proposed_accepted_rate_ci_lower": proposed_acceptance_ci_lower,
+                "proposed_accepted_rate_ci_upper": proposed_acceptance_ci_upper,
+                "proposed_improvement_depth_ci_lower": proposed_depth_ci_lower,
+                "proposed_improvement_depth_ci_upper": proposed_depth_ci_upper,
                 "depth_margin_vs_agent_loop": proposed_depth - agent_depth,
                 "depth_margin_vs_ci_only": proposed_depth - ci_depth,
                 "safety_win_over_no_rollback": safety_win,
@@ -1615,7 +2082,7 @@ def write_comparison_csv(path: Path, comparisons: List[Dict[str, object]]) -> No
 
 def write_markdown_reports(output_dir: Path, results: List[ExperimentResult]) -> None:
     aggregates = aggregate_results(results)
-    comparisons = build_baseline_comparisons(aggregates)
+    comparisons = build_baseline_comparisons(aggregates, results=results)
     table_lines = [
         "| Repository | Split | Task | Variant | Repeat | Accepted | Rejected | Rate | Full Test | Regression Failures | Rollback Correct | Seconds |",
         "|---|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
@@ -1630,31 +2097,49 @@ def write_markdown_reports(output_dir: Path, results: List[ExperimentResult]) ->
         )
 
     aggregate_lines = [
-        "| Repository | Split | Task | Variant | Trials | Accepted Rate Mean | Full Test Success | Regression Failures Mean | Rollback Success | Depth Mean | Seconds Mean |",
-        "|---|---|---|---:|---:|---:|---:|---:|---:|---:|---:|",
+        "| Repository | Split | Task | Variant | Trials | Accepted Rate Mean | Accepted Rate CI | Full Test Success | Regression Failures Mean | Rollback Success | Depth Mean | Depth CI | Seconds Mean |",
+        "|---|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
     ]
     for row in aggregates:
         rollback = "n/a" if row["rollback_success_rate"] is None else f"{float(row['rollback_success_rate']):.2f}"
         aggregate_lines.append(
             f"| {row['repository']} | {row['repository_split']} | {row['task']} | {row['variant']} | {row['trial_count']} | "
-            f"{float(row['accepted_rate_mean']):.2f} | {float(row['full_test_success_rate']):.2f} | "
+            f"{float(row['accepted_rate_mean']):.2f} | "
+            f"[{float(row['accepted_rate_ci_lower']):.2f}, {float(row['accepted_rate_ci_upper']):.2f}] | "
+            f"{float(row['full_test_success_rate']):.2f} | "
             f"{float(row['regression_gate_failures_mean']):.2f} | "
-            f"{rollback} | {float(row['improvement_depth_mean']):.2f} | {float(row['cost_proxy_seconds_mean']):.2f} |"
+            f"{rollback} | {float(row['improvement_depth_mean']):.2f} | "
+            f"[{float(row['improvement_depth_ci_lower']):.2f}, {float(row['improvement_depth_ci_upper']):.2f}] | "
+            f"{float(row['cost_proxy_seconds_mean']):.2f} |"
         )
 
     comparison_lines = [
-        "| Repository | Split | Task | Outcome | Proposed Rate | Best Baseline | Baseline Rate | Depth Margin vs Agent | Safety Win | Unseen Transfer | External Transfer | External Code Transfer | Capability Transfer |",
-        "|---|---|---|---|---:|---|---:|---:|---:|---:|---:|---:|---:|",
+        "| Repository | Split | Task | Outcome | Proposed Rate | Best Baseline | Baseline Rate | Rate Margin CI | Depth Margin CI | Safety Win | Unseen Transfer | External Transfer | External Code Transfer | Capability Transfer |",
+        "|---|---|---|---|---:|---|---:|---:|---:|---:|---:|---:|---:|---:|",
     ]
     for row in comparisons:
         comparison_lines.append(
             f"| {row['repository']} | {row['repository_split']} | {row['task']} | {row['outcome']} | "
             f"{float(row['proposed_accepted_rate_mean']):.2f} | {row['best_baseline_variant']} | "
             f"{float(row['best_baseline_accepted_rate_mean']):.2f} | "
-            f"{float(row['depth_margin_vs_agent_loop']):.2f} | "
+            f"[{float(row['accepted_rate_margin_ci_lower']):.2f}, {float(row['accepted_rate_margin_ci_upper']):.2f}] | "
+            f"[{float(row['improvement_depth_margin_ci_lower']):.2f}, {float(row['improvement_depth_margin_ci_upper']):.2f}] | "
             f"{row['safety_win_over_no_rollback']} | {row['unseen_transfer_success']} | "
             f"{row['external_transfer_success']} | {row['external_code_transfer_success']} | "
             f"{row['capability_transfer_success']} |"
+        )
+
+    success_provenance_lines = [
+        "| Repository | Task | Variant | Repeat | Seed | Full Test Command | Exit Code | Provenance Hash | Held-Out Input Set |",
+        "|---|---|---|---:|---|---|---:|---|---|",
+    ]
+    for result in results:
+        if result.accepted_count <= 0 or result.full_test_exit_code != 0:
+            continue
+        success_provenance_lines.append(
+            f"| {result.repository} | {result.task} | {result.variant} | {result.repeat_index} | "
+            f"{result.seed} | `{result.full_test_command}` | {result.full_test_exit_code} | "
+            f"`{result.provenance_hash}` | `{result.held_out_input_set[:500]}` |"
         )
 
     repositories = sorted({result.repository for result in results})
@@ -1682,6 +2167,10 @@ def write_markdown_reports(output_dir: Path, results: List[ExperimentResult]) ->
         "## Baseline And Transfer Scorecard",
         "",
         *comparison_lines,
+        "",
+        "## Counted Success Provenance",
+        "",
+        *success_provenance_lines,
         "",
         "## Review-Relevant Claims",
         "",
@@ -1795,7 +2284,7 @@ def run_suite(args: argparse.Namespace) -> Path:
                     if not task_applies_to_repository(task, repository):
                         continue
                     for variant in variants:
-                        seed = stable_trial_seed(repository.name, task.name, variant.name, repeat_index)
+                        seed = stable_paired_seed(repository.name, task.name, repeat_index)
                         work_repo = tmp_root / f"{repository.name}__{task.name}__{variant.name}__r{repeat_index}"
                         build_benchmark_repo(repo_root, work_repo, repository)
                         prepare_task(work_repo, task)
@@ -1806,6 +2295,7 @@ def run_suite(args: argparse.Namespace) -> Path:
                                 proc = run_loop_variant(
                                     work_repo,
                                     variant,
+                                    seed=seed,
                                     max_generations=args.max_generations,
                                     max_candidates=args.max_candidates,
                                     wall_seconds=args.wall_seconds,
@@ -1860,7 +2350,12 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     parser.add_argument("--repository", action="append", default=[])
     parser.add_argument("--task", action="append", default=[])
     parser.add_argument("--variant", action="append", default=[])
-    parser.add_argument("--repeats", type=int, default=2)
+    parser.add_argument("--repeats", type=int, default=10)
+    parser.add_argument(
+        "--allow-low-repeats",
+        action="store_true",
+        help="Allow fewer than 10 repeats for local smoke checks; reported wins remain underpowered.",
+    )
     parser.add_argument("--max-generations", type=int, default=4)
     parser.add_argument("--max-candidates", type=int, default=4)
     parser.add_argument("--wall-seconds", type=int, default=1800)
@@ -1868,6 +2363,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     args = parser.parse_args(argv)
     if args.repeats < 1:
         parser.error("--repeats must be at least 1")
+    if args.repeats < 10 and not args.allow_low_repeats:
+        parser.error("--repeats must be at least 10 unless --allow-low-repeats is set")
 
     output_dir = run_suite(args)
     print(json.dumps({"output_dir": str(output_dir)}, indent=2, sort_keys=True))

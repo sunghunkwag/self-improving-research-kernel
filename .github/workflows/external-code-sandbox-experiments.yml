@@ -6,7 +6,7 @@ on:
       repeats:
         description: Repeated trials per external code repository/task/variant cell.
         required: true
-        default: "2"
+        default: "10"
       max_generations:
         description: Maximum loop generations per experiment run.
         required: true
@@ -106,6 +106,7 @@ jobs:
             --repository external_pandas_code_transfer_repo \
             --repository external_dask_code_transfer_repo \
             --variant verified_closed_loop \
+            --variant evolutionary_repair_loop \
             --variant agent_coding_loop \
             --variant ci_only_validation \
             --repeats "${{ inputs.repeats }}" \
