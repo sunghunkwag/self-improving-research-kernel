@@ -616,6 +616,23 @@ def build_compact_kernel_repo(src: Path, dst: Path) -> None:
     copy_repo(src, dst)
 
 
+def build_minimal_transfer_repo(src: Path, dst: Path) -> None:
+    """Build a small full-test-capable fixture for powered transfer cells."""
+
+    dst.mkdir(parents=True, exist_ok=True)
+    copy_required_file(src, dst, "scripts/closed_recursive_self_improvement_loop.py")
+    copy_required_file(src, dst, "shared/local_corpus.py")
+    for relative_path in (
+        "scripts/rsi_policy_registry.py",
+        "shared/__init__.py",
+        "shared/capability_benchmarks.py",
+        "shared/capability_primitives.py",
+        "conftest.py",
+        "pytest.ini",
+    ):
+        copy_optional_file(src, dst, relative_path)
+
+
 def build_unseen_schema_transfer_repo(
     src: Path,
     dst: Path,
@@ -674,7 +691,7 @@ def build_composite_schema_transfer_repo(
 ) -> None:
     """Build a multi-field transfer fixture that requires one general schema repair."""
 
-    build_compact_kernel_repo(src, dst)
+    build_minimal_transfer_repo(src, dst)
     local_corpus = dst / "shared" / "local_corpus.py"
     text = local_corpus.read_text(encoding="utf-8")
     marker = "    feature_flags: Tuple[str, ...] = ()\n"
