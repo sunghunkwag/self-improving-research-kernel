@@ -234,6 +234,27 @@ def test_schema_transfer_manifest_rejects_partial_schema_candidate_before_full_p
     assert "partial_schema_candidate_failed_composite_manifest" in gate.stderr_tail
 
 
+def test_schema_transfer_manifest_skips_quarantine_only_exploration(tmp_path):
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    (repo / "schema_transfer_manifest.json").write_text('{"fields": []}', encoding="utf-8")
+    loop = ClosedRecursiveSelfImprovementLoop(
+        repo,
+        state_dir=tmp_path / "state",
+        exploration_policy="recursive_quarantine",
+        exploration_depth=2,
+    )
+
+    records = loop.run_quarantine_exploration(
+        {"accepted": [], "rejected": [], "active_generation": 0, "active_base": "initial"},
+        max_candidates=4,
+        started=__import__("time").monotonic(),
+        wall_seconds=60,
+    )
+
+    assert records == []
+
+
 def test_capability_operator_candidates_include_delta_metadata(tmp_path):
     repo = tmp_path / "repo"
     shared = repo / "shared"

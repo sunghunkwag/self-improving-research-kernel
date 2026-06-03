@@ -2138,6 +2138,8 @@ print({{"seed": {self.capability_seed!r}, "hidden_inputs": hidden_inputs, "metho
 
         if not self.exploration_enabled():
             return []
+        if (self.repo_root / "schema_transfer_manifest.json").exists():
+            return []
         records: List[dict] = []
         self.state_dir.mkdir(parents=True, exist_ok=True)
         with tempfile.TemporaryDirectory(prefix="closed_rsi_quarantine_", dir=str(self.state_dir)) as tmp:
