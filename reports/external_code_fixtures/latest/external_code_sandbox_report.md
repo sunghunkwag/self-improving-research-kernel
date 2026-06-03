@@ -4,7 +4,7 @@ These fixtures transfer bounded source excerpts and issue failure excerpts from 
 
 | Repository | Source Path | Issue | Field | Values | Source Lines |
 |---|---|---|---|---|---:|
-| `psf/requests` | `src/requests/sessions.py` | [issue](https://github.com/psf/requests/issues/4965) | `external_requests_code_signals` | `merge_setting_none_header, merge_setting, merge_hooks, src, requests` | 51-109 |
+| `psf/requests` | `src/requests/sessions.py` | [issue](https://github.com/psf/requests/issues/2109) | `external_requests_code_signals` | `merge_setting_none_header, merge_setting, merge_hooks, src, requests` | 51-109 |
 
 ## Safety Controls
 

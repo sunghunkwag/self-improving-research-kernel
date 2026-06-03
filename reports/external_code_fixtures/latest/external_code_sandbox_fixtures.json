@@ -2,9 +2,9 @@
   "fixture_kind": "external_code_sandbox",
   "fixtures": [
     {
-      "failure_excerpt_line_count": 2,
+      "failure_excerpt_line_count": 6,
       "failure_excerpt_path": "failures/psf_requests_failure.txt",
-      "failure_excerpt_sha256": "3bd526e1c1acd6c1247d5c2bc5922ba0fe37bf52c329d978674044d6632ac2d2",
+      "failure_excerpt_sha256": "d4de5f78b62c0a5c0803bf9d0490e7403dd9eca12c82299a44547f56c17f6896",
       "field_name": "external_requests_code_signals",
       "field_values": [
         "merge_setting_none_header",
@@ -17,9 +17,9 @@
         "headers"
       ],
       "fixture_id": "external-code:psf/requests",
-      "issue_task_id": "github:psf/requests#4965",
-      "issue_title": "Accessing response.content twice removes forgets read error",
-      "issue_url": "https://github.com/psf/requests/issues/4965",
+      "issue_task_id": "github:psf/requests#2109",
+      "issue_title": "[idea] Change how we merge request and session settings",
+      "issue_url": "https://github.com/psf/requests/issues/2109",
       "safety_controls": [
         "text_fixture_only",
         "no_external_code_execution",
@@ -47,7 +47,7 @@
       "source_url": "https://raw.githubusercontent.com/psf/requests/main/src/requests/sessions.py"
     }
   ],
-  "generated_at": "2026-06-03T12:49:31Z",
+  "generated_at": "2026-06-03T12:58:13Z",
   "grounding_path": "reports/external_grounding/external_transfer/latest/external_grounding_tasks.json",
   "safety_model": [
     "External code is fetched only as bounded text excerpts.",
