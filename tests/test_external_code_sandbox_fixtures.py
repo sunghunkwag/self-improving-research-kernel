@@ -62,6 +62,13 @@ def test_build_external_code_sandbox_report_writes_text_only_fixtures(tmp_path, 
     def fake_github_json_request(url, **_kwargs):
         if url == "https://api.github.com/repos/psf/requests":
             return {"default_branch": "main"}
+        if url == "https://api.github.com/repos/psf/requests/issues/1921":
+            return {
+                "title": "Session headers cannot be overridden by None",
+                "body": "```python\nassert 'User-Agent' not in merge_setting({'User-Agent': None}, session_headers)\n```",
+                "labels": [{"name": "Bug"}],
+                "html_url": "https://github.com/psf/requests/issues/1921",
+            }
         if "contents/src/requests/sessions.py" in url:
             return {
                 "type": "file",
@@ -102,6 +109,8 @@ def test_build_external_code_sandbox_report_writes_text_only_fixtures(tmp_path, 
     fixture = fixtures[0]
     payload = json.loads((tmp_path / "fixtures" / "external_code_sandbox_fixtures.json").read_text())
     assert fixture.fixture_id == "external-code:psf/requests"
+    assert fixture.issue_task_id == "github:psf/requests#1921"
+    assert fixture.issue_url == "https://github.com/psf/requests/issues/1921"
     assert fixture.source_snippet_path.endswith(".txt")
     assert fixture.failure_excerpt_path.endswith(".txt")
     assert fixture.source_commit_sha == "0123456789abcdef0123456789abcdef01234567"

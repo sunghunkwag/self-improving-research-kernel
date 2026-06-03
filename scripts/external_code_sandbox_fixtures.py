@@ -12,6 +12,7 @@ import hashlib
 import json
 import os
 import re
+import shutil
 import time
 import urllib.parse
 import urllib.request
@@ -36,6 +37,7 @@ class ExternalCodeSourceSpec:
     path_candidates: Tuple[str, ...]
     anchor_terms: Tuple[str, ...]
     description: str
+    issue_number: Optional[int] = None
 
 
 @dataclass(frozen=True)
@@ -82,6 +84,7 @@ EXTERNAL_CODE_SOURCE_SPECS: Tuple[ExternalCodeSourceSpec, ...] = (
         path_candidates=("src/requests/sessions.py",),
         anchor_terms=("merge_setting", "Session", "headers", "None"),
         description="requests session merge_setting source surface paired with an inherited-header removal bug fixture.",
+        issue_number=1921,
     ),
     ExternalCodeSourceSpec(
         repository="hypothesisworks/hypothesis",
@@ -270,6 +273,44 @@ def select_grounding_task(
     )
 
 
+def fetch_pinned_issue_task(
+    spec: ExternalCodeSourceSpec,
+    *,
+    token: Optional[str],
+) -> Optional[Dict[str, object]]:
+    """Fetch one pinned issue as bounded metadata for an executable code fixture."""
+
+    if spec.issue_number is None:
+        return None
+    try:
+        payload = github_json_request(
+            f"https://api.github.com/repos/{spec.repository}/issues/{spec.issue_number}",
+            token=token,
+        )
+    except Exception:
+        return None
+    if not isinstance(payload, dict) or payload.get("pull_request"):
+        return None
+    labels = tuple(
+        sorted(
+            str(label.get("name", ""))
+            for label in payload.get("labels", [])
+            if isinstance(label, dict) and label.get("name")
+        )
+    )
+    body = str(payload.get("body", "") or "")
+    return {
+        "repository": spec.repository,
+        "task_id": f"github:{spec.repository}#{spec.issue_number}",
+        "title": str(payload.get("title", "") or ""),
+        "body_excerpt": body[:MAX_FAILURE_SNIPPET_CHARS],
+        "labels": labels,
+        "task_kind": "external_code_repair_issue",
+        "url": str(payload.get("html_url", "") or f"https://github.com/{spec.repository}/issues/{spec.issue_number}"),
+        "grounding_score": 10.0,
+    }
+
+
 def extract_fenced_blocks(text: str, *, max_chars: int = MAX_FAILURE_SNIPPET_CHARS) -> Tuple[str, ...]:
     blocks: List[str] = []
     for match in re.finditer(r"```(?P<lang>[A-Za-z0-9_+-]*)\s*(?P<body>.*?)```", text, flags=re.DOTALL):
@@ -417,6 +458,8 @@ def build_external_code_sandbox_report(
     max_source_chars: int = MAX_SOURCE_SNIPPET_CHARS,
     max_failure_chars: int = MAX_FAILURE_SNIPPET_CHARS,
 ) -> Tuple[ExternalCodeSandboxFixture, ...]:
+    if output_dir.exists():
+        shutil.rmtree(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     selected_repositories = set(repositories)
     specs = tuple(
@@ -428,7 +471,7 @@ def build_external_code_sandbox_report(
     fixtures: List[ExternalCodeSandboxFixture] = []
 
     for spec in specs:
-        task = select_grounding_task(tasks, spec.repository)
+        task = fetch_pinned_issue_task(spec, token=token) or select_grounding_task(tasks, spec.repository)
         ref, commit_sha, source_path, source_url, source_text = fetch_external_source(spec, token=token)
         source_snippet, line_start, line_end = bounded_source_window(
             source_text,
