@@ -7,4 +7,5 @@
 - Accepted and rejected records are persisted as JSON provenance.
 - Benchmark trials run inside isolated disposable repository fixtures.
 - Dangerous ablations such as no rollback run only in disposable experiment copies.
-- The main workflow commits only accepted state and validated source changes.
+- The main workflow commits only accepted state and source changes validated by full pytest.
+- External-code repair fixtures quarantine reference fixes by hash and reject candidates that touch quarantine paths or paste held-out reference spans.

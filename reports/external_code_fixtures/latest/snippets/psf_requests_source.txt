@@ -1,78 +1,67 @@
 Repository: psf/requests
-Source: https://raw.githubusercontent.com/psf/requests/main/src/requests/models.py
+Source: https://raw.githubusercontent.com/psf/requests/main/src/requests/sessions.py
 Ref: main
-Path: src/requests/models.py
-Lines: 35-105
+Commit: cd90742ed94d901759e26766197d0ce7c7bd9c8e
+Path: src/requests/sessions.py
+Lines: 51-109
 Safety: text fixture only; not imported or executed.
 
-from urllib3.filepost import encode_multipart_formdata
-from urllib3.util import parse_url
-
-from ._internal_utils import to_native_string, unicode_is_ascii
-from ._types import SupportsRead as _SupportsRead
-from .auth import HTTPBasicAuth
-from .compat import (
-    JSONDecodeError,
-    basestring,
-    builtin_str,
-    chardet,
-    cookielib,
-    urlencode,
-    urlsplit,
-    urlunparse,
-)
-from .compat import json as complexjson
-from .cookies import (
-    _copy_cookie_jar,  # type: ignore[reportPrivateUsage]
-    cookiejar_from_dict,
-    get_cookie_header,
-)
-from .exceptions import (
-    ChunkedEncodingError,
-    ConnectionError,
-    ContentDecodingError,
-    HTTPError,
-    InvalidJSONError,
-    InvalidURL,
-    MissingSchema,
-    StreamConsumedError,
-)
-from .exceptions import JSONDecodeError as RequestsJSONDecodeError
-from .exceptions import SSLError as RequestsSSLError
-from .hooks import default_hooks
-from .status_codes import codes
-from .structures import CaseInsensitiveDict
-from .utils import (
-    check_header_validity,
     get_auth_from_url,
-    guess_filename,
-    guess_json_utf,
-    iter_slices,
-    parse_header_links,
+    get_environ_proxies,
+    get_netrc_auth,
     requote_uri,
-    stream_decode_response_unicode,
-    super_len,
+    resolve_proxies,
+    rewind_body,
+    should_bypass_proxies,  # type: ignore[reportUnusedImport]  # re-export for external consumers
     to_key_val_list,
 )
 
 if TYPE_CHECKING:
     from http.cookiejar import CookieJar
 
-    from typing_extensions import Self
+    from typing_extensions import Self, Unpack
 
     from . import _types as _t
-    from .adapters import HTTPAdapter
-    from .cookies import RequestsCookieJar
+    from .adapters import BaseAdapter
 
-#: The set of HTTP status codes that indicate an automatically
-#: processable redirect.
-REDIRECT_STATI: Final[tuple[int, ...]] = (  # type: ignore[assignment]
-    codes.moved,  # 301
-    codes.found,  # 302
-    codes.other,  # 303
-    codes.temporary_redirect,  # 307
-    codes.permanent_redirect,  # 308
-)
+# Preferred clock, based on which one is more accurate on a given system.
+if sys.platform == "win32":
+    preferred_clock = time.perf_counter
+else:
+    preferred_clock = time.time
 
-DEFAULT_REDIRECT_LIMIT: int = 30
-CONTENT_CHUNK_SIZE: int = 10 * 1024
+
+def merge_setting(
+    request_setting: Any, session_setting: Any, dict_class: type = OrderedDict
+) -> Any:
+    """Determines appropriate setting for a given request, taking into account
+    the explicit setting on that request, and the setting in the session. If a
+    setting is a dictionary, they will be merged together using `dict_class`
+    """
+
+    if session_setting is None:
+        return request_setting
+
+    if request_setting is None:
+        return session_setting
+
+    # Bypass if not a dictionary (e.g. verify)
+    if not (
+        isinstance(session_setting, Mapping) and isinstance(request_setting, Mapping)
+    ):
+        return request_setting
+
+    merged_setting = dict_class(to_key_val_list(session_setting))  # type: ignore[arg-type]  # isinstance narrows Any to Mapping[Unknown]
+    merged_setting.update(to_key_val_list(request_setting))  # type: ignore[arg-type]
+
+    # Remove keys that are set to None. Extract keys first to avoid altering
+    # the dictionary during iteration.
+    none_keys = [k for (k, v) in merged_setting.items() if v is None]
+    for key in none_keys:
+        del merged_setting[key]
+
+    return merged_setting
+
+
+def merge_hooks(
+    request_hooks: _t.HooksType,

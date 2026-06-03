@@ -1,35 +1,17 @@
 {
-  "repeats": 1,
+  "repeats": 20,
   "repositories": [
     {
-      "description": "Actual psf/requests source-code and issue-failure sandbox fixture.",
+      "description": "Executable psf/requests merge_setting bug port with buggy source, visible failing test, quarantined reference hash, and hidden seed-derived cases.",
       "name": "external_requests_code_transfer_repo",
       "split": "external_code_unseen",
       "transfer_origin": "psf/requests"
-    },
-    {
-      "description": "Actual Hypothesis source-code and issue-failure sandbox fixture.",
-      "name": "external_hypothesis_code_transfer_repo",
-      "split": "external_code_unseen",
-      "transfer_origin": "hypothesisworks/hypothesis"
-    },
-    {
-      "description": "Actual pandas source-code and issue-failure sandbox fixture.",
-      "name": "external_pandas_code_transfer_repo",
-      "split": "external_code_unseen",
-      "transfer_origin": "pandas-dev/pandas"
-    },
-    {
-      "description": "Actual dask source-code and issue-failure sandbox fixture.",
-      "name": "external_dask_code_transfer_repo",
-      "split": "external_code_unseen",
-      "transfer_origin": "dask/dask"
     }
   ],
   "tasks": [
     {
       "claim": "",
-      "description": "Remove accepted local corpus query APIs and measure whether the loop recovers them.",
+      "description": "Remove accepted local corpus query APIs and measure whether the loop recreates them under full pytest.",
       "name": "local_corpus_queries_clean",
       "repositories": [
         "omega_full_repo",
@@ -167,27 +149,19 @@
       ]
     },
     {
-      "claim": "External code transfer succeeds when the loop repairs a local executable failure target derived from bounded hypothesisworks/hypothesis source and failure snippets.",
-      "description": "Measure transfer on a sandbox fixture extracted from actual hypothesisworks/hypothesis source snippets and issue failure excerpts.",
-      "name": "external_hypothesis_code_failure_fixture_query",
+      "claim": "Unseen transfer succeeds only when one general schema patch repairs all held-out tuple-membership query surfaces under full pytest.",
+      "description": "Composite held-out schema fixture with four tuple-valued record fields absent from the original benchmark repositories.",
+      "name": "composite_unseen_schema_transfer",
       "repositories": [
-        "external_hypothesis_code_transfer_repo"
+        "composite_unseen_schema_transfer_repo"
       ]
     },
     {
-      "claim": "External code transfer succeeds when the loop repairs a local executable failure target derived from bounded pandas-dev/pandas source and failure snippets.",
-      "description": "Measure transfer on a sandbox fixture extracted from actual pandas-dev/pandas source snippets and issue failure excerpts.",
-      "name": "external_pandas_code_failure_fixture_query",
+      "claim": "External transfer succeeds only when one general schema patch repairs all issue-metadata-derived query surfaces under full pytest.",
+      "description": "Composite external issue fixture whose schema fields are derived from real GitHub issue metadata across the allowlisted repositories.",
+      "name": "composite_external_issue_transfer",
       "repositories": [
-        "external_pandas_code_transfer_repo"
-      ]
-    },
-    {
-      "claim": "External code transfer succeeds when the loop repairs a local executable failure target derived from bounded dask/dask source and failure snippets.",
-      "description": "Measure transfer on a sandbox fixture extracted from actual dask/dask source snippets and issue failure excerpts.",
-      "name": "external_dask_code_failure_fixture_query",
-      "repositories": [
-        "external_dask_code_transfer_repo"
+        "composite_external_issue_transfer_repo"
       ]
     }
   ],
@@ -195,7 +169,10 @@
     {
       "broad_gate": true,
       "description": "Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",
+      "exploration_depth": 2,
+      "exploration_policy": "recursive_quarantine",
       "family": "proposed",
+      "full_test_required": true,
       "max_candidates_override": null,
       "max_generations_override": null,
       "name": "verified_closed_loop",
@@ -207,7 +184,10 @@
     {
       "broad_gate": true,
       "description": "Baseline: single-pass automated coding loop with validation but without persistent recursive depth.",
+      "exploration_depth": 0,
+      "exploration_policy": "conservative",
       "family": "baseline_agent_coding_loop",
+      "full_test_required": true,
       "max_candidates_override": 1,
       "max_generations_override": 1,
       "name": "agent_coding_loop",
@@ -218,8 +198,26 @@
     },
     {
       "broad_gate": true,
+      "description": "Baseline: retry candidate repair loop with the same safety gates but without recursive quarantine search or persistent self-policy depth.",
+      "exploration_depth": 0,
+      "exploration_policy": "conservative",
+      "family": "baseline_evolutionary_repair_loop",
+      "full_test_required": true,
+      "max_candidates_override": 3,
+      "max_generations_override": 3,
+      "name": "evolutionary_repair_loop",
+      "persistence": false,
+      "rollback": true,
+      "run_loop": true,
+      "thdse_core_gate": true
+    },
+    {
+      "broad_gate": true,
       "description": "Baseline: run validation without candidate generation or code patching.",
+      "exploration_depth": 0,
+      "exploration_policy": "conservative",
       "family": "baseline_ci_only",
+      "full_test_required": true,
       "max_candidates_override": null,
       "max_generations_override": null,
       "name": "ci_only_validation",

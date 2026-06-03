@@ -7,14 +7,14 @@
       "failure_excerpt_sha256": "3bd526e1c1acd6c1247d5c2bc5922ba0fe37bf52c329d978674044d6632ac2d2",
       "field_name": "external_requests_code_signals",
       "field_values": [
-        "response_content",
+        "merge_setting_none_header",
+        "merge_setting",
+        "merge_hooks",
         "src",
         "requests",
-        "models",
-        "content",
-        "iter_content",
-        "response",
-        "bug"
+        "sessions",
+        "session",
+        "headers"
       ],
       "fixture_id": "external-code:psf/requests",
       "issue_task_id": "github:psf/requests#4965",
@@ -28,159 +28,32 @@
         "repository_allowlist",
         "source_url_provenance"
       ],
-      "source_file_path": "src/requests/models.py",
-      "source_line_end": 105,
-      "source_line_start": 35,
+      "source_commit_sha": "cd90742ed94d901759e26766197d0ce7c7bd9c8e",
+      "source_file_path": "src/requests/sessions.py",
+      "source_line_end": 109,
+      "source_line_start": 51,
       "source_ref": "main",
       "source_repository": "psf/requests",
-      "source_snippet_line_count": 71,
+      "source_snippet_line_count": 59,
       "source_snippet_path": "snippets/psf_requests_source.txt",
-      "source_snippet_sha256": "90c907ec67e225376b57aabe725d26b79f8f5308e2e28b1f8ed1e252988d9e88",
+      "source_snippet_sha256": "4b0fdea45f0aca37fa69a3c0f4fd350134135ce7e397ecb311efc9eef0de04d9",
       "source_symbols": [
+        "merge_setting",
+        "merge_hooks",
         "src",
         "requests",
-        "models"
+        "sessions"
       ],
-      "source_url": "https://raw.githubusercontent.com/psf/requests/main/src/requests/models.py"
-    },
-    {
-      "failure_excerpt_line_count": 2,
-      "failure_excerpt_path": "failures/hypothesisworks_hypothesis_failure.txt",
-      "failure_excerpt_sha256": "f3de306ea46fd820a34840a52547ecbdf7c45af7d276adb23cf4997c4d0774a4",
-      "field_name": "external_hypothesis_code_signals",
-      "field_values": [
-        "pytest_patch",
-        "pytest_collection_modifyitems",
-        "hypothesis",
-        "src",
-        "hypothesis_pytestplugin",
-        "make_patch",
-        "unified_diff",
-        "pytest"
-      ],
-      "fixture_id": "external-code:hypothesisworks/hypothesis",
-      "issue_task_id": "github:hypothesisworks/hypothesis#4729",
-      "issue_title": "Time blowup for `from_type` with certain abstract classes",
-      "issue_url": "https://github.com/HypothesisWorks/hypothesis/issues/4729",
-      "safety_controls": [
-        "text_fixture_only",
-        "no_external_code_execution",
-        "bounded_source_excerpt",
-        "bounded_failure_excerpt",
-        "repository_allowlist",
-        "source_url_provenance"
-      ],
-      "source_file_path": "hypothesis/src/_hypothesis_pytestplugin.py",
-      "source_line_end": 440,
-      "source_line_start": 396,
-      "source_ref": "master",
-      "source_repository": "hypothesisworks/hypothesis",
-      "source_snippet_line_count": 45,
-      "source_snippet_path": "snippets/hypothesisworks_hypothesis_source.txt",
-      "source_snippet_sha256": "ad9373e3d3e6ec7f1ec4a5a723eab602061a04bc56bd634fbe2f361d4c8384fd",
-      "source_symbols": [
-        "pytest_collection_modifyitems",
-        "hypothesis",
-        "src",
-        "hypothesis_pytestplugin"
-      ],
-      "source_url": "https://raw.githubusercontent.com/HypothesisWorks/hypothesis/master/hypothesis/src/_hypothesis_pytestplugin.py"
-    },
-    {
-      "failure_excerpt_line_count": 7,
-      "failure_excerpt_path": "failures/pandas_dev_pandas_failure.txt",
-      "failure_excerpt_sha256": "8fecd004736f53c3db7b14b1415c117ac144439f7f582beaa7270e1763712601",
-      "field_name": "external_pandas_code_signals",
-      "field_values": [
-        "series_map_dtype",
-        "pandas",
-        "core",
-        "series",
-        "map",
-        "map_values",
-        "dtype",
-        "bug"
-      ],
-      "fixture_id": "external-code:pandas-dev/pandas",
-      "issue_task_id": "github:pandas-dev/pandas#65735",
-      "issue_title": "BUG: Incoherent dynamic dtype changes in `.map()`",
-      "issue_url": "https://github.com/pandas-dev/pandas/issues/65735",
-      "safety_controls": [
-        "text_fixture_only",
-        "no_external_code_execution",
-        "bounded_source_excerpt",
-        "bounded_failure_excerpt",
-        "repository_allowlist",
-        "source_url_provenance"
-      ],
-      "source_file_path": "pandas/core/series.py",
-      "source_line_end": 89,
-      "source_line_start": 1,
-      "source_ref": "main",
-      "source_repository": "pandas-dev/pandas",
-      "source_snippet_line_count": 89,
-      "source_snippet_path": "snippets/pandas_dev_pandas_source.txt",
-      "source_snippet_sha256": "684ac4fd16030b6f17d3c8a50564696dff5761b29bc43aad6b972ecd4ed990d6",
-      "source_symbols": [
-        "pandas",
-        "core",
-        "series"
-      ],
-      "source_url": "https://raw.githubusercontent.com/pandas-dev/pandas/main/pandas/core/series.py"
-    },
-    {
-      "failure_excerpt_line_count": 1,
-      "failure_excerpt_path": "failures/dask_dask_failure.txt",
-      "failure_excerpt_sha256": "3020ff095bd1556028528187996004a64842473eef30e29d645dc321aa73b634",
-      "field_name": "external_dask_code_signals",
-      "field_values": [
-        "array_cumsum",
-        "nanprod",
-        "nancumsum",
-        "nancumprod",
-        "dask",
-        "array",
-        "reductions",
-        "cumsum"
-      ],
-      "fixture_id": "external-code:dask/dask",
-      "issue_task_id": "github:dask/dask#12359",
-      "issue_title": "'cumsum' results differ from 'cumsum' on a pure numpy array",
-      "issue_url": "https://github.com/dask/dask/issues/12359",
-      "safety_controls": [
-        "text_fixture_only",
-        "no_external_code_execution",
-        "bounded_source_excerpt",
-        "bounded_failure_excerpt",
-        "repository_allowlist",
-        "source_url_provenance"
-      ],
-      "source_file_path": "dask/array/reductions.py",
-      "source_line_end": 247,
-      "source_line_start": 187,
-      "source_ref": "main",
-      "source_repository": "dask/dask",
-      "source_snippet_line_count": 61,
-      "source_snippet_path": "snippets/dask_dask_source.txt",
-      "source_snippet_sha256": "4953f6ff1312237ba58626ed054627c4bc77692dfec217efcc816f3d90957635",
-      "source_symbols": [
-        "nanprod",
-        "nancumsum",
-        "nancumprod",
-        "dask",
-        "array",
-        "reductions"
-      ],
-      "source_url": "https://raw.githubusercontent.com/dask/dask/main/dask/array/reductions.py"
+      "source_url": "https://raw.githubusercontent.com/psf/requests/main/src/requests/sessions.py"
     }
   ],
-  "generated_at": "2026-05-27T04:00:35Z",
+  "generated_at": "2026-06-03T12:49:31Z",
   "grounding_path": "reports/external_grounding/external_transfer/latest/external_grounding_tasks.json",
   "safety_model": [
     "External code is fetched only as bounded text excerpts.",
     "No external repository code is cloned, installed, imported, or executed.",
     "Failure excerpts come from bounded issue metadata already captured by the grounding step.",
-    "Every fixture records source URL, branch ref, path, hashes, and safety controls.",
+    "Every fixture records source URL, branch ref, file commit, path, hashes, and safety controls.",
     "Downstream experiments execute only local sandbox fixture tests."
   ]
 }

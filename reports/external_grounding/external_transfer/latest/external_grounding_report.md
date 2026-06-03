@@ -1,8 +1,8 @@
 # External Grounding Report
 
-- Generated at: 2026-06-03T04:10:31Z
-- Sources: 4
-- Tasks: 4
+- Generated at: 2026-06-03T12:49:29Z
+- Sources: 1
+- Tasks: 1
 
 ## Safety Model
 
@@ -13,33 +13,6 @@
 - Every task keeps source URL and retrieval provenance.
 
 ## Grounded Tasks
-
-### github:dask/dask#12359
-
-- Repository: `dask/dask`
-- Kind: `external_bug_repair`
-- Score: 3.000
-- Labels: array, bug
-- URL: https://github.com/dask/dask/issues/12359
-- Title: 'cumsum' results differ from 'cumsum' on a pure numpy array
-
-### github:hypothesisworks/hypothesis#4475
-
-- Repository: `hypothesisworks/hypothesis`
-- Kind: `external_regression_repair`
-- Score: 3.000
-- Labels: bug
-- URL: https://github.com/HypothesisWorks/hypothesis/issues/4475
-- Title: Race condition error in `recursive_property`
-
-### github:pandas-dev/pandas#65778
-
-- Repository: `pandas-dev/pandas`
-- Kind: `external_regression_repair`
-- Score: 3.000
-- Labels: Bug, IO Data
-- URL: https://github.com/pandas-dev/pandas/issues/65778
-- Title: BUG: `DataFrame.to_dict(orient="index", into=...)` does not apply `into` to nested mappings
 
 ### github:psf/requests#4965
 
