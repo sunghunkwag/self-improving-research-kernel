@@ -1954,6 +1954,8 @@ print({{"seed": {self.capability_seed!r}, "hidden_inputs": hidden_inputs, "metho
         schema_gate = self.schema_transfer_evaluator_gate(candidate)
         if schema_gate is not None:
             gates.append(schema_gate)
+        if any(gate.exit_code != 0 for gate in gates):
+            return gates
         gates.append(
             self.run_command(
                 f"{candidate.name}_full_pytest",
