@@ -208,20 +208,39 @@ The experiment suite writes both raw and aggregate artifacts under
 - `baseline_comparison.md`: proposed-loop vs baseline scorecard
 - `evidence_scorecard.json`: machine-readable win/tie/inconclusive labels
 
-Powered experiment cells use at least ten paired repeats per
+Powered experiment cells use at least twenty paired repeats per
 repository/task/variant. The same seed is recorded for proposed and baseline
 variants in each repeat, and aggregate rows report mean, variance, and
 bootstrap confidence intervals for accepted rate and improvement depth. A win
 is counted only when the paired margin or confidence-bound comparison clears
-the baseline; otherwise the scorecard keeps `tie_or_frontier_match` or
+the baseline with a non-degenerate interval; otherwise the scorecard keeps
+`deterministic_not_powered`, `tie_or_frontier_match`, or
 `baseline_stronger_or_inconclusive`.
+
+Current GitHub Actions evidence:
+
+- `unseen_transfer_success=true` on
+  `reports/rsi_experiments/unseen_multi_transfer/latest/`: 20 paired repeats,
+  proposed accepted-rate mean `0.188571`, accepted-rate margin CI
+  `[0.172381, 0.20631]` vs `evolutionary_repair_loop`, full-test success rate
+  `1.0`.
+- `external_transfer_success=true` on
+  `reports/rsi_experiments/external_transfer/latest/`: 20 paired repeats,
+  proposed accepted-rate mean `0.180476`, accepted-rate margin CI
+  `[0.162381, 0.199048]` vs `evolutionary_repair_loop`, full-test success rate
+  `1.0`.
+- `external_code_transfer_success=true` on
+  `reports/rsi_experiments/external_code_transfer/latest/`: 20 paired repeats,
+  proposed accepted-rate mean `0.4725`, accepted-rate margin CI
+  `[0.2975, 0.6425]`, improvement-depth margin CI `[1.2, 2.4]`, full-test
+  success rate `1.0`.
 
 Additional evidence artifacts:
 
 - `reports/rsi_experiments/evidence_index.md`: index of repeated, transfer,
   baseline, ablation, and failure-analysis evidence
-- `reports/rsi_experiments/unseen_transfer/latest/`: held-out schema-transfer
-  matrix with ten paired repeated trials per variant
+- `reports/rsi_experiments/unseen_transfer/latest/`: earlier held-out
+  schema-transfer matrix retained for provenance
 - `reports/rsi_experiments/unseen_multi_transfer/latest/`: four held-out
   schema-transfer fixtures across generic, security, science, and control
   domains, plus a composite held-out fixture that requires one general
@@ -230,10 +249,11 @@ Additional evidence artifacts:
   actual external GitHub issue metadata for `psf/requests`,
   `hypothesisworks/hypothesis`, `pandas-dev/pandas`, and `dask/dask`, plus a
   composite external fixture over all four metadata-derived schema fields
-- `reports/external_code_fixtures/latest/`: bounded source-code and
-  failure-excerpt sandbox fixtures from the same real external repositories
+- `reports/external_code_fixtures/latest/`: bounded `psf/requests` source-code
+  and issue-excerpt sandbox fixture derived from `src/requests/sessions.py`
+  and issue `psf/requests#2109`
 - `reports/rsi_experiments/external_code_transfer/latest/`: transfer matrix
-  over the external code sandbox fixtures
+  over the executable external code sandbox repair fixture
 - full-test command and exit-code evidence for every counted successful result
 - counted success provenance: seed, held-out input set, full-test command,
   full-test exit code, and provenance hash
@@ -241,7 +261,11 @@ Additional evidence artifacts:
 External code sandbox fixtures now include a local executable repair target in
 the disposable repository. The external source and failure excerpts remain
 text-only, but the downstream benchmark is a real local repair task rather than
-only a metadata summary.
+only a metadata summary. The current executable fixture ports the
+`requests.sessions.merge_setting` None-removal behavior into local buggy source,
+uses a visible failing test, generates seed-derived hidden counterexamples after
+the candidate patch, and stores the held-out reference fix only as quarantine
+hashes.
 
 Open-ended exploration proposals remain unapplied. Every materialized proposal
 now carries an executable validation plan; proposal text alone is not enough
@@ -254,9 +278,9 @@ record the result as an unseen transfer cell rather than as another seen-repo
 repair.
 
 The workflow `Unseen Transfer Experiments` runs a powered composite held-out
-schema cell without running the heavier full repository matrix. Local smoke checks can use
-`--allow-low-repeats`, but reported transfer wins should come from the Actions
-path with at least ten repeats and full-pytest evidence.
+schema cell without running the heavier full repository matrix. Local smoke
+checks can use `--allow-low-repeats`, but reported transfer wins should come
+from the Actions path with at least twenty repeats and full-pytest evidence.
 
 The workflow `External Transfer Experiments` refreshes bounded external GitHub
 issue metadata, builds an issue-derived composite fixture over the allowlisted
