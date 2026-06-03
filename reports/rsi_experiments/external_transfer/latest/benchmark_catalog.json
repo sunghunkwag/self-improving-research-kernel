@@ -1,5 +1,5 @@
 {
-  "repeats": 10,
+  "repeats": 20,
   "repositories": [
     {
       "description": "Composite external issue fixture whose schema fields are derived from real GitHub issue metadata across the allowlisted repositories.",
@@ -146,30 +146,6 @@
       "name": "external_requests_code_failure_fixture_query",
       "repositories": [
         "external_requests_code_transfer_repo"
-      ]
-    },
-    {
-      "claim": "External code transfer succeeds when the loop repairs a local executable failure target derived from bounded hypothesisworks/hypothesis source and failure snippets.",
-      "description": "Measure transfer on a sandbox fixture extracted from actual hypothesisworks/hypothesis source snippets and issue failure excerpts.",
-      "name": "external_hypothesis_code_failure_fixture_query",
-      "repositories": [
-        "external_hypothesis_code_transfer_repo"
-      ]
-    },
-    {
-      "claim": "External code transfer succeeds when the loop repairs a local executable failure target derived from bounded pandas-dev/pandas source and failure snippets.",
-      "description": "Measure transfer on a sandbox fixture extracted from actual pandas-dev/pandas source snippets and issue failure excerpts.",
-      "name": "external_pandas_code_failure_fixture_query",
-      "repositories": [
-        "external_pandas_code_transfer_repo"
-      ]
-    },
-    {
-      "claim": "External code transfer succeeds when the loop repairs a local executable failure target derived from bounded dask/dask source and failure snippets.",
-      "description": "Measure transfer on a sandbox fixture extracted from actual dask/dask source snippets and issue failure excerpts.",
-      "name": "external_dask_code_failure_fixture_query",
-      "repositories": [
-        "external_dask_code_transfer_repo"
       ]
     },
     {

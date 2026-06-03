@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-03T12:58:11Z",
+  "generated_at": "2026-06-03T12:40:52Z",
   "safety_model": [
     "Only issue metadata is fetched.",
     "No external repository code is cloned or executed.",
@@ -13,9 +13,116 @@
       "provider": "github",
       "query": "state=open labels=bug",
       "repository": "psf/requests"
+    },
+    {
+      "max_items": 1,
+      "provider": "github",
+      "query": "state=open labels=bug",
+      "repository": "hypothesisworks/hypothesis"
+    },
+    {
+      "max_items": 1,
+      "provider": "github",
+      "query": "state=open labels=bug",
+      "repository": "pandas-dev/pandas"
+    },
+    {
+      "max_items": 1,
+      "provider": "github",
+      "query": "state=open labels=bug",
+      "repository": "dask/dask"
     }
   ],
   "tasks": [
+    {
+      "body_excerpt": "<!-- Please include a self-contained copy-pastable example that generates the issue if possible. Please be concise with code posted. See guidelines below on how to provide a good bug report: - Craft Minimal Bug Reports http://matthewrocklin.com/blog/work/2018/02/28/minimal-bug-reports - Minimal Complete Verifiable Examples https://stackoverflow.com/help/mcve Bug reports that follow these guidelines are easier to diagnose, and so are often handled much more quickly. --> **Describe the issue**: I wanted to calculate a cumsum on a dask array. The results differ from a cumsum on the same data opened as a pure numpy array. An example plot of the difference between the two approaches (cumsum over the horizontal axis): <img width=\"603\" height=\"481\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/2a2a2986-1371-4b6c-9459-237665c393e5\" /> There are 3 chunks in time. The results start to diverge at the start of the second chunk. I expected that using pure numpy arrays or dask arrays should yield results that are numerically close(r). Or maybe the difference can be explained solely by the fact that floating point numbers are not associative, and using dask means the data is added i",
+      "created_at": "2026-04-23T09:02:47Z",
+      "grounding_score": 3.0,
+      "issue_number": 12359,
+      "labels": [
+        "array",
+        "bug"
+      ],
+      "provenance": {
+        "retrieved_at": "2026-06-03T12:40:52Z",
+        "source_api": "https://api.github.com/repos/dask/dask/issues",
+        "source_url": "https://github.com/dask/dask/issues/12359"
+      },
+      "provider": "github",
+      "repository": "dask/dask",
+      "safety_controls": [
+        "metadata_only",
+        "no_remote_code_execution",
+        "bounded_issue_count",
+        "bounded_body_excerpt",
+        "repository_allowlist"
+      ],
+      "state": "open",
+      "task_id": "github:dask/dask#12359",
+      "task_kind": "external_bug_repair",
+      "title": "'cumsum' results differ from 'cumsum' on a pure numpy array",
+      "updated_at": "2026-05-28T17:08:36Z",
+      "url": "https://github.com/dask/dask/issues/12359"
+    },
+    {
+      "body_excerpt": "Part of https://github.com/HypothesisWorks/hypothesis/issues/4451. I have seen this error rarely when testing with multiple threads. As a debugging measure, I added a per-name lock around the entirety of `recursive_property`, but still saw this occur. My guess is a race in `mapping` somehow, such that a strategy doesn't get the `cache_key` set when we expect it to. But I'm not sure how this could happen. Keywords for searchers: `cached_is_empty`, `cached_is_cacheable`. ``` ~/Desktop/Liam/coding/hypothesis \u03bb PYTEST_RUN_PARALLEL_VERBOSE=1 p1 -k test_intervalset --parallel-threads 2 -s --hypothesis-profile=threading \u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015 test_error_for_index_of_not_present_value \u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015 Traceback (most recent call last): File \"/Users/tybug/Desktop/Liam/coding/hypothesis/hypothesis-python/tests/cover/test_intervalset.py\", line 43, in test_error_for_index_of_not_present_value @example(intervals=IntervalSet(()), v=0) ^^^ File \"/Users/tybug/Desktop/Liam/coding/hypothesis/hypothesis-python/src/hypothesis/core.py\", line 1877, in wrapped_test arguments, kwargs, stuff = process_arguments_to_given( ^^^^^^^^",
+      "created_at": "2025-07-16T20:40:33Z",
+      "grounding_score": 3.0,
+      "issue_number": 4475,
+      "labels": [
+        "bug"
+      ],
+      "provenance": {
+        "retrieved_at": "2026-06-03T12:40:51Z",
+        "source_api": "https://api.github.com/repos/hypothesisworks/hypothesis/issues",
+        "source_url": "https://github.com/HypothesisWorks/hypothesis/issues/4475"
+      },
+      "provider": "github",
+      "repository": "hypothesisworks/hypothesis",
+      "safety_controls": [
+        "metadata_only",
+        "no_remote_code_execution",
+        "bounded_issue_count",
+        "bounded_body_excerpt",
+        "repository_allowlist"
+      ],
+      "state": "open",
+      "task_id": "github:hypothesisworks/hypothesis#4475",
+      "task_kind": "external_regression_repair",
+      "title": "Race condition error in `recursive_property`",
+      "updated_at": "2025-07-16T20:40:36Z",
+      "url": "https://github.com/HypothesisWorks/hypothesis/issues/4475"
+    },
+    {
+      "body_excerpt": "#### Code Sample, a copy-pastable example if possible ```python from numpy import nan a = np.random.rand(3,4) a[:,-1] = range(3) b = np.random.rand(3,4) b[:,-1] = range(3) dfa = pd.DataFrame(a,columns=pd.MultiIndex.from_tuples([(\"n\",\"a\"),(\"n\",\"b\"),(\"n\",\"c\"),(\"x\",)])) dfb = pd.DataFrame(a,columns=pd.MultiIndex.from_tuples([(\"m\",\"a\"),(\"m\",\"b\"),(\"m\",\"c\"),(\"x\",)])) pd.merge(dfa, dfb, how=\"outer\", on=\"x\") yields: \"ValueError: The column label 'x' is not unique\" ``` #### Problem description It would be cumbersome and degrade readability to write `on=(\"x\", np.nan)` instead of `on=\"x\"`. especially if the real word example would be more like `on=(\"x\", np.nan, np.nan, np.nan, np.nan, np.nan)` I think an easy solution would be to add here https://github.com/pandas-dev/pandas/blob/master/pandas/core/generic.py#L1384 sth. like `if values.ndim == 2 and values.shape[0] == 1: return values[0]` But actually I was wondering for a long tome, why `MultiIndex` * automatically fills `np.nan` for unknown values BUT * for selecting treats `''` (empty string) as \"skippable\" levels (My wording is probably not very clear, but Expected Output should clarify my point) #### Expected Output the same as with ```p",
+      "created_at": "2018-04-20T16:58:30Z",
+      "grounding_score": 3.0,
+      "issue_number": 20769,
+      "labels": [
+        "Bug",
+        "Reshaping"
+      ],
+      "provenance": {
+        "retrieved_at": "2026-06-03T12:40:51Z",
+        "source_api": "https://api.github.com/repos/pandas-dev/pandas/issues",
+        "source_url": "https://github.com/pandas-dev/pandas/issues/20769"
+      },
+      "provider": "github",
+      "repository": "pandas-dev/pandas",
+      "safety_controls": [
+        "metadata_only",
+        "no_remote_code_execution",
+        "bounded_issue_count",
+        "bounded_body_excerpt",
+        "repository_allowlist"
+      ],
+      "state": "open",
+      "task_id": "github:pandas-dev/pandas#20769",
+      "task_kind": "external_bug_repair",
+      "title": "pd.merge: MultiIndex column label mistakenly classified as \"not unique\"",
+      "updated_at": "2026-06-03T09:17:31Z",
+      "url": "https://github.com/pandas-dev/pandas/issues/20769"
+    },
     {
       "body_excerpt": "I had a hard debugging time today because an error in the response stream is only reported when accessing `response.content` for the first time. This is especially irritating when running code in a debugger. ## Expected Result If accessing `response.content` the first time raises an exception I would expect that accessing `response.content` again would also raise an exception (ideally the same). ## Actual Result Instead after raising on the first get, getting `response.content` again returns an empty string. ## Reproduction Steps Here is a patch with a new test case for this: [error_replay_test.diff.gz](https://github.com/requests/requests/files/2838360/error_replay_test.diff.gz). Basically, it boils down to this: ```python import requests response = requests.post(\"http://connreset.biz/get/incomplete/chunked\", stream=True) try: response.content except Exception: # Error handling code, may try something else or fall through pass content = response.content # empty string ``` Output of my test case: ``` $ pipenv run py.test tests/test_lowlevel.py -q --tb=short -k retain F [100%] ============================= FAILURES ============================= _______________ test_response_content_",
       "created_at": "2019-02-06T21:46:17Z",
@@ -25,7 +132,7 @@
         "Bug"
       ],
       "provenance": {
-        "retrieved_at": "2026-06-03T12:58:11Z",
+        "retrieved_at": "2026-06-03T12:40:50Z",
         "source_api": "https://api.github.com/repos/psf/requests/issues",
         "source_url": "https://github.com/psf/requests/issues/4965"
       },
