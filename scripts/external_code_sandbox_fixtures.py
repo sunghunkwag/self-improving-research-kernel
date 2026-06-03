@@ -84,7 +84,7 @@ EXTERNAL_CODE_SOURCE_SPECS: Tuple[ExternalCodeSourceSpec, ...] = (
         path_candidates=("src/requests/sessions.py",),
         anchor_terms=("merge_setting", "Session", "headers", "None"),
         description="requests session merge_setting source surface paired with an inherited-header removal bug fixture.",
-        issue_number=1921,
+        issue_number=2109,
     ),
     ExternalCodeSourceSpec(
         repository="hypothesisworks/hypothesis",
