@@ -1,27 +1,9 @@
 {
-  "repeats": 2,
+  "repeats": 10,
   "repositories": [
     {
-      "description": "Held-out compact fixture with an unseen tuple-valued record field that tests schema transfer beyond the original task distribution.",
-      "name": "unseen_schema_transfer_repo",
-      "split": "unseen",
-      "transfer_origin": "compact_kernel_repo"
-    },
-    {
-      "description": "Held-out security-oriented fixture with a threat-label schema absent from the seen benchmark repositories.",
-      "name": "unseen_security_transfer_repo",
-      "split": "unseen",
-      "transfer_origin": "compact_kernel_repo"
-    },
-    {
-      "description": "Held-out science-oriented fixture with evidence-source schema absent from the seen benchmark repositories.",
-      "name": "unseen_science_transfer_repo",
-      "split": "unseen",
-      "transfer_origin": "compact_kernel_repo"
-    },
-    {
-      "description": "Held-out control-oriented fixture with controller-mode schema absent from the seen benchmark repositories.",
-      "name": "unseen_control_transfer_repo",
+      "description": "Composite held-out schema fixture with four tuple-valued record fields absent from the original benchmark repositories.",
+      "name": "composite_unseen_schema_transfer_repo",
       "split": "unseen",
       "transfer_origin": "compact_kernel_repo"
     }
@@ -29,7 +11,7 @@
   "tasks": [
     {
       "claim": "",
-      "description": "Remove accepted local corpus query APIs and measure whether the loop recovers them.",
+      "description": "Remove accepted local corpus query APIs and measure whether the loop recreates them under full pytest.",
       "name": "local_corpus_queries_clean",
       "repositories": [
         "omega_full_repo",
@@ -52,6 +34,46 @@
       "repositories": [
         "omega_full_repo",
         "compact_kernel_repo"
+      ]
+    },
+    {
+      "claim": "Capability transfer succeeds when the loop synthesizes the reusable run_length_encode primitive for algorithm_synthesis.",
+      "description": "Measure executable algorithm_synthesis repair with public and hidden counterexamples.",
+      "name": "capability_algorithm_synthesis",
+      "repositories": [
+        "capability_algorithm_synthesis_repo"
+      ]
+    },
+    {
+      "claim": "Capability transfer succeeds when the loop synthesizes the reusable infer_linear_rule primitive for symbolic_reasoning.",
+      "description": "Measure executable symbolic_reasoning repair with public and hidden counterexamples.",
+      "name": "capability_symbolic_reasoning",
+      "repositories": [
+        "capability_symbolic_reasoning_repo"
+      ]
+    },
+    {
+      "claim": "Capability transfer succeeds when the loop synthesizes the reusable rotate_grid_clockwise primitive for grid_transformation.",
+      "description": "Measure executable grid_transformation repair with public and hidden counterexamples.",
+      "name": "capability_grid_transformation",
+      "repositories": [
+        "capability_grid_transformation_repo"
+      ]
+    },
+    {
+      "claim": "Capability transfer succeeds when the loop synthesizes the reusable dedupe_preserve_order primitive for bug_repair.",
+      "description": "Measure executable bug_repair repair with public and hidden counterexamples.",
+      "name": "capability_bug_repair",
+      "repositories": [
+        "capability_bug_repair_repo"
+      ]
+    },
+    {
+      "claim": "Capability transfer succeeds when the loop synthesizes the reusable apply_grid_action primitive for planning_state_transition.",
+      "description": "Measure executable planning_state_transition repair with public and hidden counterexamples.",
+      "name": "capability_planning_state_transition",
+      "repositories": [
+        "capability_planning_state_transition_repo"
       ]
     },
     {
@@ -85,13 +107,96 @@
       "repositories": [
         "unseen_control_transfer_repo"
       ]
+    },
+    {
+      "claim": "External transfer succeeds when the loop patches a query API for external_issue_labels extracted from psf/requests issue metadata.",
+      "description": "Measure transfer on a fixture extracted from psf/requests issue metadata.",
+      "name": "external_requests_issue_labels_query",
+      "repositories": [
+        "external_requests_issue_transfer_repo"
+      ]
+    },
+    {
+      "claim": "External transfer succeeds when the loop patches a query API for external_patch_signals extracted from hypothesisworks/hypothesis issue metadata.",
+      "description": "Measure transfer on a fixture extracted from hypothesisworks/hypothesis issue metadata.",
+      "name": "external_hypothesis_patch_signals_query",
+      "repositories": [
+        "external_hypothesis_issue_transfer_repo"
+      ]
+    },
+    {
+      "claim": "External transfer succeeds when the loop patches a query API for external_failure_terms extracted from pandas-dev/pandas issue metadata.",
+      "description": "Measure transfer on a fixture extracted from pandas-dev/pandas issue metadata.",
+      "name": "external_pandas_failure_terms_query",
+      "repositories": [
+        "external_pandas_issue_transfer_repo"
+      ]
+    },
+    {
+      "claim": "External transfer succeeds when the loop patches a query API for external_array_labels extracted from dask/dask issue metadata.",
+      "description": "Measure transfer on a fixture extracted from dask/dask issue metadata.",
+      "name": "external_dask_array_labels_query",
+      "repositories": [
+        "external_dask_issue_transfer_repo"
+      ]
+    },
+    {
+      "claim": "External code transfer succeeds when the loop repairs a local executable failure target derived from bounded psf/requests source and failure snippets.",
+      "description": "Measure transfer on a sandbox fixture extracted from actual psf/requests source snippets and issue failure excerpts.",
+      "name": "external_requests_code_failure_fixture_query",
+      "repositories": [
+        "external_requests_code_transfer_repo"
+      ]
+    },
+    {
+      "claim": "External code transfer succeeds when the loop repairs a local executable failure target derived from bounded hypothesisworks/hypothesis source and failure snippets.",
+      "description": "Measure transfer on a sandbox fixture extracted from actual hypothesisworks/hypothesis source snippets and issue failure excerpts.",
+      "name": "external_hypothesis_code_failure_fixture_query",
+      "repositories": [
+        "external_hypothesis_code_transfer_repo"
+      ]
+    },
+    {
+      "claim": "External code transfer succeeds when the loop repairs a local executable failure target derived from bounded pandas-dev/pandas source and failure snippets.",
+      "description": "Measure transfer on a sandbox fixture extracted from actual pandas-dev/pandas source snippets and issue failure excerpts.",
+      "name": "external_pandas_code_failure_fixture_query",
+      "repositories": [
+        "external_pandas_code_transfer_repo"
+      ]
+    },
+    {
+      "claim": "External code transfer succeeds when the loop repairs a local executable failure target derived from bounded dask/dask source and failure snippets.",
+      "description": "Measure transfer on a sandbox fixture extracted from actual dask/dask source snippets and issue failure excerpts.",
+      "name": "external_dask_code_failure_fixture_query",
+      "repositories": [
+        "external_dask_code_transfer_repo"
+      ]
+    },
+    {
+      "claim": "Unseen transfer succeeds only when one general schema patch repairs all held-out tuple-membership query surfaces under full pytest.",
+      "description": "Composite held-out schema fixture with four tuple-valued record fields absent from the original benchmark repositories.",
+      "name": "composite_unseen_schema_transfer",
+      "repositories": [
+        "composite_unseen_schema_transfer_repo"
+      ]
+    },
+    {
+      "claim": "External transfer succeeds only when one general schema patch repairs all issue-metadata-derived query surfaces under full pytest.",
+      "description": "Composite external issue fixture whose schema fields are derived from real GitHub issue metadata across the allowlisted repositories.",
+      "name": "composite_external_issue_transfer",
+      "repositories": [
+        "composite_external_issue_transfer_repo"
+      ]
     }
   ],
   "variants": [
     {
       "broad_gate": true,
       "description": "Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",
+      "exploration_depth": 2,
+      "exploration_policy": "recursive_quarantine",
       "family": "proposed",
+      "full_test_required": true,
       "max_candidates_override": null,
       "max_generations_override": null,
       "name": "verified_closed_loop",
@@ -102,26 +207,17 @@
     },
     {
       "broad_gate": true,
-      "description": "Baseline: single-pass automated coding loop with validation but without persistent recursive depth.",
-      "family": "baseline_agent_coding_loop",
-      "max_candidates_override": 1,
-      "max_generations_override": 1,
-      "name": "agent_coding_loop",
+      "description": "Baseline: retry candidate repair loop with the same safety gates but without recursive quarantine search or persistent self-policy depth.",
+      "exploration_depth": 0,
+      "exploration_policy": "conservative",
+      "family": "baseline_evolutionary_repair_loop",
+      "full_test_required": true,
+      "max_candidates_override": 3,
+      "max_generations_override": 3,
+      "name": "evolutionary_repair_loop",
       "persistence": false,
       "rollback": true,
       "run_loop": true,
-      "thdse_core_gate": true
-    },
-    {
-      "broad_gate": true,
-      "description": "Baseline: run validation without candidate generation or code patching.",
-      "family": "baseline_ci_only",
-      "max_candidates_override": null,
-      "max_generations_override": null,
-      "name": "ci_only_validation",
-      "persistence": true,
-      "rollback": true,
-      "run_loop": false,
       "thdse_core_gate": true
     }
   ]
