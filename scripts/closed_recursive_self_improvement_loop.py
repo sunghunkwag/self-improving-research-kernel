@@ -1840,6 +1840,27 @@ class ClosedRecursiveSelfImprovementLoop:
         if not candidate.schema_fields:
             return None
         fields = tuple(dict.fromkeys(candidate.schema_fields))
+        manifest = read_json(self.repo_root / "schema_transfer_manifest.json", {})
+        required_fields = tuple(
+            str(item.get("field_name", ""))
+            for item in manifest.get("fields", [])
+            if isinstance(item, dict) and item.get("field_name")
+        ) if isinstance(manifest, dict) else ()
+        if required_fields and not set(required_fields).issubset(set(fields)):
+            payload = {
+                "required_fields": required_fields,
+                "candidate_fields": fields,
+                "overfit_signal": "partial_schema_candidate_failed_composite_manifest",
+            }
+            return GateResult(
+                label=f"{candidate.name}_schema_transfer_manifest",
+                args=["internal", "schema_transfer_manifest"],
+                cwd=str(self.repo_root),
+                exit_code=1,
+                elapsed_s=0.0,
+                stdout_tail="",
+                stderr_tail=json.dumps(payload, sort_keys=True),
+            )
         hidden_inputs = {
             field: (
                 f"hidden_{field}_"

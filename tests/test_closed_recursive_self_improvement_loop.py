@@ -201,6 +201,39 @@ def test_recursive_schema_batch_candidate_ranks_before_partial_transfer_repairs(
     assert {"static_roles", "threat_labels"} <= set(ranked[0].schema_fields)
 
 
+def test_schema_transfer_manifest_rejects_partial_schema_candidate_before_full_pytest(tmp_path):
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    (repo / "schema_transfer_manifest.json").write_text(
+        '{"fields": [{"field_name": "static_roles"}, {"field_name": "threat_labels"}]}',
+        encoding="utf-8",
+    )
+    candidate = CandidatePatch(
+        name="partial_schema_query",
+        generation=1,
+        goal=Goal(
+            name="partial",
+            target="shared.local_corpus.LocalCorpusIndex",
+            metric="manifest gate rejects partial schema repair",
+            rationale="Composite fixtures require all held-out schema fields.",
+        ),
+        target_path=repo / "shared" / "local_corpus.py",
+        test_path=repo / "tests" / "test_partial.py",
+        transform=lambda source: source,
+        test_source="",
+        schema_fields=("static_roles",),
+        generator_improvement={"surface": "test", "mechanism": "test", "evidence": "test"},
+    )
+    loop = ClosedRecursiveSelfImprovementLoop(repo, state_dir=tmp_path / "state")
+
+    gate = loop.schema_transfer_evaluator_gate(candidate)
+
+    assert gate is not None
+    assert gate.exit_code == 1
+    assert gate.label == "partial_schema_query_schema_transfer_manifest"
+    assert "partial_schema_candidate_failed_composite_manifest" in gate.stderr_tail
+
+
 def test_capability_operator_candidates_include_delta_metadata(tmp_path):
     repo = tmp_path / "repo"
     shared = repo / "shared"
