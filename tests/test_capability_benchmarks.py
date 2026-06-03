@@ -132,11 +132,20 @@ def test_anti_cheat_catches_test_and_evaluator_tampering():
                 "def evaluate_capability_cases():\n    solved = output == case.expected\n",
                 "def evaluate_capability_cases():\n    solved = True\n",
             ),
+            "reports/rsi_experiments/latest/evidence_scorecard.json": (
+                "{}\n",
+                '{"external_code_transfer_success": true}\n',
+            ),
+            "seed_registry.json": (
+                "{}\n",
+                '{"seeds": ["rewritten"]}\n',
+            ),
         }
     )
 
     assert "pytest_skip_xfail_bypass" in {finding.kind for finding in findings}
     assert "evaluator_weakening" in {finding.kind for finding in findings}
+    assert "protected_evaluator_or_report_mutation" in {finding.kind for finding in findings}
 
 
 def test_failure_residue_extracts_missing_operator_and_overfit_signal():

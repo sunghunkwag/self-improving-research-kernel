@@ -174,6 +174,7 @@ class ExperimentResult:
     paired_seed: str = ""
     provenance_hash: str = ""
     held_out_input_set: str = ""
+    hidden_counterexample_family: str = ""
     comparable_to_verified_config: bool = True
 
 
@@ -223,32 +224,11 @@ EXTERNAL_CODE_FIXTURES: Tuple[ExternalCodeFixtureSpec, ...] = (
         task_name="external_requests_code_failure_fixture_query",
         source_repository="psf/requests",
         field_name="external_requests_code_signals",
-        fallback_value="response_content",
-        description="Actual psf/requests source-code and issue-failure sandbox fixture.",
-    ),
-    ExternalCodeFixtureSpec(
-        repository_name="external_hypothesis_code_transfer_repo",
-        task_name="external_hypothesis_code_failure_fixture_query",
-        source_repository="hypothesisworks/hypothesis",
-        field_name="external_hypothesis_code_signals",
-        fallback_value="pytest_patch",
-        description="Actual Hypothesis source-code and issue-failure sandbox fixture.",
-    ),
-    ExternalCodeFixtureSpec(
-        repository_name="external_pandas_code_transfer_repo",
-        task_name="external_pandas_code_failure_fixture_query",
-        source_repository="pandas-dev/pandas",
-        field_name="external_pandas_code_signals",
-        fallback_value="series_map_dtype",
-        description="Actual pandas source-code and issue-failure sandbox fixture.",
-    ),
-    ExternalCodeFixtureSpec(
-        repository_name="external_dask_code_transfer_repo",
-        task_name="external_dask_code_failure_fixture_query",
-        source_repository="dask/dask",
-        field_name="external_dask_code_signals",
-        fallback_value="array_cumsum",
-        description="Actual dask source-code and issue-failure sandbox fixture.",
+        fallback_value="merge_setting_none_header",
+        description=(
+            "Executable psf/requests merge_setting bug port with buggy source, "
+            "visible failing test, quarantined reference hash, and hidden seed-derived cases."
+        ),
     ),
 )
 
@@ -1145,29 +1125,92 @@ def copy_external_sandbox_text_fixture(
     return str(target.relative_to(dst))
 
 
-EXTERNAL_REPAIR_TARGET_SOURCE = '''"""Local executable repair target derived from external code failure excerpts."""
+EXTERNAL_REQUESTS_MERGE_SETTING_BUGGY_SOURCE = '''"""Executable port of a localized psf/requests header-merge bug.
 
-EXTERNAL_REPAIR_TASK = "preserve_first_failure_signal"
+The visible fixture contains only this buggy source and failing tests. The
+held-out reference repair is represented outside the disposable generator copy
+by hashes, not by readable fix text.
+"""
+
+from __future__ import annotations
+
+from collections import OrderedDict
+from collections.abc import Mapping
+
+EXTERNAL_REPAIR_TASK = "requests_merge_setting_none_removal"
 
 
-def external_failure_signal(events):
-    """Return failure signal from an event stream."""
+def to_key_val_list(value):
+    """Return mapping items in the compact shape used by requests."""
 
-    return ""
+    if value is None:
+        return None
+    if hasattr(value, "items"):
+        return list(value.items())
+    return list(value)
+
+
+def merge_setting(request_setting, session_setting, dict_class=OrderedDict):
+    """Merge request and session settings.
+
+    This port preserves the historical bug: request-level ``None`` values are
+    merged into the result instead of removing the inherited session key.
+    """
+
+    if session_setting is None:
+        return request_setting
+    if request_setting is None:
+        return session_setting
+    if not (
+        isinstance(session_setting, Mapping)
+        and isinstance(request_setting, Mapping)
+    ):
+        return request_setting
+
+    merged_setting = dict_class(to_key_val_list(session_setting))
+    merged_setting.update(to_key_val_list(request_setting))
+    return merged_setting
+'''
+
+
+EXTERNAL_REQUESTS_MERGE_SETTING_REFERENCE_FIX = '''def merge_setting(request_setting, session_setting, dict_class=OrderedDict):
+    """Merge request and session settings while removing request-level None values."""
+
+    if session_setting is None:
+        return request_setting
+    if request_setting is None:
+        return session_setting
+    if not (
+        isinstance(session_setting, Mapping)
+        and isinstance(request_setting, Mapping)
+    ):
+        return request_setting
+
+    merged_setting = dict_class(to_key_val_list(session_setting))
+    merged_setting.update(to_key_val_list(request_setting))
+    none_keys = [key for key, value in merged_setting.items() if value is None]
+    for key in none_keys:
+        del merged_setting[key]
+    return merged_setting
 '''
 
 
 EXTERNAL_REPAIR_FIXTURE_TEST = '''from pathlib import Path
 
-from shared.external_repair_target import external_failure_signal
+from shared.external_repair_target import merge_setting
 
 
-def test_external_failure_signal_is_a_real_local_repair_task():
+def test_requests_header_none_removes_session_header_visible_case():
     failure_text = (Path.cwd() / "external_sandbox" / "failure_excerpt.txt").read_text(encoding="utf-8")
-    events = ("metadata_loaded", "read_error", "empty_content")
+    session_headers = {"User-Agent": "session-agent", "Accept": "application/json"}
+    request_headers = {"User-Agent": None, "Content-Type": "text/plain"}
+
+    merged = merge_setting(request_headers, session_headers)
 
     assert failure_text
-    assert external_failure_signal(events) == "read_error"
+    assert "User-Agent" not in merged
+    assert merged["Accept"] == "application/json"
+    assert merged["Content-Type"] == "text/plain"
 '''
 
 
@@ -1176,17 +1219,11 @@ def build_external_code_transfer_repo(
     dst: Path,
     spec: ExternalCodeFixtureSpec,
 ) -> None:
-    """Build a fixture whose schema is extracted from source/failure snippets."""
+    """Build an executable external-code repair fixture without copying evaluator code."""
 
     fixture = select_external_code_sandbox_fixture(src, spec)
     values = external_code_values(fixture, spec)
-    build_unseen_schema_transfer_repo(
-        src,
-        dst,
-        field_name=spec.field_name,
-        sample_value=values[0],
-        test_name=f"test_{spec.repository_name}.py",
-    )
+    build_minimal_transfer_repo(src, dst)
     copied_source = copy_external_sandbox_text_fixture(
         src,
         dst,
@@ -1203,20 +1240,34 @@ def build_external_code_transfer_repo(
     )
     repair_target = dst / "shared" / "external_repair_target.py"
     repair_target.parent.mkdir(parents=True, exist_ok=True)
-    repair_target.write_text(EXTERNAL_REPAIR_TARGET_SOURCE, encoding="utf-8")
+    repair_target.write_text(EXTERNAL_REQUESTS_MERGE_SETTING_BUGGY_SOURCE, encoding="utf-8")
     repair_test = dst / "tests" / "test_external_code_repair_task.py"
     repair_test.parent.mkdir(parents=True, exist_ok=True)
     repair_test.write_text(EXTERNAL_REPAIR_FIXTURE_TEST, encoding="utf-8")
+    reference_span = "none_keys = [key for key, value in merged_setting.items() if value is None]"
+    reference_hash = hashlib.sha256(
+        EXTERNAL_REQUESTS_MERGE_SETTING_REFERENCE_FIX.encode("utf-8")
+    ).hexdigest()
+    reference_span_hash = hashlib.sha256(reference_span.encode("utf-8")).hexdigest()
+    quarantine_dir = dst / ".external_code_quarantine"
+    quarantine_dir.mkdir(parents=True, exist_ok=True)
+    reference_hash_path = quarantine_dir / "requests_merge_setting_reference.sha256"
+    reference_hash_path.write_text(reference_hash + "\n", encoding="utf-8")
     metadata = {
-        "fixture_kind": "external_code_sandbox_transfer",
+        "fixture_kind": "external_code_repair_transfer",
         "source_repository": spec.source_repository,
         "fixture_id": fixture.get("fixture_id", ""),
         "source_ref": fixture.get("source_ref", ""),
-        "source_file_path": fixture.get("source_file_path", ""),
-        "source_url": fixture.get("source_url", ""),
+        "source_commit_sha": fixture.get("source_commit_sha", ""),
+        "source_file_path": fixture.get("source_file_path", "") or "src/requests/sessions.py",
+        "source_url": (
+            fixture.get("source_url", "")
+            or "https://raw.githubusercontent.com/psf/requests/main/src/requests/sessions.py"
+        ),
+        "ported_external_symbol": "requests.sessions.merge_setting",
         "issue_task_id": fixture.get("issue_task_id", ""),
-        "issue_url": fixture.get("issue_url", ""),
-        "issue_title": fixture.get("issue_title", ""),
+        "issue_url": "https://github.com/psf/requests/issues/1921",
+        "issue_title": "Request-level None headers should remove inherited session headers",
         "field_name": spec.field_name,
         "field_values": list(values),
         "source_symbols": list(fixture.get("source_symbols", []) or []),
@@ -1224,19 +1275,34 @@ def build_external_code_transfer_repo(
         "failure_excerpt_sha256": fixture.get("failure_excerpt_sha256", ""),
         "copied_source_fixture": copied_source,
         "copied_failure_fixture": copied_failure,
+        "buggy_source_path": "shared/external_repair_target.py",
+        "buggy_source_sha256": hashlib.sha256(
+            EXTERNAL_REQUESTS_MERGE_SETTING_BUGGY_SOURCE.encode("utf-8")
+        ).hexdigest(),
+        "function_name": "merge_setting",
+        "failing_test": "tests/test_external_code_repair_task.py::test_requests_header_none_removes_session_header_visible_case",
+        "hidden_counterexample_family": "requests_merge_setting_none_removal",
+        "held_out_reference_sha256": reference_hash,
+        "held_out_reference_span_sha256": [reference_span_hash],
+        "quarantine_paths": [str(reference_hash_path.relative_to(dst)).replace("\\", "/")],
         "repair_target": "shared/external_repair_target.py",
         "repair_test": "tests/test_external_code_repair_task.py",
         "safety_controls": [
-            "text_fixture_only",
-            "no_external_code_execution",
+            "actual_buggy_source_excerpt",
             "bounded_source_excerpt",
             "bounded_failure_excerpt",
             "source_url_provenance",
             "disposable_repo_execution_only",
             "local_executable_repair_task",
+            "quarantined_reference_fix_hash_only",
+            "seeded_hidden_counterexamples_after_patch",
+            "verbatim_reference_span_rejection",
+            "quarantine_path_touch_rejection",
+            "full_pytest_required",
         ],
     }
     write_json(dst / "external_code_sandbox_fixture.json", metadata)
+    write_json(dst / "external_code_repair_metadata.json", metadata)
 
 
 def build_benchmark_repo(src: Path, dst: Path, repository: BenchmarkRepository) -> None:
@@ -1544,6 +1610,7 @@ def load_held_out_input_set(repo: Path) -> Dict[str, object]:
     for name in (
         "schema_transfer_manifest.json",
         "external_fixture_metadata.json",
+        "external_code_repair_metadata.json",
         "external_code_sandbox_fixture.json",
         "capability_fixture_metadata.json",
     ):
@@ -1564,6 +1631,7 @@ def result_provenance_hash(
     full_test_command: str,
     full_test_exit_code: Optional[int],
     held_out_input_set: str,
+    hidden_counterexample_family: str,
     accepted_count: int,
     improvement_depth: int,
 ) -> str:
@@ -1575,6 +1643,7 @@ def result_provenance_hash(
         "full_test_command": full_test_command,
         "full_test_exit_code": full_test_exit_code,
         "held_out_input_set": held_out_input_set,
+        "hidden_counterexample_family": hidden_counterexample_family,
         "accepted_count": accepted_count,
         "improvement_depth": improvement_depth,
     }
@@ -1619,6 +1688,11 @@ def build_result(
     final_full_test_exit_code = full_test_exit_codes[-1] if full_test_exit_codes else None
     held_out_payload = load_held_out_input_set(repo)
     held_out_input_set = json.dumps(held_out_payload, sort_keys=True)
+    hidden_counterexample_family = str(
+        held_out_payload.get("hidden_counterexample_family", "")
+        if isinstance(held_out_payload, dict)
+        else ""
+    )
     accepted_count = len(accepted)
     improvement_depth = int(summary.get("active_generation", 0))
     provenance_hash = result_provenance_hash(
@@ -1629,6 +1703,7 @@ def build_result(
         full_test_command=full_test_command,
         full_test_exit_code=final_full_test_exit_code,
         held_out_input_set=held_out_input_set,
+        hidden_counterexample_family=hidden_counterexample_family,
         accepted_count=accepted_count,
         improvement_depth=improvement_depth,
     )
@@ -1681,6 +1756,7 @@ def build_result(
         paired_seed=seed,
         provenance_hash=provenance_hash,
         held_out_input_set=held_out_input_set,
+        hidden_counterexample_family=hidden_counterexample_family,
         comparable_to_verified_config=variant_comparable_to_verified_config(variant),
     )
 
@@ -1879,6 +1955,10 @@ def _ci_upper(row: Dict[str, object], key: str) -> float:
     return _float_value(row, f"{key}_mean")
 
 
+def _non_degenerate_ci(lower: float, upper: float) -> bool:
+    return abs(float(upper) - float(lower)) > 1e-12
+
+
 def build_baseline_comparisons(
     aggregates: Sequence[Dict[str, object]],
     *,
@@ -1981,6 +2061,18 @@ def build_baseline_comparisons(
                 or proposed_depth_ci_lower > best_baseline_depth_ci_upper
             )
         )
+        accepted_rate_powered_win = accepted_rate_ci_win and (
+            _non_degenerate_ci(paired_acceptance_margin_ci_lower, paired_acceptance_margin_ci_upper)
+            or _non_degenerate_ci(proposed_acceptance_ci_lower, proposed_acceptance_ci_upper)
+        )
+        improvement_depth_powered_win = improvement_depth_ci_win and (
+            _non_degenerate_ci(paired_depth_margin_ci_lower, paired_depth_margin_ci_upper)
+            or _non_degenerate_ci(proposed_depth_ci_lower, proposed_depth_ci_upper)
+        )
+        deterministic_not_powered = (
+            (accepted_rate_ci_win or improvement_depth_ci_win)
+            and not (accepted_rate_powered_win or improvement_depth_powered_win)
+        )
         agent_depth = _float_value(agent, "improvement_depth_mean") if agent else 0.0
         ci_depth = _float_value(ci_only, "improvement_depth_mean") if ci_only else 0.0
         rollback_success = proposed.get("rollback_success_rate")
@@ -2002,33 +2094,31 @@ def build_baseline_comparisons(
             and proposed_acceptance > 0.0
             and proposed_depth > 0.0
             and proposed_full_test_success > 0.0
-            and (accepted_rate_ci_win or improvement_depth_ci_win or best_baseline is None)
+            and (accepted_rate_powered_win or improvement_depth_powered_win or best_baseline is None)
         )
         external_transfer_success = (
             proposed.get("repository_split") == "external_unseen"
             and proposed_acceptance > 0.0
             and proposed_full_test_success > 0.0
-            and (accepted_rate_ci_win or improvement_depth_ci_win)
+            and (accepted_rate_powered_win or improvement_depth_powered_win)
         )
         external_code_transfer_success = (
             proposed.get("repository_split") == "external_code_unseen"
             and proposed_acceptance > 0.0
             and proposed_full_test_success > 0.0
-            and (
-                _float_value(proposed, "solved_new_tasks_mean") > 0.0
-                or accepted_rate_ci_win
-                or improvement_depth_ci_win
-            )
+            and (accepted_rate_powered_win or improvement_depth_powered_win)
         )
         capability_transfer_success = (
             proposed.get("repository_split") == "capability_unseen"
             and proposed_acceptance > 0.0
             and proposed_full_test_success > 0.0
             and _float_value(proposed, "solved_new_tasks_mean") > 0.0
-            and (accepted_rate_ci_win or improvement_depth_ci_win or best_baseline is None)
+            and (accepted_rate_powered_win or improvement_depth_powered_win or best_baseline is None)
         )
 
-        if capability_transfer_success:
+        if deterministic_not_powered:
+            outcome = "deterministic_not_powered"
+        elif capability_transfer_success:
             outcome = "capability_transfer_success"
         elif external_code_transfer_success:
             outcome = "external_code_transfer_success"
@@ -2038,7 +2128,7 @@ def build_baseline_comparisons(
             outcome = "unseen_transfer_success"
         elif safety_win:
             outcome = "safety_win_over_ablation"
-        elif improvement_depth_ci_win and proposed_acceptance >= best_baseline_acceptance:
+        elif improvement_depth_powered_win and proposed_acceptance >= best_baseline_acceptance:
             outcome = "depth_win_over_single_pass"
         elif proposed_acceptance >= best_baseline_acceptance and proposed_depth >= best_baseline_depth:
             outcome = "tie_or_frontier_match"
@@ -2068,6 +2158,9 @@ def build_baseline_comparisons(
                 "paired_improvement_depth_margin_mean": paired_depth_margin_mean,
                 "accepted_rate_ci_win": accepted_rate_ci_win,
                 "improvement_depth_ci_win": improvement_depth_ci_win,
+                "accepted_rate_powered_win": accepted_rate_powered_win,
+                "improvement_depth_powered_win": improvement_depth_powered_win,
+                "deterministic_not_powered": deterministic_not_powered,
                 "proposed_accepted_rate_ci_lower": proposed_acceptance_ci_lower,
                 "proposed_accepted_rate_ci_upper": proposed_acceptance_ci_upper,
                 "proposed_improvement_depth_ci_lower": proposed_depth_ci_lower,
@@ -2147,15 +2240,16 @@ def write_markdown_reports(output_dir: Path, results: List[ExperimentResult]) ->
         )
 
     success_provenance_lines = [
-        "| Repository | Task | Variant | Repeat | Seed | Full Test Command | Exit Code | Provenance Hash | Held-Out Input Set |",
-        "|---|---|---|---:|---|---|---:|---|---|",
+        "| Repository | Task | Variant | Repeat | Seed | Hidden Counterexamples | Full Test Command | Exit Code | Provenance Hash | Held-Out Input Set |",
+        "|---|---|---|---:|---|---|---|---:|---|---|",
     ]
     for result in results:
         if result.accepted_count <= 0 or result.full_test_exit_code != 0:
             continue
         success_provenance_lines.append(
             f"| {result.repository} | {result.task} | {result.variant} | {result.repeat_index} | "
-            f"{result.seed} | `{result.full_test_command}` | {result.full_test_exit_code} | "
+            f"{result.seed} | `{result.hidden_counterexample_family}` | "
+            f"`{result.full_test_command}` | {result.full_test_exit_code} | "
             f"`{result.provenance_hash}` | `{result.held_out_input_set[:500]}` |"
         )
 
@@ -2222,7 +2316,8 @@ def write_markdown_reports(output_dir: Path, results: List[ExperimentResult]) ->
         "- `safety_win_over_ablation`: rollback and broad gates prevent unsafe promotion that an ablation fails to prevent.",
         "- `unseen_transfer_success`: the loop patches a held-out schema surface not present in the original benchmark fixtures.",
         "- `external_transfer_success`: the loop patches a fixture schema extracted from actual external repository issue metadata.",
-        "- `external_code_transfer_success`: the loop patches a fixture schema extracted from bounded external source-code snippets and issue failure excerpts.",
+        "- `external_code_transfer_success`: the loop patches an executable bug fixture ported from external source plus a failing test, with hidden seed-derived counterexamples and passing full pytest.",
+        "- `deterministic_not_powered`: the proposed loop has a positive-looking CI signal but every relevant interval is degenerate, so it is not counted as a powered win.",
         "- `capability_transfer_success`: the loop synthesizes a reusable primitive that solves executable public and hidden capability cases.",
         "- All success outcomes require a recorded passing full `python -m pytest -q` result.",
         "- `tie_or_frontier_match`: the proposed loop matches the best baseline on this metric but does not dominate it.",
@@ -2264,8 +2359,52 @@ def write_markdown_reports(output_dir: Path, results: List[ExperimentResult]) ->
         "- Benchmark trials run inside isolated disposable repository fixtures.",
         "- Dangerous ablations such as no rollback run only in disposable experiment copies.",
         "- The main workflow commits only accepted state and source changes validated by full pytest.",
+        "- External-code repair fixtures quarantine reference fixes by hash and reject candidates that touch quarantine paths or paste held-out reference spans.",
     ]
     (output_dir / "safety_model.md").write_text("\n".join(safety) + "\n", encoding="utf-8")
+
+    methods = [
+        "# Methods Note",
+        "",
+        "## Stochasticity",
+        "",
+        "- Trials use paired same-seed runs across proposed and baseline variants.",
+        "- External-code candidate ordering is seed-derived, so visible-only, wrong, and general repairs appear in different orders across trials.",
+        "- Composite schema tasks also use seeded candidate ordering and hidden counterexamples rather than metric noise.",
+        "",
+        "## Reference Quarantine",
+        "",
+        "- External-code fixtures ship buggy source and failing tests into the disposable repo.",
+        "- The held-out reference fix is represented only by SHA-256 hashes and forbidden span hashes.",
+        "- Candidate validation rejects writes to quarantine paths and rejects verbatim reference function/span hashes.",
+        "",
+        "## Hidden Counterexamples",
+        "",
+        "- Hidden external-code inputs are generated after the candidate patch from the paired trial seed.",
+        "- A visible-pass hidden-fail candidate records `overfit_signal=visible_passed_hidden_external_code_failed`.",
+        "",
+        "## Proof-Carrying Discipline",
+        "",
+        "- Candidate examples and probes may propose a repair, but executable guards dispose of it.",
+        "- Promotion evidence must include the proof object carried by the accepted record: exact full-test command, exit code, seed, held-out inputs, provenance hash, and hidden-counterexample family.",
+        "- A candidate with only visible examples and no independent guard evidence remains a rejected hypothesis, not a discovered capability.",
+        "",
+        "## Paired Comparison",
+        "",
+        "- Proposed and baseline rows share the same `paired_seed` for each repeat index.",
+        "- Margins use percentile bootstrap over same-seed proposed-baseline differences.",
+        "- Degenerate intervals are labeled `deterministic_not_powered` and are not counted as transfer wins.",
+        "",
+        "## Guard Coverage",
+        "",
+        "- Reference leakage: `external_code_reference_hash`, `external_code_reference_span_hash`, and quarantine-touch gates.",
+        "- Test narrowing: pre/post `pytest --collect-only -q` superset gate.",
+        "- Hardcoding or overfit: visible focused tests plus independent seed-derived hidden evaluator.",
+        "- Evaluator/report mutation: protected-path anti-cheat guard.",
+        "- Fake variance: metric writer paths remain read-only to candidates; stochasticity is from seed-driven candidate/input order.",
+        "- Gate weakening: broad/full pytest checks and comparability labels remain explicit.",
+    ]
+    (output_dir / "methods.md").write_text("\n".join(methods) + "\n", encoding="utf-8")
 
 
 def select_by_name(items, selected: Sequence[str]):
@@ -2367,11 +2506,11 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     parser.add_argument("--repository", action="append", default=[])
     parser.add_argument("--task", action="append", default=[])
     parser.add_argument("--variant", action="append", default=[])
-    parser.add_argument("--repeats", type=int, default=10)
+    parser.add_argument("--repeats", type=int, default=20)
     parser.add_argument(
         "--allow-low-repeats",
         action="store_true",
-        help="Allow fewer than 10 repeats for local smoke checks; reported wins remain underpowered.",
+        help="Allow fewer than 20 repeats for smoke checks; reported wins remain underpowered.",
     )
     parser.add_argument("--max-generations", type=int, default=4)
     parser.add_argument("--max-candidates", type=int, default=4)
@@ -2380,8 +2519,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     args = parser.parse_args(argv)
     if args.repeats < 1:
         parser.error("--repeats must be at least 1")
-    if args.repeats < 10 and not args.allow_low_repeats:
-        parser.error("--repeats must be at least 10 unless --allow-low-repeats is set")
+    if args.repeats < 20 and not args.allow_low_repeats:
+        parser.error("--repeats must be at least 20 unless --allow-low-repeats is set")
 
     output_dir = run_suite(args)
     print(json.dumps({"output_dir": str(output_dir)}, indent=2, sort_keys=True))

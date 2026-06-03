@@ -1200,37 +1200,68 @@ def capability_operator_candidates(repo_root: Path, generation: int) -> List[Can
     return candidates
 
 
-EXTERNAL_REPAIR_BUGGY = '''def external_failure_signal(events):
-    """Return failure signal from an event stream."""
-
-    return ""
+EXTERNAL_MERGE_BUGGY_BODY = '''    merged_setting = dict_class(to_key_val_list(session_setting))
+    merged_setting.update(to_key_val_list(request_setting))
+    return merged_setting
 '''
 
 
-EXTERNAL_REPAIR_FIXED = '''def external_failure_signal(events):
-    """Return the first failure-like signal from an event stream."""
+EXTERNAL_MERGE_VISIBLE_ONLY_BODY = '''    merged_setting = dict_class(to_key_val_list(session_setting))
+    merged_setting.update(to_key_val_list(request_setting))
+    if merged_setting.get("User-Agent") is None:
+        del merged_setting["User-Agent"]
+    return merged_setting
+'''
 
-    for event in events:
-        text = str(event)
-        lowered = text.lower()
-        if any(token in lowered for token in ("error", "fail", "exception", "traceback", "assert")):
-            return text
-    return str(events[0]) if events else ""
+
+EXTERNAL_MERGE_USER_AGENT_CASEFOLD_BODY = '''    merged_setting = dict_class(to_key_val_list(session_setting))
+    merged_setting.update(to_key_val_list(request_setting))
+    for key in list(merged_setting):
+        if str(key).lower() == "user-agent" and merged_setting[key] is None:
+            del merged_setting[key]
+    return merged_setting
+'''
+
+
+EXTERNAL_MERGE_VISIBLE_HEADER_SET_BODY = '''    merged_setting = dict_class(to_key_val_list(session_setting))
+    merged_setting.update(to_key_val_list(request_setting))
+    visible_headers = {"User-Agent", "Content-Type"}
+    for key in tuple(visible_headers):
+        if merged_setting.get(key) is None:
+            del merged_setting[key]
+    return merged_setting
+'''
+
+
+EXTERNAL_MERGE_EMPTY_ONLY_BODY = '''    merged_setting = dict_class(to_key_val_list(session_setting))
+    merged_setting.update(to_key_val_list(request_setting))
+    return dict_class((key, value) for key, value in merged_setting.items() if value != "")
+'''
+
+
+EXTERNAL_MERGE_GENERAL_BODY = '''    merged_setting = dict_class(to_key_val_list(session_setting))
+    merged_setting.update(to_key_val_list(request_setting))
+    return dict_class((key, value) for key, value in merged_setting.items() if value is not None)
 '''
 
 
 EXTERNAL_REPAIR_TEST = '''from pathlib import Path
 
-from shared.external_repair_target import external_failure_signal
+from shared.external_repair_target import merge_setting
 
 
-def test_external_failure_signal_preserves_first_failure():
-    events = ("metadata_loaded", "read_error", "empty_content")
+def test_requests_header_none_removes_session_header_visible_case():
+    session_headers = {"User-Agent": "session-agent", "Accept": "application/json"}
+    request_headers = {"User-Agent": None, "Content-Type": "text/plain"}
 
-    assert external_failure_signal(events) == "read_error"
+    merged = merge_setting(request_headers, session_headers)
+
+    assert "User-Agent" not in merged
+    assert merged["Accept"] == "application/json"
+    assert merged["Content-Type"] == "text/plain"
 
 
-def test_external_sandbox_text_fixtures_are_local_inputs():
+def test_external_source_and_failure_fixtures_are_local_inputs():
     root = Path.cwd() / "external_sandbox"
 
     assert (root / "source_snippet.txt").read_text(encoding="utf-8")
@@ -1238,55 +1269,199 @@ def test_external_sandbox_text_fixtures_are_local_inputs():
 '''
 
 
-def repair_external_failure_target(text: str) -> str:
-    """Repair the local external-code failure target."""
+def replace_external_merge_body(text: str, new_body: str, candidate_name: str) -> str:
+    """Replace only the buggy merge-setting body with a candidate implementation."""
 
-    if EXTERNAL_REPAIR_FIXED in text:
+    if new_body in text:
         return text
-    return replace_once(
+    return replace_once(text, EXTERNAL_MERGE_BUGGY_BODY, new_body, candidate_name)
+
+
+def repair_external_merge_general(text: str) -> str:
+    return replace_external_merge_body(
         text,
-        EXTERNAL_REPAIR_BUGGY,
-        EXTERNAL_REPAIR_FIXED,
-        "external_code_repair_failure_signal_v1",
+        EXTERNAL_MERGE_GENERAL_BODY,
+        "external_code_repair_requests_merge_setting_general_v1",
     )
 
 
-def external_code_repair_candidates(repo_root: Path, generation: int) -> List[CandidatePatch]:
+def repair_external_merge_visible_only(text: str) -> str:
+    return replace_external_merge_body(
+        text,
+        EXTERNAL_MERGE_VISIBLE_ONLY_BODY,
+        "external_code_repair_requests_merge_setting_visible_only_v1",
+    )
+
+
+def repair_external_merge_user_agent_casefold(text: str) -> str:
+    return replace_external_merge_body(
+        text,
+        EXTERNAL_MERGE_USER_AGENT_CASEFOLD_BODY,
+        "external_code_repair_requests_merge_setting_user_agent_casefold_v1",
+    )
+
+
+def repair_external_merge_visible_header_set(text: str) -> str:
+    return replace_external_merge_body(
+        text,
+        EXTERNAL_MERGE_VISIBLE_HEADER_SET_BODY,
+        "external_code_repair_requests_merge_setting_visible_header_set_v1",
+    )
+
+
+def repair_external_merge_empty_only(text: str) -> str:
+    return replace_external_merge_body(
+        text,
+        EXTERNAL_MERGE_EMPTY_ONLY_BODY,
+        "external_code_repair_requests_merge_setting_empty_only_v1",
+    )
+
+
+def external_code_repair_candidates(
+    repo_root: Path,
+    generation: int,
+    *,
+    include_recursive_general: bool = False,
+) -> List[CandidatePatch]:
     """Plan local executable repairs derived from external-code failure fixtures."""
 
     target = repo_root / "shared" / "external_repair_target.py"
     if not target.exists():
         return []
     text = target.read_text(encoding="utf-8")
-    if EXTERNAL_REPAIR_FIXED in text:
+    if EXTERNAL_MERGE_GENERAL_BODY in text:
         return []
-    return [
+    candidates = [
         CandidatePatch(
-            name="external_code_repair_failure_signal_v1",
+            name="external_code_repair_requests_merge_setting_visible_only_v1",
             generation=generation,
             goal=Goal(
-                name="repair_external_code_failure_fixture",
-                target="shared.external_repair_target.external_failure_signal",
-                metric="local external sandbox repair test passes",
+                name="repair_requests_merge_setting_visible_header_none",
+                target="shared.external_repair_target.merge_setting",
+                metric="visible requests header-removal regression passes without full-suite weakening",
                 rationale=(
-                    "External source and failure excerpts have been converted into "
-                    "a local executable repair target instead of a metadata-only summary."
+                    "A visible failing test from a ported requests header-merge bug "
+                    "suggests removing a per-request header set to None."
                 ),
             ),
             target_path=target,
             test_path=repo_root / "tests" / "test_external_code_repair_task.py",
-            transform=repair_external_failure_target,
+            transform=repair_external_merge_visible_only,
             test_source=EXTERNAL_REPAIR_TEST,
             focused_tests=("tests/test_external_code_repair_task.py",),
             capability_family="external_code_repair",
-            operator_specs=operator_specs_for("external_code_repair", "external_failure_signal"),
+            operator_specs=operator_specs_for("external_code_repair", "merge_setting_visible_only"),
             generator_improvement=generator_feedback(
-                "external-code failure fixtures",
-                "converts fetched source and failure excerpts into reusable local repair tasks",
-                "future external fixtures can be ranked by executable repair outcome, not metadata presence",
+                "external-code failing tests",
+                "tries a narrow candidate first so hidden seed-derived cases can expose overfit repairs",
+                "future external-code repairs record seen-pass hidden-fail residue instead of silent promotion",
             ),
-        )
+        ),
+        CandidatePatch(
+            name="external_code_repair_requests_merge_setting_user_agent_casefold_v1",
+            generation=generation,
+            goal=Goal(
+                name="repair_requests_merge_setting_user_agent_casefold",
+                target="shared.external_repair_target.merge_setting",
+                metric="visible requests header-removal regression passes without full-suite weakening",
+                rationale=(
+                    "A narrow hypothesis treats the visible User-Agent header as the "
+                    "only removable inherited key; hidden seed-derived headers must reject it."
+                ),
+            ),
+            target_path=target,
+            test_path=repo_root / "tests" / "test_external_code_repair_task.py",
+            transform=repair_external_merge_user_agent_casefold,
+            test_source=EXTERNAL_REPAIR_TEST,
+            focused_tests=("tests/test_external_code_repair_task.py",),
+            capability_family="external_code_repair",
+            operator_specs=operator_specs_for("external_code_repair", "merge_setting_user_agent_casefold"),
+            generator_improvement=generator_feedback(
+                "external-code overfit detection",
+                "keeps a visible-case candidate in the seed-varied search space",
+                "hidden probes reject header-name special cases before promotion",
+            ),
+        ),
+        CandidatePatch(
+            name="external_code_repair_requests_merge_setting_visible_header_set_v1",
+            generation=generation,
+            goal=Goal(
+                name="repair_requests_merge_setting_visible_header_set",
+                target="shared.external_repair_target.merge_setting",
+                metric="visible requests header-removal regression passes without full-suite weakening",
+                rationale=(
+                    "A second narrow hypothesis only considers headers named in the "
+                    "visible fixture; seeded hidden counterexamples must reject it."
+                ),
+            ),
+            target_path=target,
+            test_path=repo_root / "tests" / "test_external_code_repair_task.py",
+            transform=repair_external_merge_visible_header_set,
+            test_source=EXTERNAL_REPAIR_TEST,
+            focused_tests=("tests/test_external_code_repair_task.py",),
+            capability_family="external_code_repair",
+            operator_specs=operator_specs_for("external_code_repair", "merge_setting_visible_header_set"),
+            generator_improvement=generator_feedback(
+                "external-code anti-hardcoding guard",
+                "records seen-pass hidden-fail residue for visible-header special cases",
+                "only general mapping semantics can survive the hidden evaluator and full pytest",
+            ),
+        ),
+        CandidatePatch(
+            name="external_code_repair_requests_merge_setting_empty_only_v1",
+            generation=generation,
+            goal=Goal(
+                name="repair_requests_merge_setting_empty_values",
+                target="shared.external_repair_target.merge_setting",
+                metric="visible requests header-removal regression passes without full-suite weakening",
+                rationale=(
+                    "A competing candidate removes empty-string values; it should fail "
+                    "the visible None-removal regression rather than being promoted."
+                ),
+            ),
+            target_path=target,
+            test_path=repo_root / "tests" / "test_external_code_repair_task.py",
+            transform=repair_external_merge_empty_only,
+            test_source=EXTERNAL_REPAIR_TEST,
+            focused_tests=("tests/test_external_code_repair_task.py",),
+            capability_family="external_code_repair",
+            operator_specs=operator_specs_for("external_code_repair", "merge_setting_empty_only"),
+            generator_improvement=generator_feedback(
+                "external-code candidate ranking",
+                "keeps a plausible but wrong repair in the seed-varied search space",
+                "accepted-rate estimates now vary by real candidate order and failures",
+            ),
+        ),
     ]
+    if include_recursive_general:
+        candidates.append(
+            CandidatePatch(
+                name="external_code_repair_requests_merge_setting_general_v1",
+                generation=generation,
+                goal=Goal(
+                    name="repair_requests_merge_setting_general_none_removal",
+                    target="shared.external_repair_target.merge_setting",
+                    metric="visible and hidden requests header-removal regressions pass under full pytest",
+                    rationale=(
+                        "The recursive loop promotes a general repair: any request-level "
+                        "mapping key set to None removes the inherited session value."
+                    ),
+                ),
+                target_path=target,
+                test_path=repo_root / "tests" / "test_external_code_repair_task.py",
+                transform=repair_external_merge_general,
+                test_source=EXTERNAL_REPAIR_TEST,
+                focused_tests=("tests/test_external_code_repair_task.py",),
+                capability_family="external_code_repair",
+                operator_specs=operator_specs_for("external_code_repair", "merge_setting_general_none_removal"),
+                generator_improvement=generator_feedback(
+                    "external-code bug repair",
+                    "repairs an executable port of requests merge_setting without reading the held-out reference",
+                    "future external-code tasks can be scored on hidden counterexamples and full pytest evidence",
+                ),
+            )
+        )
+    return candidates
 
 
 POLICY_REGISTRY_SOURCE = '''"""Candidate policy registry for the closed RSI loop.
@@ -1518,7 +1693,13 @@ class ClosedRecursiveSelfImprovementLoop:
         loop_script = self.repo_root / "scripts" / "closed_recursive_self_improvement_loop.py"
         loop_text = loop_script.read_text(encoding="utf-8") if loop_script.exists() else ""
         candidates = []
-        candidates.extend(external_code_repair_candidates(self.repo_root, generation))
+        candidates.extend(
+            external_code_repair_candidates(
+                self.repo_root,
+                generation,
+                include_recursive_general=self.exploration_policy == "recursive_quarantine",
+            )
+        )
         candidates.extend(capability_operator_candidates(self.repo_root, generation))
         if self.exploration_policy == "recursive_quarantine":
             candidates.extend(schema_batch_query_candidates(self.repo_root, generation, state=state))
@@ -1573,22 +1754,43 @@ class ClosedRecursiveSelfImprovementLoop:
             if isinstance(record, dict)
         }
 
-        def candidate_key(candidate: CandidatePatch) -> Tuple[int, int, int, int, str]:
+        schema_transfer_active = (self.repo_root / "schema_transfer_manifest.json").exists()
+
+        def candidate_key(candidate: CandidatePatch) -> Tuple[int, int, int, int, str, str]:
             rejected_penalty = 1 if candidate.name in rejected_names else 0
             novelty_bonus = 0 if candidate.name not in accepted_names else 1
+            schema_transfer_candidate = schema_transfer_active and candidate.name.startswith(
+                (
+                    "recursive_schema_batch_",
+                    "autonomous_local_corpus_",
+                )
+            )
             executable_repair_bonus = (
                 0
-                if candidate.name.startswith(
+                if schema_transfer_candidate
+                or candidate.name.startswith(
                     (
                         "external_code_repair_",
                         "capability_operator_",
-                        "recursive_schema_batch_",
                     )
                 )
                 else 1
             )
             policy_bonus = 0 if candidate.name.startswith("loop_policy") else 1
-            return (rejected_penalty, novelty_bonus, executable_repair_bonus, policy_bonus, candidate.name)
+            if candidate.name.startswith("external_code_repair_") or schema_transfer_candidate:
+                seed_tiebreak = hashlib.sha256(
+                    f"{self.capability_seed}:{candidate.name}:{candidate.goal.name}".encode("utf-8")
+                ).hexdigest()
+            else:
+                seed_tiebreak = candidate.name
+            return (
+                rejected_penalty,
+                novelty_bonus,
+                executable_repair_bonus,
+                policy_bonus,
+                seed_tiebreak,
+                candidate.name,
+            )
 
         return sorted(candidates, key=candidate_key)
 
@@ -1784,6 +1986,95 @@ class ClosedRecursiveSelfImprovementLoop:
             stderr_tail=json.dumps(payload, sort_keys=True),
         )
 
+    def external_code_reference_gate(
+        self,
+        candidate: CandidatePatch,
+        changed_sources: Dict[str, Tuple[Optional[str], Optional[str]]],
+    ) -> Optional[GateResult]:
+        """Reject external-code candidates that paste or touch quarantined reference material."""
+
+        metadata = read_json(self.repo_root / "external_code_repair_metadata.json", {})
+        if not isinstance(metadata, dict):
+            return None
+        relative_target = str(candidate.target_path.relative_to(self.repo_root)).replace("\\", "/")
+        buggy_source_path = str(metadata.get("buggy_source_path", "") or "")
+        quarantine_paths = {
+            str(path).replace("\\", "/")
+            for path in metadata.get("quarantine_paths", [])
+            if path
+        }
+        material_paths = {
+            path.replace("\\", "/")
+            for path, (before, after) in changed_sources.items()
+            if before != after
+        }
+        touched_quarantine = sorted(material_paths & quarantine_paths)
+        if touched_quarantine:
+            payload = {
+                "quarantine_paths": touched_quarantine,
+                "overfit_signal": "candidate_touched_quarantined_reference_path",
+            }
+            return GateResult(
+                label=f"{candidate.name}_external_code_quarantine_touch",
+                args=["internal", "external_code_quarantine_touch"],
+                cwd=str(self.repo_root),
+                exit_code=1,
+                elapsed_s=0.0,
+                stdout_tail="",
+                stderr_tail=json.dumps(payload, sort_keys=True),
+            )
+        if relative_target != buggy_source_path:
+            return None
+        _before, after = changed_sources.get(relative_target, (None, None))
+        if not after:
+            return None
+        function_name = str(metadata.get("function_name", "merge_setting") or "merge_setting")
+        candidate_source = top_level_function_source(after, function_name)
+        reference_hash = str(metadata.get("held_out_reference_sha256", "") or "")
+        if reference_hash and candidate_source and source_sha256(candidate_source) == reference_hash:
+            payload = {
+                "function_name": function_name,
+                "held_out_reference_sha256": reference_hash,
+                "overfit_signal": "verbatim_external_code_reference_function",
+            }
+            return GateResult(
+                label=f"{candidate.name}_external_code_reference",
+                args=["internal", "external_code_reference_hash"],
+                cwd=str(self.repo_root),
+                exit_code=1,
+                elapsed_s=0.0,
+                stdout_tail="",
+                stderr_tail=json.dumps(payload, sort_keys=True),
+            )
+        forbidden_spans = {
+            str(item)
+            for item in metadata.get("held_out_reference_span_sha256", [])
+            if item
+        }
+        if forbidden_spans and candidate_source:
+            candidate_span_hashes = {
+                source_sha256(line.strip())
+                for line in candidate_source.splitlines()
+                if len(line.strip()) >= 24
+            }
+            overlap = sorted(candidate_span_hashes & forbidden_spans)
+            if overlap:
+                payload = {
+                    "function_name": function_name,
+                    "span_hashes": overlap,
+                    "overfit_signal": "verbatim_external_code_reference_span",
+                }
+                return GateResult(
+                    label=f"{candidate.name}_external_code_reference_span",
+                    args=["internal", "external_code_reference_span_hash"],
+                    cwd=str(self.repo_root),
+                    exit_code=1,
+                    elapsed_s=0.0,
+                    stdout_tail="",
+                    stderr_tail=json.dumps(payload, sort_keys=True),
+                )
+        return None
+
     def capability_evaluations(self, candidate: CandidatePatch) -> Tuple[CapabilityEvaluation, ...]:
         """Run dynamic capability evaluator cases for a candidate primitive."""
 
@@ -1913,6 +2204,66 @@ print({{"seed": {self.capability_seed!r}, "hidden_inputs": hidden_inputs, "metho
             self.repo_root,
         )
 
+    def external_code_repair_evaluator_gate(self, candidate: CandidatePatch) -> Optional[GateResult]:
+        """Run seed-derived hidden cases for executable external-code repairs."""
+
+        if candidate.capability_family != "external_code_repair":
+            return None
+        metadata = read_json(self.repo_root / "external_code_repair_metadata.json", {})
+        if not isinstance(metadata, dict) or metadata.get("function_name") != "merge_setting":
+            return None
+        digest = hashlib.sha256(f"{self.capability_seed}:external_code:merge_setting".encode("utf-8")).hexdigest()
+        hidden_remove = f"X-Remove-{digest[:8]}"
+        hidden_keep = f"X-Keep-{digest[8:16]}"
+        hidden_new = f"X-New-{digest[16:24]}"
+        probe = f'''
+import json
+import sys
+from shared.external_repair_target import merge_setting
+
+seed = {self.capability_seed!r}
+hidden_remove = {hidden_remove!r}
+hidden_keep = {hidden_keep!r}
+hidden_new = {hidden_new!r}
+session_headers = {{
+    "User-Agent": "session-agent",
+    hidden_remove: "remove-me",
+    hidden_keep: "keep-me",
+}}
+request_headers = {{
+    hidden_remove: None,
+    hidden_new: "new-value",
+}}
+merged = merge_setting(request_headers, session_headers)
+expected = {{
+    "User-Agent": "session-agent",
+    hidden_keep: "keep-me",
+    hidden_new: "new-value",
+}}
+payload = {{
+    "seed": seed,
+    "hidden_counterexample_family": "requests_merge_setting_none_removal",
+    "hidden_inputs": {{
+        "remove_header": hidden_remove,
+        "keep_header": hidden_keep,
+        "new_header": hidden_new,
+    }},
+    "observed": dict(merged),
+    "expected": expected,
+}}
+if dict(merged) != expected:
+    payload["overfit_signal"] = "visible_passed_hidden_external_code_failed"
+    print(json.dumps(payload, sort_keys=True), file=sys.stderr)
+    raise SystemExit(1)
+print(json.dumps(payload, sort_keys=True))
+'''
+        py = sys.executable
+        return self.run_command(
+            f"{candidate.name}_external_code_hidden_evaluator",
+            [py, "-c", probe],
+            self.repo_root,
+        )
+
     def validate(self, candidate: CandidatePatch) -> List[GateResult]:
         py = sys.executable
         compile_targets = [
@@ -1954,6 +2305,9 @@ print({{"seed": {self.capability_seed!r}, "hidden_inputs": hidden_inputs, "metho
         schema_gate = self.schema_transfer_evaluator_gate(candidate)
         if schema_gate is not None:
             gates.append(schema_gate)
+        external_code_gate = self.external_code_repair_evaluator_gate(candidate)
+        if external_code_gate is not None:
+            gates.append(external_code_gate)
         if any(gate.exit_code != 0 for gate in gates):
             return gates
         gates.append(
@@ -2026,6 +2380,10 @@ print({{"seed": {self.capability_seed!r}, "hidden_inputs": hidden_inputs, "metho
             if reference_gate is not None:
                 gates.append(reference_gate)
                 raise RuntimeError("held-out reference validation failed")
+            external_reference_gate = self.external_code_reference_gate(candidate, changed_sources)
+            if external_reference_gate is not None:
+                gates.append(external_reference_gate)
+                raise RuntimeError("external-code reference validation failed")
             pre_collect_gate, pre_nodeids = self.collect_test_nodeids(f"{candidate.name}_pre_collect")
             gates.append(pre_collect_gate)
             if pre_collect_gate.exit_code != 0:

@@ -600,8 +600,17 @@ def detect_anti_cheat_findings(
 
     for path in material_paths:
         normalized_path = path.replace("\\", "/").lower()
+        normalized_name = normalized_path.rsplit("/", 1)[-1]
         if (
             normalized_path.startswith("reports/")
+            or normalized_name in {
+                "aggregate_metrics.csv",
+                "baseline_comparison.csv",
+                "evidence_scorecard.json",
+                "metrics.csv",
+                "seed_registry.json",
+            }
+            or "seed_registry" in normalized_name
             or normalized_path in {
                 "scripts/rsi_experiment_suite.py",
                 "scripts/external_world_grounding.py",
@@ -615,7 +624,7 @@ def detect_anti_cheat_findings(
             AntiCheatFinding(
                 kind="protected_evaluator_or_report_mutation",
                 path=",".join(sorted(protected_paths)),
-                detail="candidate patches may not mutate reports, metric writers, evaluator code, or fixture builders",
+                detail="candidate patches may not mutate reports, metric writers, seed registries, evaluator code, or fixture builders",
             )
         )
 

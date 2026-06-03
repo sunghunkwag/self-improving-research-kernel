@@ -46,11 +46,11 @@ def test_build_external_code_sandbox_report_writes_text_only_fixtures(tmp_path, 
                 "tasks": [
                     {
                         "repository": "psf/requests",
-                        "task_id": "github:psf/requests#4965",
-                        "title": "Accessing response.content twice forgets read error",
-                        "body_excerpt": "```python\nassert response.content == b''\n```",
+                        "task_id": "github:psf/requests#1921",
+                        "title": "Request-level None headers should remove inherited session headers",
+                        "body_excerpt": "```python\nassert 'User-Agent' not in merge_setting({'User-Agent': None}, session_headers)\n```",
                         "labels": ["Bug"],
-                        "url": "https://github.com/psf/requests/issues/4965",
+                        "url": "https://github.com/psf/requests/issues/1921",
                         "grounding_score": 3.0,
                     }
                 ]
@@ -62,22 +62,26 @@ def test_build_external_code_sandbox_report_writes_text_only_fixtures(tmp_path, 
     def fake_github_json_request(url, **_kwargs):
         if url == "https://api.github.com/repos/psf/requests":
             return {"default_branch": "main"}
-        if "contents/src/requests/models.py" in url:
+        if "contents/src/requests/sessions.py" in url:
             return {
                 "type": "file",
-                "download_url": "https://example.test/requests/models.py",
+                "download_url": "https://example.test/requests/sessions.py",
+                "sha": "source-blob-sha",
             }
+        if "commits?" in url and "path=src%2Frequests%2Fsessions.py" in url:
+            return [{"sha": "0123456789abcdef0123456789abcdef01234567"}]
         raise AssertionError(f"unexpected GitHub request: {url}")
 
     def fake_read_url_text(url, **_kwargs):
-        assert url == "https://example.test/requests/models.py"
+        assert url == "https://example.test/requests/sessions.py"
         return (
-            "class Response:\n"
-            "    def iter_content(self):\n"
-            "        return b''\n"
-            "    @property\n"
-            "    def content(self):\n"
-            "        return self._content\n"
+            "def merge_setting(request_setting, session_setting, dict_class=OrderedDict):\n"
+            "    merged_setting = dict_class(to_key_val_list(session_setting))\n"
+            "    merged_setting.update(to_key_val_list(request_setting))\n"
+            "    none_keys = [k for k, v in merged_setting.items() if v is None]\n"
+            "    for key in none_keys:\n"
+            "        del merged_setting[key]\n"
+            "    return merged_setting\n"
         )
 
     monkeypatch.setattr(
@@ -100,9 +104,11 @@ def test_build_external_code_sandbox_report_writes_text_only_fixtures(tmp_path, 
     assert fixture.fixture_id == "external-code:psf/requests"
     assert fixture.source_snippet_path.endswith(".txt")
     assert fixture.failure_excerpt_path.endswith(".txt")
-    assert fixture.field_values[0] == "response_content"
-    assert "response" in fixture.field_values
+    assert fixture.source_commit_sha == "0123456789abcdef0123456789abcdef01234567"
+    assert fixture.field_values[0] == "merge_setting_none_header"
+    assert "merge_setting" in fixture.field_values
     assert payload["fixtures"][0]["source_repository"] == "psf/requests"
+    assert payload["fixtures"][0]["source_commit_sha"] == "0123456789abcdef0123456789abcdef01234567"
     assert (tmp_path / "fixtures" / fixture.source_snippet_path).exists()
     assert (tmp_path / "fixtures" / fixture.failure_excerpt_path).exists()
 

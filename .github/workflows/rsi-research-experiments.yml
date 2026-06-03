@@ -33,7 +33,7 @@ on:
       repeats:
         description: Repeated trials per repository/task/variant.
         required: true
-        default: "10"
+        default: "20"
       repository:
         description: Repository fixture to run, or all.
         required: true
@@ -123,7 +123,7 @@ jobs:
             --max-candidates "${{ inputs.max_candidates || '4' }}" \
             --wall-seconds "${{ inputs.wall_seconds || '1800' }}" \
             --timeout-seconds "${{ inputs.timeout_seconds || '420' }}" \
-            --repeats "${{ inputs.repeats || '10' }}" \
+            --repeats "${{ inputs.repeats || '20' }}" \
             "${EXTRA_ARGS[@]}"
 
       - name: Show experiment summary

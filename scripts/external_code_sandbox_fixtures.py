@@ -45,6 +45,7 @@ class ExternalCodeSandboxFixture:
     fixture_id: str
     source_repository: str
     source_ref: str
+    source_commit_sha: str
     source_file_path: str
     source_url: str
     issue_task_id: str
@@ -77,10 +78,10 @@ EXTERNAL_CODE_SOURCE_SPECS: Tuple[ExternalCodeSourceSpec, ...] = (
     ExternalCodeSourceSpec(
         repository="psf/requests",
         field_name="external_requests_code_signals",
-        fallback_value="response_content",
-        path_candidates=("src/requests/models.py",),
-        anchor_terms=("content", "iter_content", "_content", "Response"),
-        description="requests response source surface paired with an issue failure around repeated response.content access.",
+        fallback_value="merge_setting_none_header",
+        path_candidates=("src/requests/sessions.py",),
+        anchor_terms=("merge_setting", "Session", "headers", "None"),
+        description="requests session merge_setting source surface paired with an inherited-header removal bug fixture.",
     ),
     ExternalCodeSourceSpec(
         repository="hypothesisworks/hypothesis",
@@ -186,12 +187,26 @@ def github_contents_url(repository: str, path: str, ref: str) -> str:
     return f"https://api.github.com/repos/{repository}/contents/{quoted_path}?{query}"
 
 
+def github_latest_file_commit(repository: str, path: str, ref: str, *, token: Optional[str]) -> str:
+    quoted_path = urllib.parse.quote(path.strip("/"), safe="/")
+    query = urllib.parse.urlencode({"path": path, "sha": ref, "per_page": 1})
+    payload = github_json_request(
+        f"https://api.github.com/repos/{repository}/commits?{query}",
+        token=token,
+    )
+    if isinstance(payload, list) and payload and isinstance(payload[0], dict):
+        sha = str(payload[0].get("sha", "") or "")
+        if sha:
+            return sha
+    return ref
+
+
 def fetch_external_source(
     spec: ExternalCodeSourceSpec,
     *,
     token: Optional[str],
-) -> Tuple[str, str, str, str]:
-    """Return ``(ref, path, source_url, text)`` for the first existing path."""
+) -> Tuple[str, str, str, str, str]:
+    """Return ``(ref, commit_sha, path, source_url, text)`` for the first existing path."""
 
     ref = repository_default_branch(spec.repository, token=token)
     errors: List[str] = []
@@ -208,7 +223,11 @@ def fetch_external_source(
             if not download_url:
                 errors.append(f"{path}: missing download_url")
                 continue
-            return ref, path, download_url, read_url_text(download_url, token=token)
+            try:
+                commit_sha = github_latest_file_commit(spec.repository, path, ref, token=token)
+            except Exception:
+                commit_sha = str(payload.get("sha", "") or ref)
+            return ref, commit_sha, path, download_url, read_url_text(download_url, token=token)
         except Exception as exc:
             errors.append(f"{path}: {type(exc).__name__}: {exc}")
     joined = "; ".join(errors) if errors else "no path candidates"
@@ -410,7 +429,7 @@ def build_external_code_sandbox_report(
 
     for spec in specs:
         task = select_grounding_task(tasks, spec.repository)
-        ref, source_path, source_url, source_text = fetch_external_source(spec, token=token)
+        ref, commit_sha, source_path, source_url, source_text = fetch_external_source(spec, token=token)
         source_snippet, line_start, line_end = bounded_source_window(
             source_text,
             spec.anchor_terms,
@@ -430,6 +449,7 @@ def build_external_code_sandbox_report(
                 f"Repository: {spec.repository}",
                 f"Source: {source_url}",
                 f"Ref: {ref}",
+                f"Commit: {commit_sha}",
                 f"Path: {source_path}",
                 f"Lines: {line_start}-{line_end}",
                 "Safety: text fixture only; not imported or executed.",
@@ -451,6 +471,7 @@ def build_external_code_sandbox_report(
                 fixture_id=f"external-code:{spec.repository}",
                 source_repository=spec.repository,
                 source_ref=ref,
+                source_commit_sha=commit_sha,
                 source_file_path=source_path,
                 source_url=source_url,
                 issue_task_id=str(task.get("task_id", "")),
@@ -478,7 +499,7 @@ def build_external_code_sandbox_report(
             "External code is fetched only as bounded text excerpts.",
             "No external repository code is cloned, installed, imported, or executed.",
             "Failure excerpts come from bounded issue metadata already captured by the grounding step.",
-            "Every fixture records source URL, branch ref, path, hashes, and safety controls.",
+            "Every fixture records source URL, branch ref, file commit, path, hashes, and safety controls.",
             "Downstream experiments execute only local sandbox fixture tests.",
         ],
         "fixtures": [asdict(fixture) for fixture in fixtures],

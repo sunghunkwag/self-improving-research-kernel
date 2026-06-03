@@ -445,11 +445,13 @@ def test_external_code_transfer_repository_uses_sandbox_fixture(tmp_path):
         encoding="utf-8",
     )
     (fixture_root / "snippets" / "psf_requests_source.txt").write_text(
-        "Repository: psf/requests\n\nclass Response:\n    pass\n",
+        "Repository: psf/requests\n\n"
+        "def merge_setting(request_setting, session_setting):\n"
+        "    pass\n",
         encoding="utf-8",
     )
     (fixture_root / "failures" / "psf_requests_failure.txt").write_text(
-        "response.content raised once and returned empty content later\n",
+        "request-level None headers should remove inherited session headers\n",
         encoding="utf-8",
     )
     (fixture_root / "external_code_sandbox_fixtures.json").write_text(
@@ -459,14 +461,15 @@ def test_external_code_transfer_repository_uses_sandbox_fixture(tmp_path):
       "fixture_id": "external-code:psf/requests",
       "source_repository": "psf/requests",
       "source_ref": "main",
-      "source_file_path": "src/requests/models.py",
-      "source_url": "https://raw.githubusercontent.com/psf/requests/main/src/requests/models.py",
-      "issue_task_id": "github:psf/requests#4965",
-      "issue_url": "https://github.com/psf/requests/issues/4965",
-      "issue_title": "Accessing response.content twice forgets read error",
+      "source_commit_sha": "0123456789abcdef0123456789abcdef01234567",
+      "source_file_path": "src/requests/sessions.py",
+      "source_url": "https://raw.githubusercontent.com/psf/requests/main/src/requests/sessions.py",
+      "issue_task_id": "github:psf/requests#1921",
+      "issue_url": "https://github.com/psf/requests/issues/1921",
+      "issue_title": "Request-level None headers should remove inherited session headers",
       "field_name": "external_requests_code_signals",
-      "field_values": ["response_content", "response"],
-      "source_symbols": ["response"],
+      "field_values": ["merge_setting_none_header", "merge_setting"],
+      "source_symbols": ["merge_setting"],
       "source_snippet_path": "snippets/psf_requests_source.txt",
       "failure_excerpt_path": "failures/psf_requests_failure.txt",
       "source_snippet_sha256": "abc",
@@ -484,17 +487,37 @@ def test_external_code_transfer_repository_uses_sandbox_fixture(tmp_path):
     )
     build_benchmark_repo(source, target, repository)
 
-    text = (target / "shared" / "local_corpus.py").read_text(encoding="utf-8")
     metadata = __import__("json").loads(
         (target / "external_code_sandbox_fixture.json").read_text(encoding="utf-8")
     )
-    assert "external_requests_code_signals: Tuple[str, ...] = ()" in text
+    repair_metadata = __import__("json").loads(
+        (target / "external_code_repair_metadata.json").read_text(encoding="utf-8")
+    )
+    repair_target = target / "shared" / "external_repair_target.py"
+    reference_hash_path = target / ".external_code_quarantine" / "requests_merge_setting_reference.sha256"
+    reference_hash_text = reference_hash_path.read_text(encoding="utf-8")
+    repair_source = repair_target.read_text(encoding="utf-8")
+
+    assert not (target / "scripts" / "rsi_experiment_suite.py").exists()
+    assert metadata == repair_metadata
+    assert metadata["fixture_kind"] == "external_code_repair_transfer"
     assert metadata["source_repository"] == "psf/requests"
-    assert metadata["field_values"][:2] == ["response_content", "response"]
+    assert metadata["source_commit_sha"] == "0123456789abcdef0123456789abcdef01234567"
+    assert metadata["source_file_path"] == "src/requests/sessions.py"
+    assert metadata["function_name"] == "merge_setting"
+    assert metadata["field_values"][:2] == ["merge_setting_none_header", "merge_setting"]
+    assert metadata["hidden_counterexample_family"] == "requests_merge_setting_none_removal"
+    assert metadata["held_out_reference_sha256"]
+    assert metadata["held_out_reference_span_sha256"]
+    assert ".external_code_quarantine/requests_merge_setting_reference.sha256" in metadata["quarantine_paths"]
     assert (target / "external_sandbox" / "source_snippet.txt").exists()
     assert (target / "external_sandbox" / "failure_excerpt.txt").exists()
-    assert (target / "shared" / "external_repair_target.py").exists()
+    assert repair_target.exists()
     assert (target / "tests" / "test_external_code_repair_task.py").exists()
+    assert reference_hash_path.exists()
+    assert "def merge_setting" in repair_source
+    assert "none_keys = [key for key, value in merged_setting.items() if value is None]" not in repair_source
+    assert "def merge_setting" not in reference_hash_text
     assert "local_executable_repair_task" in metadata["safety_controls"]
 
 
@@ -509,7 +532,9 @@ def test_external_code_fixtures_are_catalogued_as_code_unseen():
 
     assert repository.split == "external_code_unseen"
     assert task.repositories == (repository.name,)
-    assert external_code_values({"field_values": ["Response Content"]}, spec) == ("response_content",)
+    assert external_code_values({"field_values": ["Merge Setting None Header"]}, spec) == (
+        "merge_setting_none_header",
+    )
 
 
 def test_ci_only_runs_exact_full_pytest_command(tmp_path):
@@ -641,7 +666,9 @@ def test_baseline_comparison_marks_unseen_transfer_success():
             "task_claim": "held-out transfer",
             "variant": "verified_closed_loop",
             "family": "proposed",
-            "accepted_rate_mean": 1.0,
+            "accepted_rate_mean": 0.6,
+            "accepted_rate_ci_lower": 0.35,
+            "accepted_rate_ci_upper": 0.8,
             "improvement_depth_mean": 1.0,
             "cost_proxy_seconds_mean": 1.0,
             "rollback_success_rate": None,
@@ -681,6 +708,8 @@ def test_baseline_comparison_marks_external_transfer_success():
             "family": "proposed",
             "accepted_rate_mean": 1.0,
             "improvement_depth_mean": 3.0,
+            "improvement_depth_ci_lower": 2.0,
+            "improvement_depth_ci_upper": 3.5,
             "cost_proxy_seconds_mean": 1.0,
             "rollback_success_rate": None,
             "full_test_success_rate": 1.0,
@@ -717,7 +746,9 @@ def test_baseline_comparison_marks_external_code_transfer_success():
             "task_claim": "external code transfer",
             "variant": "verified_closed_loop",
             "family": "proposed",
-            "accepted_rate_mean": 1.0,
+            "accepted_rate_mean": 0.6,
+            "accepted_rate_ci_lower": 0.35,
+            "accepted_rate_ci_upper": 0.8,
             "improvement_depth_mean": 3.0,
             "cost_proxy_seconds_mean": 1.0,
             "rollback_success_rate": None,
@@ -731,7 +762,7 @@ def test_baseline_comparison_marks_external_code_transfer_success():
             "task_claim": "external code transfer",
             "variant": "agent_coding_loop",
             "family": "baseline_agent_coding_loop",
-            "accepted_rate_mean": 1.0,
+            "accepted_rate_mean": 0.0,
             "improvement_depth_mean": 1.0,
             "cost_proxy_seconds_mean": 1.0,
             "rollback_success_rate": None,
@@ -743,6 +774,50 @@ def test_baseline_comparison_marks_external_code_transfer_success():
 
     assert comparison["outcome"] == "external_code_transfer_success"
     assert comparison["external_code_transfer_success"] is True
+    assert comparison["accepted_rate_powered_win"] is True
+
+
+def test_baseline_comparison_marks_degenerate_ci_as_not_powered():
+    aggregates = [
+        {
+            "repository": "external_requests_code_transfer_repo",
+            "repository_split": "external_code_unseen",
+            "transfer_origin": "psf/requests",
+            "task": "external_requests_code_failure_fixture_query",
+            "task_claim": "external code transfer",
+            "variant": "verified_closed_loop",
+            "family": "proposed",
+            "accepted_rate_mean": 0.25,
+            "accepted_rate_ci_lower": 0.25,
+            "accepted_rate_ci_upper": 0.25,
+            "improvement_depth_mean": 1.0,
+            "improvement_depth_ci_lower": 1.0,
+            "improvement_depth_ci_upper": 1.0,
+            "cost_proxy_seconds_mean": 1.0,
+            "rollback_success_rate": None,
+            "full_test_success_rate": 1.0,
+        },
+        {
+            "repository": "external_requests_code_transfer_repo",
+            "repository_split": "external_code_unseen",
+            "transfer_origin": "psf/requests",
+            "task": "external_requests_code_failure_fixture_query",
+            "task_claim": "external code transfer",
+            "variant": "agent_coding_loop",
+            "family": "baseline_agent_coding_loop",
+            "accepted_rate_mean": 0.0,
+            "improvement_depth_mean": 0.0,
+            "cost_proxy_seconds_mean": 1.0,
+            "rollback_success_rate": None,
+            "full_test_success_rate": 1.0,
+        },
+    ]
+
+    comparison = build_baseline_comparisons(aggregates)[0]
+
+    assert comparison["outcome"] == "deterministic_not_powered"
+    assert comparison["external_code_transfer_success"] is False
+    assert comparison["deterministic_not_powered"] is True
 
 
 def test_baseline_comparison_marks_capability_transfer_success():
@@ -755,7 +830,9 @@ def test_baseline_comparison_marks_capability_transfer_success():
             "task_claim": "capability transfer",
             "variant": "verified_closed_loop",
             "family": "proposed",
-            "accepted_rate_mean": 1.0,
+            "accepted_rate_mean": 0.6,
+            "accepted_rate_ci_lower": 0.35,
+            "accepted_rate_ci_upper": 0.8,
             "improvement_depth_mean": 1.0,
             "cost_proxy_seconds_mean": 1.0,
             "rollback_success_rate": None,

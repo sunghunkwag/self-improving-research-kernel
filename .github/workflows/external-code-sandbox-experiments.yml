@@ -6,7 +6,7 @@ on:
       repeats:
         description: Repeated trials per external code repository/task/variant cell.
         required: true
-        default: "10"
+        default: "20"
       max_generations:
         description: Maximum loop generations per experiment run.
         required: true
@@ -75,9 +75,6 @@ jobs:
         run: |
           python scripts/external_world_grounding.py \
             --repository psf/requests \
-            --repository hypothesisworks/hypothesis \
-            --repository pandas-dev/pandas \
-            --repository dask/dask \
             --label-query bug \
             --limit-per-repo 1 \
             --output-dir reports/external_grounding/external_transfer/latest
@@ -88,9 +85,6 @@ jobs:
         run: |
           python scripts/external_code_sandbox_fixtures.py \
             --repository psf/requests \
-            --repository hypothesisworks/hypothesis \
-            --repository pandas-dev/pandas \
-            --repository dask/dask \
             --grounding-path reports/external_grounding/external_transfer/latest/external_grounding_tasks.json \
             --output-dir reports/external_code_fixtures/latest \
             --max-source-chars 1800 \
@@ -102,9 +96,6 @@ jobs:
             --repo-root "$GITHUB_WORKSPACE" \
             --output-dir "$GITHUB_WORKSPACE/reports/rsi_experiments/external_code_transfer/latest" \
             --repository external_requests_code_transfer_repo \
-            --repository external_hypothesis_code_transfer_repo \
-            --repository external_pandas_code_transfer_repo \
-            --repository external_dask_code_transfer_repo \
             --variant verified_closed_loop \
             --variant evolutionary_repair_loop \
             --variant agent_coding_loop \
