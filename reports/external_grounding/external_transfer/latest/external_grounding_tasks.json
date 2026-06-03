@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-27T04:00:33Z",
+  "generated_at": "2026-06-03T04:10:31Z",
   "safety_model": [
     "Only issue metadata is fetched.",
     "No external repository code is cloned or executed.",
@@ -41,11 +41,10 @@
       "issue_number": 12359,
       "labels": [
         "array",
-        "bug",
-        "needs triage"
+        "bug"
       ],
       "provenance": {
-        "retrieved_at": "2026-05-27T04:00:33Z",
+        "retrieved_at": "2026-06-03T04:10:31Z",
         "source_api": "https://api.github.com/repos/dask/dask/issues",
         "source_url": "https://github.com/dask/dask/issues/12359"
       },
@@ -62,22 +61,21 @@
       "task_id": "github:dask/dask#12359",
       "task_kind": "external_bug_repair",
       "title": "'cumsum' results differ from 'cumsum' on a pure numpy array",
-      "updated_at": "2026-05-21T15:05:45Z",
+      "updated_at": "2026-05-28T17:08:36Z",
       "url": "https://github.com/dask/dask/issues/12359"
     },
     {
-      "body_excerpt": "The following takes 4 seconds to complete, and blows up badly (quadratically?) as n increases: ```python import time from abc import ABC, abstractmethod from dataclasses import dataclass import hypothesis.strategies as st class Stmt(ABC): @abstractmethod def f(self) -> str: ... @dataclass class Block(Stmt): stmts: list[Stmt] def f(self) -> str: return \"\" for i in range(30): exec( f\"@dataclass\\n\" f\"class S{i}(Stmt):\\n\" f\" a: Stmt\\n\" f\" b: Stmt | None\\n\" f\" def f(self) -> str: return ''\\n\" ) t0 = time.perf_counter() st.from_type(Block) print(f\"{time.perf_counter() - t0:.3f}s\") ``` Something about many subclasses referencing the parent class in their types seems load bearing., as does having two fields `a` and `b` of slightly different forms doing so.",
-      "created_at": "2026-05-15T16:08:59Z",
+      "body_excerpt": "Part of https://github.com/HypothesisWorks/hypothesis/issues/4451. I have seen this error rarely when testing with multiple threads. As a debugging measure, I added a per-name lock around the entirety of `recursive_property`, but still saw this occur. My guess is a race in `mapping` somehow, such that a strategy doesn't get the `cache_key` set when we expect it to. But I'm not sure how this could happen. Keywords for searchers: `cached_is_empty`, `cached_is_cacheable`. ``` ~/Desktop/Liam/coding/hypothesis \u03bb PYTEST_RUN_PARALLEL_VERBOSE=1 p1 -k test_intervalset --parallel-threads 2 -s --hypothesis-profile=threading \u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015 test_error_for_index_of_not_present_value \u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015\u2015 Traceback (most recent call last): File \"/Users/tybug/Desktop/Liam/coding/hypothesis/hypothesis-python/tests/cover/test_intervalset.py\", line 43, in test_error_for_index_of_not_present_value @example(intervals=IntervalSet(()), v=0) ^^^ File \"/Users/tybug/Desktop/Liam/coding/hypothesis/hypothesis-python/src/hypothesis/core.py\", line 1877, in wrapped_test arguments, kwargs, stuff = process_arguments_to_given( ^^^^^^^^",
+      "created_at": "2025-07-16T20:40:33Z",
       "grounding_score": 3.0,
-      "issue_number": 4729,
+      "issue_number": 4475,
       "labels": [
-        "bug",
-        "performance"
+        "bug"
       ],
       "provenance": {
-        "retrieved_at": "2026-05-27T04:00:32Z",
+        "retrieved_at": "2026-06-03T04:10:30Z",
         "source_api": "https://api.github.com/repos/hypothesisworks/hypothesis/issues",
-        "source_url": "https://github.com/HypothesisWorks/hypothesis/issues/4729"
+        "source_url": "https://github.com/HypothesisWorks/hypothesis/issues/4475"
       },
       "provider": "github",
       "repository": "hypothesisworks/hypothesis",
@@ -89,25 +87,25 @@
         "repository_allowlist"
       ],
       "state": "open",
-      "task_id": "github:hypothesisworks/hypothesis#4729",
-      "task_kind": "external_bug_repair",
-      "title": "Time blowup for `from_type` with certain abstract classes",
-      "updated_at": "2026-05-15T16:09:40Z",
-      "url": "https://github.com/HypothesisWorks/hypothesis/issues/4729"
+      "task_id": "github:hypothesisworks/hypothesis#4475",
+      "task_kind": "external_regression_repair",
+      "title": "Race condition error in `recursive_property`",
+      "updated_at": "2025-07-16T20:40:36Z",
+      "url": "https://github.com/HypothesisWorks/hypothesis/issues/4475"
     },
     {
-      "body_excerpt": "### Pandas version checks - [x] I have checked that this issue has not already been reported. - [x] I have confirmed this bug exists on the [latest version](https://pandas.pydata.org/docs/whatsnew/index.html) of pandas. - [x] I have confirmed this bug exists on the [main branch](https://pandas.pydata.org/docs/dev/getting_started/install.html#installing-the-development-version-of-pandas) of pandas. ### Issue Description In `a.map(b)`, when both a and b are Series and b's dtype is non-nullable, Pandas dynamically changes the output dtype if it can't match all the keys. This behaviour changed in the nightlies vs. 3.0; however I am seeing inconsistencies which make little sense to me. ### Use case 1: Not all elements of `a.values` are in `b.index` ```python a = pd.Series([1, 2]) b = pd.Series([10, 20], index=[2, 3]) ``` output (pandas 3.0): np.float64 output (pandas 3.1 nightly): np.float64 ### Use case 2: Some values of `a` are NULL ```python a = pd.Series([1, None], dtype=\"Int16\") b = pd.Series([10, 20], index=[2, 1]) ``` output (pandas 3.0): np.float64 output (pandas 3.1 nightly): Float64 ```python a = pd.Series([1, None], dtype=\"int16[pyarrow]\") b = pd.Series([10, 20], index=[2, 1]",
-      "created_at": "2026-05-26T13:37:47Z",
+      "body_excerpt": "### Pandas version checks - [x] I have checked that this issue has not already been reported. - [x] I have confirmed this bug exists on the [latest version](https://pandas.pydata.org/docs/whatsnew/index.html) of pandas. - [x] I have confirmed this bug exists on the [main branch](https://pandas.pydata.org/docs/dev/getting_started/install.html#installing-the-development-version-of-pandas) of pandas. ### Reproducible Example ```python import pandas as pd class MyDict(dict): pass df = pd.DataFrame( {\"A\": [1, 2], \"B\": [\"x\", \"y\"]} ) out = df.to_dict(\"index\", into=MyDict) print(out) print(type(out)) print(type(out[0])) assert isinstance(out, MyDict) assert isinstance(out[0], MyDict) # fails ``` ### Issue Description Running the code above raises an `AssertionError` like below. ```python {0: {'A': 1, 'B': 'x'}, 1: {'A': 2, 'B': 'y'}} <class '__main__.MyDict'> <class 'dict'> --------------------------------------------------------------------------- AssertionError Traceback (most recent call last) Cell In[19], line 22 18 print(type(out)) 19 print(type(out[0])) 20 21 assert isinstance(out, MyDict) ---> 22 assert isinstance(out[0], MyDict) # fails AssertionError: ``` This suggests `DataFrame.",
+      "created_at": "2026-06-02T10:16:55Z",
       "grounding_score": 3.0,
-      "issue_number": 65735,
+      "issue_number": 65778,
       "labels": [
         "Bug",
-        "Needs Triage"
+        "IO Data"
       ],
       "provenance": {
-        "retrieved_at": "2026-05-27T04:00:32Z",
+        "retrieved_at": "2026-06-03T04:10:30Z",
         "source_api": "https://api.github.com/repos/pandas-dev/pandas/issues",
-        "source_url": "https://github.com/pandas-dev/pandas/issues/65735"
+        "source_url": "https://github.com/pandas-dev/pandas/issues/65778"
       },
       "provider": "github",
       "repository": "pandas-dev/pandas",
@@ -119,11 +117,11 @@
         "repository_allowlist"
       ],
       "state": "open",
-      "task_id": "github:pandas-dev/pandas#65735",
+      "task_id": "github:pandas-dev/pandas#65778",
       "task_kind": "external_regression_repair",
-      "title": "BUG: Incoherent dynamic dtype changes in `.map()`",
-      "updated_at": "2026-05-26T13:52:56Z",
-      "url": "https://github.com/pandas-dev/pandas/issues/65735"
+      "title": "BUG: `DataFrame.to_dict(orient=\"index\", into=...)` does not apply `into` to nested mappings",
+      "updated_at": "2026-06-03T02:40:22Z",
+      "url": "https://github.com/pandas-dev/pandas/issues/65778"
     },
     {
       "body_excerpt": "I had a hard debugging time today because an error in the response stream is only reported when accessing `response.content` for the first time. This is especially irritating when running code in a debugger. ## Expected Result If accessing `response.content` the first time raises an exception I would expect that accessing `response.content` again would also raise an exception (ideally the same). ## Actual Result Instead after raising on the first get, getting `response.content` again returns an empty string. ## Reproduction Steps Here is a patch with a new test case for this: [error_replay_test.diff.gz](https://github.com/requests/requests/files/2838360/error_replay_test.diff.gz). Basically, it boils down to this: ```python import requests response = requests.post(\"http://connreset.biz/get/incomplete/chunked\", stream=True) try: response.content except Exception: # Error handling code, may try something else or fall through pass content = response.content # empty string ``` Output of my test case: ``` $ pipenv run py.test tests/test_lowlevel.py -q --tb=short -k retain F [100%] ============================= FAILURES ============================= _______________ test_response_content_",
@@ -134,7 +132,7 @@
         "Bug"
       ],
       "provenance": {
-        "retrieved_at": "2026-05-27T04:00:32Z",
+        "retrieved_at": "2026-06-03T04:10:29Z",
         "source_api": "https://api.github.com/repos/psf/requests/issues",
         "source_url": "https://github.com/psf/requests/issues/4965"
       },
