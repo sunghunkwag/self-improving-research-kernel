@@ -15,6 +15,14 @@ from scripts.closed_rsi.gates.results import (
     full_test_passed,
     is_full_test_gate,
 )
+from scripts.closed_rsi.generators.ast_synthesis import (
+    AstMutationPlan,
+    apply_mapping_none_deletion_mutation,
+    ast_synthesis_candidates,
+    ast_synthesis_compile_count,
+    ast_synthesis_summary,
+    discover_mapping_none_deletion_plans,
+)
 from scripts.closed_rsi.generators.capability import (
     CAPABILITY_OPERATOR_BLUEPRINTS,
     CapabilityOperatorBlueprint,

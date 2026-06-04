@@ -141,6 +141,8 @@ def external_code_repair_candidates(
     text = target.read_text(encoding="utf-8")
     if EXTERNAL_MERGE_GENERAL_BODY in text:
         return []
+    if EXTERNAL_MERGE_BUGGY_BODY not in text:
+        return []
     candidates = [
         CandidatePatch(
             name="external_code_repair_requests_merge_setting_visible_only_v1",
