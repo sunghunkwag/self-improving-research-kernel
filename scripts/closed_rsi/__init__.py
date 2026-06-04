@@ -29,8 +29,12 @@ from scripts.closed_rsi.generators.capability import (
     CAPABILITY_OPERATOR_BLUEPRINTS,
     CapabilityOperatorBlueprint,
     add_capability_operator,
+    add_self_proposed_operator,
     build_capability_operator_test,
+    build_self_proposed_operator_test,
     capability_operator_candidates,
+    failure_residue_history_from_state,
+    self_proposed_capability_candidates,
 )
 from scripts.closed_rsi.generators.common import insert_before, names_from_state, replace_once
 from scripts.closed_rsi.generators.external_code import (

@@ -10,6 +10,7 @@ from __future__ import annotations
 import ast
 import hashlib
 import re
+from collections import Counter
 from dataclasses import asdict, dataclass
 from typing import Callable, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
 
@@ -69,6 +70,21 @@ class FailureResidue:
     overfit_signal: str
     failed_gate: str = ""
     next_hypothesis: str = ""
+
+    def to_dict(self) -> Dict[str, object]:
+        return asdict(self)
+
+
+@dataclass(frozen=True)
+class SelfProposedCapabilityDimension:
+    """Capability family inferred from accumulated rejected-candidate residue."""
+
+    family: str
+    operator: str
+    source_signature: str
+    residue_count: int
+    trigger_terms: Tuple[str, ...]
+    rationale: str
 
     def to_dict(self) -> Dict[str, object]:
         return asdict(self)
@@ -264,6 +280,178 @@ def _dedupe_expected(items: Sequence[object]) -> Tuple[object, ...]:
     return tuple(result)
 
 
+_RESIDUE_STOP_WORDS = {
+    "and",
+    "before",
+    "candidate",
+    "failed",
+    "failure",
+    "gate",
+    "implement",
+    "missing",
+    "one",
+    "operator",
+    "or",
+    "repair",
+    "rerunning",
+    "the",
+    "with",
+}
+
+
+def _residue_mapping(residue: object) -> Dict[str, object]:
+    if isinstance(residue, FailureResidue):
+        return residue.to_dict()
+    if isinstance(residue, Mapping):
+        return dict(residue)
+    return {}
+
+
+def _residue_text(residue: Mapping[str, object]) -> str:
+    fields = (
+        "failed_candidate_reason",
+        "missing_operator",
+        "missing_abstraction",
+        "failed_evaluator",
+        "overfit_signal",
+        "failed_gate",
+        "next_hypothesis",
+    )
+    return " ".join(str(residue.get(field, "") or "") for field in fields)
+
+
+def _residue_terms(residues: Sequence[Mapping[str, object]]) -> Tuple[str, ...]:
+    counts: Counter[str] = Counter()
+    for residue in residues:
+        for token in re.findall(r"[A-Za-z][A-Za-z0-9_]+", _residue_text(residue).lower()):
+            token = token.strip("_")
+            if len(token) < 4 or token in _RESIDUE_STOP_WORDS:
+                continue
+            counts[token] += 1
+    return tuple(token for token, _count in counts.most_common(5))
+
+
+def _slug_terms(terms: Sequence[str], fallback: str) -> Tuple[str, ...]:
+    selected = [
+        re.sub(r"[^a-z0-9_]+", "_", term.lower()).strip("_")[:24]
+        for term in terms
+        if term
+    ]
+    selected = [term for term in selected if term]
+    if not selected:
+        selected = [fallback]
+    return tuple(dict.fromkeys(selected))[:3]
+
+
+def _dimension_group_key(residue: Mapping[str, object]) -> str:
+    return str(
+        residue.get("missing_abstraction")
+        or residue.get("overfit_signal")
+        or residue.get("failed_gate")
+        or residue.get("failed_candidate_reason")
+        or "undifferentiated residue"
+    )
+
+
+def propose_capability_dimensions_from_residue(
+    failure_residue_history: Sequence[object],
+    *,
+    seed: str = "self_proposed_capability_dimension_v1",
+    max_dimensions: int = 3,
+) -> Tuple[SelfProposedCapabilityDimension, ...]:
+    """Infer new capability dimensions from accumulated failure residue.
+
+    The family names and operators are derived from residue text and a seed. The
+    function does not inspect benchmark expected outputs or quarantined fixes.
+    """
+
+    groups: Dict[str, List[Dict[str, object]]] = {}
+    for item in failure_residue_history:
+        residue = _residue_mapping(item)
+        if not residue:
+            continue
+        if not _residue_text(residue).strip():
+            continue
+        groups.setdefault(_dimension_group_key(residue), []).append(residue)
+
+    dimensions: List[SelfProposedCapabilityDimension] = []
+    for group_key, residues in sorted(groups.items(), key=lambda item: (-len(item[1]), item[0])):
+        terms = _residue_terms(residues)
+        fallback = hashlib.sha256(f"{seed}:{group_key}".encode("utf-8")).hexdigest()[:8]
+        slug = "_".join(_slug_terms(terms, fallback))
+        family = f"residue_{slug}"
+        if family in CAPABILITY_FAMILIES:
+            family = f"residue_invented_{slug}"
+        operator = f"classify_{family}_pressure"
+        signature = hashlib.sha256(
+            f"{seed}:{group_key}:{tuple(sorted(_residue_text(item) for item in residues))}".encode("utf-8")
+        ).hexdigest()[:16]
+        dimensions.append(
+            SelfProposedCapabilityDimension(
+                family=family,
+                operator=operator,
+                source_signature=signature,
+                residue_count=len(residues),
+                trigger_terms=terms[:5] or (fallback,),
+                rationale=(
+                    "Derived from repeated FailureResidue signals rather than a fixed "
+                    "benchmark family list."
+                ),
+            )
+        )
+        if len(dimensions) >= max_dimensions:
+            break
+    return tuple(dimensions)
+
+
+def _self_proposed_expected(payload: Mapping[str, object]) -> Dict[str, object]:
+    signals = tuple(str(signal) for signal in payload.get("signals", ()) if str(signal))
+    counts = Counter(signals)
+    dominant = ""
+    if counts:
+        dominant = sorted(counts.items(), key=lambda item: (-item[1], item[0]))[0][0]
+    return {
+        "family": str(payload.get("family", "")),
+        "dominant_signal": dominant,
+        "pressure": int(payload.get("residue_count", 0) or 0) + int(payload.get("seed_pressure", 0) or 0),
+        "needs_hidden_transfer": bool(payload.get("hidden", False)),
+    }
+
+
+def self_proposed_dynamic_hidden_cases(
+    seed: str,
+    failure_residue_history: Sequence[object],
+) -> Tuple[CapabilityCase, ...]:
+    """Emit seed-derived hidden cases for residue-proposed capability families."""
+
+    cases: List[CapabilityCase] = []
+    for dimension in propose_capability_dimensions_from_residue(failure_residue_history, seed=seed):
+        digest_prefix = hashlib.sha256(f"{seed}:{dimension.source_signature}".encode("utf-8")).hexdigest()[:10]
+        seed_pressure = _seed_int(seed, f"{dimension.family}:pressure", 5, offset=1)
+        seed_term = f"seed_{_seed_int(seed, dimension.family, 997, offset=1)}"
+        signals = (*dimension.trigger_terms, seed_term, dimension.trigger_terms[0])
+        payload = {
+            "family": dimension.family,
+            "signals": signals,
+            "residue_count": dimension.residue_count,
+            "seed_pressure": seed_pressure,
+            "hidden": True,
+        }
+        cases.append(
+            CapabilityCase(
+                name=f"{dimension.family}_dynamic_hidden_{digest_prefix}",
+                family=dimension.family,
+                operator=dimension.operator,
+                inputs=(payload,),
+                expected=_self_proposed_expected(payload),
+                split="hidden",
+                tags=("dynamic", "seeded", "failure_residue", "self_proposed"),
+                cost=1.5,
+            )
+        )
+    return tuple(cases)
+
+
 def dynamic_hidden_cases(
     seed: str,
     families: Sequence[str] = CAPABILITY_FAMILIES,
@@ -392,13 +580,19 @@ def dynamic_hidden_cases(
     return tuple(cases)
 
 
-def capability_cases_for_seed(seed: str, *, include_static: bool = True) -> Tuple[CapabilityCase, ...]:
+def capability_cases_for_seed(
+    seed: str,
+    *,
+    include_static: bool = True,
+    failure_residue_history: Sequence[object] = (),
+) -> Tuple[CapabilityCase, ...]:
     """Return static benchmark cases plus deterministic dynamic hidden cases."""
 
     dynamic = dynamic_hidden_cases(seed)
+    self_proposed = self_proposed_dynamic_hidden_cases(seed, failure_residue_history)
     if include_static:
-        return (*DEFAULT_CAPABILITY_CASES, *dynamic)
-    return dynamic
+        return (*DEFAULT_CAPABILITY_CASES, *dynamic, *self_proposed)
+    return (*dynamic, *self_proposed)
 
 
 def normalize_output(value: object) -> object:

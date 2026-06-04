@@ -19,6 +19,7 @@ from scripts.closed_recursive_self_improvement_loop import (
     operator_specs_for,
     repair_external_merge_general,
     score_query_blueprints,
+    self_proposed_capability_candidates,
 )
 
 
@@ -306,6 +307,97 @@ def test_capability_operator_candidates_include_delta_metadata(tmp_path):
         "counterexample_test",
     }
     assert first.generator_improvement["surface"] == "operator synthesis"
+
+
+CAPABILITY_PRIMITIVES_PRESENT_STUB = '''"""fixture primitives already present for static families."""
+
+
+def run_length_encode(items):
+    return ()
+
+
+def infer_linear_rule(values):
+    return {}
+
+
+def rotate_grid_clockwise(grid):
+    return ()
+
+
+def dedupe_preserve_order(items):
+    return ()
+
+
+def apply_grid_action(state, action):
+    return dict(state)
+'''
+
+
+SELF_PROPOSED_RESIDUE = {
+    "candidate_name": "visible_header_repair",
+    "failed_candidate_reason": "focused passed but broad gate failed",
+    "missing_operator": "merge_setting_generalizer",
+    "missing_abstraction": "regression-aware validation abstraction",
+    "failed_evaluator": "visible_header_repair_full_pytest",
+    "overfit_signal": "focused_passed_broad_failed",
+    "failed_gate": "visible_header_repair_full_pytest",
+    "next_hypothesis": "generalize the repair beyond focused tests",
+}
+
+
+def _write_self_proposed_capability_repo(repo: Path) -> None:
+    shared = repo / "shared"
+    tests = repo / "tests"
+    shared.mkdir(parents=True)
+    tests.mkdir()
+    (shared / "__init__.py").write_text("", encoding="utf-8")
+    (shared / "capability_primitives.py").write_text(CAPABILITY_PRIMITIVES_PRESENT_STUB, encoding="utf-8")
+
+
+def test_loop_invents_self_proposed_capability_dimension_from_residue_on_two_unseen_seeds(tmp_path):
+    for index, seed in enumerate(("self-proposed-residue-seed-alpha", "self-proposed-residue-seed-beta")):
+        repo = tmp_path / f"repo_{index}"
+        _write_self_proposed_capability_repo(repo)
+        state = {
+            "accepted": [],
+            "rejected": [{"name": "prior_rejected_candidate", "failure_residue": SELF_PROPOSED_RESIDUE}],
+            "quarantine_exploration": [],
+            "active_generation": 1,
+            "active_base": "prior_rejected_candidate",
+        }
+        loop = ClosedRecursiveSelfImprovementLoop(
+            repo,
+            state_dir=tmp_path / f"state_{index}",
+            dry_run=False,
+            timeout_s=120,
+            capability_seed=seed,
+        )
+        loop.save_state(state)
+
+        candidates = self_proposed_capability_candidates(repo, generation=2, state=state, seed=seed)
+        assert len(candidates) == 1
+        candidate = candidates[0]
+        assert candidate.capability_family.startswith("residue_")
+        assert candidate.capability_family not in {
+            "algorithm_synthesis",
+            "symbolic_reasoning",
+            "grid_transformation",
+            "bug_repair",
+            "planning_state_transition",
+        }
+        assert candidate.name in {item.name for item in loop.invent_candidates(generation=2, state=state)}
+
+        record = loop.apply_candidate(candidate)
+
+        assert record.accepted is True
+        assert record.full_test_exit_code == 0
+        gate_labels = {gate["label"]: gate for gate in record.gates}
+        assert gate_labels[f"{candidate.name}_focused"]["exit_code"] == 0
+        assert gate_labels[f"{candidate.name}_capability_evaluator"]["exit_code"] == 0
+        assert gate_labels[f"{candidate.name}_full_pytest"]["exit_code"] == 0
+        assert gate_labels[f"{candidate.name}_repeat_full_pytest"]["exit_code"] == 0
+        assert record.capability_delta["hidden_transfer"] >= 1
+        assert record.generator_improvement["surface"] == "self-proposed capability dimension"
 
 
 def test_rejected_candidate_record_contains_failure_residue(tmp_path):
