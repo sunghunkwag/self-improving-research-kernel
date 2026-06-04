@@ -1,0 +1,48 @@
+name: RSI Omega Proof
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rsi-omega-proof-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  omega-proof:
+    name: Systemtest BSExpr grammar-growth proof
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    env:
+      PYTHONUNBUFFERED: "1"
+      PYTHONPATH: ${{ github.workspace }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Compile omega proof scripts
+        run: python -m py_compile scripts/rsi_omega_systemtest.py scripts/rsi_omega.py scripts/rsi_omega_proof.py
+
+      - name: Run Systemtest BSExpr cold/warm omega proof
+        run: |
+          python scripts/rsi_omega_proof.py \
+            --budget 4000 \
+            --seeds 8 \
+            --cold-seeds 12 \
+            --require-confirmed \
+            --json-output .omega_rsi_runs/rsi_omega_proof.json
