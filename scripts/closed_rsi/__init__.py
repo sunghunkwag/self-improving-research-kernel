@@ -17,10 +17,12 @@ from scripts.closed_rsi.gates.results import (
 )
 from scripts.closed_rsi.generators.ast_synthesis import (
     AstMutationPlan,
+    apply_ast_mutation,
     apply_mapping_none_deletion_mutation,
     ast_synthesis_candidates,
     ast_synthesis_compile_count,
     ast_synthesis_summary,
+    discover_ast_mutation_plans,
     discover_mapping_none_deletion_plans,
 )
 from scripts.closed_rsi.generators.capability import (

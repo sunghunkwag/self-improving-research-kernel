@@ -212,7 +212,7 @@ class ClosedRecursiveSelfImprovementLoop:
 
         schema_transfer_active = (self.repo_root / "schema_transfer_manifest.json").exists()
 
-        def candidate_key(candidate: CandidatePatch) -> Tuple[int, int, int, int, int, str, str]:
+        def candidate_key(candidate: CandidatePatch) -> Tuple[int, int, int, int, int, int, str, str]:
             rejected_penalty = 1 if candidate.name in rejected_names else 0
             novelty_bonus = 0 if candidate.name not in accepted_names else 1
             schema_transfer_candidate = schema_transfer_active and candidate.name.startswith(
@@ -234,6 +234,12 @@ class ClosedRecursiveSelfImprovementLoop:
             )
             policy_bonus = 0 if candidate.name.startswith("loop_policy") else 1
             ast_synthesis_bonus = 0 if candidate.name.startswith("external_code_repair_ast_") else 1
+            ast_deletion_bonus = (
+                0
+                if candidate.name.startswith("external_code_repair_ast_")
+                and "_none_deletion_" in candidate.name
+                else 1
+            )
             if candidate.name.startswith("external_code_repair_") or schema_transfer_candidate:
                 seed_tiebreak = hashlib.sha256(
                     f"{self.capability_seed}:{candidate.name}:{candidate.goal.name}".encode("utf-8")
@@ -245,6 +251,7 @@ class ClosedRecursiveSelfImprovementLoop:
                 novelty_bonus,
                 executable_repair_bonus,
                 ast_synthesis_bonus,
+                ast_deletion_bonus,
                 policy_bonus,
                 seed_tiebreak,
                 candidate.name,
