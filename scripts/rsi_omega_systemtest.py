@@ -145,7 +145,7 @@ class MetaState:
 class SafeInterpreter:
     """Safe interpreter for recursive integer BSExpr bodies."""
 
-    def __init__(self, limit: int = 20000, max_abs: int = 10**12):
+    def __init__(self, limit: int = 20000, max_abs: int = 10**30):
         self.limit = int(limit)
         self.max_abs = int(max_abs)
 
