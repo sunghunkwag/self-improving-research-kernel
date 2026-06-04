@@ -3,8 +3,8 @@
 > An experimental, **bounded** research kernel for recursive self-improvement.
 > It proposes code patches to its own codebase, but only keeps the ones that
 > pass compilation, evaluator gates, and the **full test suite**. Everything
-> else is rolled back. **No unbounded ASI claims** — every change is
-> deterministic, reviewable, and gate-verified.
+> else is rolled back. Every change stays bounded, deterministic,
+> reviewable, and gate-verified.
 
 In one paragraph: the kernel inspects its own source tree, invents a measurable
 improvement goal, generates a real patch plus a matching regression test,
