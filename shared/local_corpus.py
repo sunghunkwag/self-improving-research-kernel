@@ -146,6 +146,13 @@ class LocalCorpusIndex:
             raise ValueError("feature must be a non-empty string")
         return tuple(record for record in self.records if feature in record.feature_flags)
 
+    def records_with_import(self, module_name: str) -> Tuple[LocalPythonFileRecord, ...]:
+        """Return records whose ``imports`` contain ``module_name``."""
+
+        if not isinstance(module_name, str) or not module_name:
+            raise ValueError("module_name must be a non-empty string")
+        return tuple(record for record in self.records if module_name in record.imports)
+
     def write_json(self, path: Path) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(self.to_dict(), indent=2, ensure_ascii=False), encoding="utf-8")

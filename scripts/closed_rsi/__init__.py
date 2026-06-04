@@ -25,6 +25,12 @@ from scripts.closed_rsi.generators.ast_synthesis import (
     discover_ast_mutation_plans,
     discover_mapping_none_deletion_plans,
 )
+from scripts.closed_rsi.generators.behavior_archive import (
+    BehaviorArchive,
+    BehaviorSignature,
+    append_behavior_signatures_to_state,
+    behavior_signature_for_candidate,
+)
 from scripts.closed_rsi.generators.capability import (
     CAPABILITY_OPERATOR_BLUEPRINTS,
     CapabilityOperatorBlueprint,
@@ -44,6 +50,12 @@ from scripts.closed_rsi.generators.external_code import (
     repair_external_merge_user_agent_casefold,
     repair_external_merge_visible_header_set,
     repair_external_merge_visible_only,
+)
+from scripts.closed_rsi.generators.immutable_guard import (
+    BoundaryFinding,
+    candidate_immutable_boundary_findings,
+    findings_to_payload,
+    proxy_immutable_boundary_findings,
 )
 from scripts.closed_rsi.generators.local_corpus import (
     LOCAL_CORPUS_QUERY_SPECS,
@@ -67,6 +79,23 @@ from scripts.closed_rsi.generators.policy_registry import (
     POLICY_REGISTRY_TEST,
     add_policy_registry_hook,
     load_policy_registry,
+)
+from scripts.closed_rsi.generators.proxy_objectives import (
+    ProxyObjective,
+    invent_proxy_objectives,
+    judge_proxy_promotion,
+    proxy_candidate_features,
+    proxy_unseen_seed_labels,
+    rank_candidates_under_proxy,
+    score_proxy_expression,
+    validate_proxy_expression,
+)
+from scripts.closed_rsi.generators.self_play import (
+    SelfPlayResult,
+    SelfPlayTask,
+    evaluate_candidate_self_play,
+    evaluate_population_self_play,
+    propose_self_play_tasks,
 )
 from scripts.closed_rsi.loop import ClosedRecursiveSelfImprovementLoop, find_repo_root, main
 from scripts.closed_rsi.records import (
