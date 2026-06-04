@@ -581,6 +581,15 @@ def copy_required_file(src: Path, dst: Path, relative_path: str) -> None:
     shutil.copy2(source, target)
 
 
+def copy_required_tree(src: Path, dst: Path, relative_path: str) -> None:
+    source = src / relative_path
+    target = dst / relative_path
+    target.parent.mkdir(parents=True, exist_ok=True)
+    if target.exists():
+        shutil.rmtree(target)
+    shutil.copytree(source, target, ignore=should_ignore)
+
+
 def copy_optional_file(src: Path, dst: Path, relative_path: str) -> None:
     source = src / relative_path
     if not source.exists():
@@ -601,6 +610,7 @@ def build_minimal_transfer_repo(src: Path, dst: Path) -> None:
 
     dst.mkdir(parents=True, exist_ok=True)
     copy_required_file(src, dst, "scripts/closed_recursive_self_improvement_loop.py")
+    copy_required_tree(src, dst, "scripts/closed_rsi")
     copy_required_file(src, dst, "shared/local_corpus.py")
     for relative_path in (
         "scripts/rsi_policy_registry.py",
@@ -1403,7 +1413,7 @@ def remove_policy_registry_surface(repo: Path) -> None:
     i = 0
     while i < len(lines):
         if lines[i].strip() == "POLICY_REGISTRY_ACTIVE = True":
-            while i < len(lines) and not lines[i].startswith("class ClosedRecursiveSelfImprovementLoop:"):
+            while i < len(lines) and not lines[i].startswith("class ClosedRecursiveSelfImprovementLoop"):
                 i += 1
             continue
         stripped.append(lines[i])
