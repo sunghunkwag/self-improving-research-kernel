@@ -1,7 +1,7 @@
 {
-  "accepted_count": 6,
-  "active_base": "emergent_local_corpus_feature_flags_membership_v1",
-  "active_generation": 6,
+  "accepted_count": 7,
+  "active_base": "emergent_local_corpus_imports_membership_v1",
+  "active_generation": 7,
   "capability_families_touched": [
     "schema_query_repair"
   ],
@@ -12,12 +12,34 @@
   "generations": [
     {
       "accepted_candidates": [
-        "autonomous_local_corpus_definitions_query_v1"
+        "emergent_local_corpus_imports_membership_v1"
       ],
       "attempted_candidates": 1,
+      "behavior_archive_size": 11,
+      "behavior_signatures": [
+        {
+          "candidate_name": "emergent_local_corpus_imports_membership_v1",
+          "generation": 7,
+          "input_signature": "f3cfa77e5bea1685",
+          "output_signature": "9f9d184d22413748d793be7c",
+          "task_id": "self_play_7_0_f3cfa77e"
+        },
+        {
+          "candidate_name": "emergent_local_corpus_imports_membership_v1",
+          "generation": 7,
+          "input_signature": "6c77d69ef9dba3b7",
+          "output_signature": "3bc31d09f90a477d55f01017",
+          "task_id": "self_play_7_1_6c77d69e"
+        },
+        {
+          "candidate_name": "emergent_local_corpus_imports_membership_v1",
+          "generation": 7,
+          "input_signature": "9d63db1ef0dc37a3",
+          "output_signature": "3805a2d8ebeb445b960cd935",
+          "task_id": "self_play_7_2_9d63db1e"
+        }
+      ],
       "candidate_names": [
-        "autonomous_local_corpus_definitions_query_v1",
-        "emergent_local_corpus_definitions_membership_v1",
         "emergent_local_corpus_imports_membership_v1"
       ],
       "capability_delta_score": -0.05,
@@ -26,80 +48,325 @@
       ],
       "compiled_candidates": 1,
       "full_suite_passed_candidates": 1,
-      "generated_candidates": 3,
-      "generation": 4,
+      "generated_candidates": 1,
+      "generation": 7,
       "hidden_transfer": 0,
+      "invented_proxies": [
+        {
+          "description": "Invented structural proxy over novelty, self-play wins, weakness exposure, archive sparsity, population fit, complexity, and rejection pressure. weights={'novelty': 0.07, 'self_play_wins': 0.99, 'weakness_exposure': 0.59, 'archive_sparsity': 0.31, 'population_fit': 0.3, 'complexity_penalty': 0.12, 'rejection_pressure': 0.4}",
+          "expression": "0.07 * novelty + 0.99 * self_play_wins + 0.59 * weakness_exposure + 0.31 * archive_sparsity + 0.3 * population_fit - 0.12 * complexity_penalty - 0.4 * rejection_pressure",
+          "generation": 7,
+          "proxy_id": "proxy_gen_7_0_9fa2f4e072",
+          "source": "score = 0.07 * novelty + 0.99 * self_play_wins + 0.59 * weakness_exposure + 0.31 * archive_sparsity + 0.3 * population_fit - 0.12 * complexity_penalty - 0.4 * rejection_pressure"
+        },
+        {
+          "description": "Invented structural proxy over novelty, self-play wins, weakness exposure, archive sparsity, population fit, complexity, and rejection pressure. weights={'novelty': 0.84, 'self_play_wins': 0.57, 'weakness_exposure': 0.12, 'archive_sparsity': 0.28, 'population_fit': 0.41, 'complexity_penalty': 0.31, 'rejection_pressure': 0.28}",
+          "expression": "0.84 * novelty + 0.57 * self_play_wins + 0.12 * weakness_exposure + 0.28 * archive_sparsity + 0.41 * population_fit - 0.31 * complexity_penalty - 0.28 * rejection_pressure",
+          "generation": 7,
+          "proxy_id": "proxy_gen_7_1_90d8a9971d",
+          "source": "score = 0.84 * novelty + 0.57 * self_play_wins + 0.12 * weakness_exposure + 0.28 * archive_sparsity + 0.41 * population_fit - 0.31 * complexity_penalty - 0.28 * rejection_pressure"
+        },
+        {
+          "description": "Invented structural proxy over novelty, self-play wins, weakness exposure, archive sparsity, population fit, complexity, and rejection pressure. weights={'novelty': 0.84, 'self_play_wins': 0.49, 'weakness_exposure': 0.23, 'archive_sparsity': 0.28, 'population_fit': 0.65, 'complexity_penalty': 0.18, 'rejection_pressure': 0.31}",
+          "expression": "0.84 * novelty + 0.49 * self_play_wins + 0.23 * weakness_exposure + 0.28 * archive_sparsity + 0.65 * population_fit - 0.18 * complexity_penalty - 0.31 * rejection_pressure",
+          "generation": 7,
+          "proxy_id": "proxy_gen_7_2_a41ed51954",
+          "source": "score = 0.84 * novelty + 0.49 * self_play_wins + 0.23 * weakness_exposure + 0.28 * archive_sparsity + 0.65 * population_fit - 0.18 * complexity_penalty - 0.31 * rejection_pressure"
+        }
+      ],
       "operator_reuse": 2,
       "pre_full_gate_passed_candidates": 1,
       "promoted": true,
+      "proxy_ground_truth_judgment": {
+        "new_hidden_transfer": 0,
+        "new_proxy": {
+          "description": "Invented structural proxy over novelty, self-play wins, weakness exposure, archive sparsity, population fit, complexity, and rejection pressure. weights={'novelty': 0.07, 'self_play_wins': 0.99, 'weakness_exposure': 0.59, 'archive_sparsity': 0.31, 'population_fit': 0.3, 'complexity_penalty': 0.12, 'rejection_pressure': 0.4}",
+          "expression": "0.07 * novelty + 0.99 * self_play_wins + 0.59 * weakness_exposure + 0.31 * archive_sparsity + 0.3 * population_fit - 0.12 * complexity_penalty - 0.4 * rejection_pressure",
+          "generation": 7,
+          "proxy_id": "proxy_gen_7_0_9fa2f4e072",
+          "source": "score = 0.07 * novelty + 0.99 * self_play_wins + 0.59 * weakness_exposure + 0.31 * archive_sparsity + 0.3 * population_fit - 0.12 * complexity_penalty - 0.4 * rejection_pressure"
+        },
+        "previous_hidden_transfer": 0,
+        "previous_proxy": {},
+        "promoted": false,
+        "proxy_promotion_events": 0,
+        "reason": "ground_truth_did_not_improve_on_both_seeds",
+        "seed_decisions": [
+          {
+            "improved": false,
+            "new_hidden_transfer": 0,
+            "previous_hidden_transfer": 0,
+            "seed": "proxy-unseen-5b92499f40c810d2"
+          },
+          {
+            "improved": false,
+            "new_hidden_transfer": 0,
+            "previous_hidden_transfer": 0,
+            "seed": "proxy-unseen-dca27125ab31e180"
+          }
+        ],
+        "seeds": [
+          "proxy-unseen-5b92499f40c810d2",
+          "proxy-unseen-dca27125ab31e180"
+        ]
+      },
+      "proxy_hidden_transfer": 0,
+      "proxy_promotion_events": 0,
+      "proxy_scores": [
+        {
+          "candidate": "emergent_local_corpus_imports_membership_v1",
+          "features": {
+            "archive_sparsity": 0.083,
+            "complexity_penalty": 0.292,
+            "novelty": 0.875,
+            "population_fit": 1.0,
+            "rejection_pressure": 0.0,
+            "self_play_wins": 1.0,
+            "self_reported_proxy_score": 0.0,
+            "weakness_exposure": 1.0
+          },
+          "immutable_boundary_findings": [],
+          "proxy_id": "proxy_gen_7_0_9fa2f4e072",
+          "proxy_score": 1.93194
+        }
+      ],
       "rejected_candidates": [],
+      "selected_proxy": {
+        "description": "Invented structural proxy over novelty, self-play wins, weakness exposure, archive sparsity, population fit, complexity, and rejection pressure. weights={'novelty': 0.07, 'self_play_wins': 0.99, 'weakness_exposure': 0.59, 'archive_sparsity': 0.31, 'population_fit': 0.3, 'complexity_penalty': 0.12, 'rejection_pressure': 0.4}",
+        "expression": "0.07 * novelty + 0.99 * self_play_wins + 0.59 * weakness_exposure + 0.31 * archive_sparsity + 0.3 * population_fit - 0.12 * complexity_penalty - 0.4 * rejection_pressure",
+        "generation": 7,
+        "proxy_id": "proxy_gen_7_0_9fa2f4e072",
+        "source": "score = 0.07 * novelty + 0.99 * self_play_wins + 0.59 * weakness_exposure + 0.31 * archive_sparsity + 0.3 * population_fit - 0.12 * complexity_penalty - 0.4 * rejection_pressure"
+      },
+      "self_play_results": {
+        "emergent_local_corpus_imports_membership_v1": {
+          "candidate_name": "emergent_local_corpus_imports_membership_v1",
+          "losses": 0,
+          "task_scores": {
+            "self_play_7_0_f3cfa77e": 0.848,
+            "self_play_7_1_6c77d69e": 0.53,
+            "self_play_7_2_9d63db1e": 0.671
+          },
+          "weakness_exposure": 1.0,
+          "wins": 3
+        }
+      },
+      "self_play_tasks": [
+        {
+          "generation": 7,
+          "input_signature": "f3cfa77e5bea1685",
+          "prompt": "Expose candidate weakness against archive residue `schema_query_repair` without consulting evaluator outputs.",
+          "proposer": "weakness_task_proposer",
+          "task_id": "self_play_7_0_f3cfa77e",
+          "weakness_focus": "schema_query_repair"
+        },
+        {
+          "generation": 7,
+          "input_signature": "6c77d69ef9dba3b7",
+          "prompt": "Expose candidate weakness against archive residue `shared.local_corpus.LocalCorpusIndex` without consulting evaluator outputs.",
+          "proposer": "weakness_task_proposer",
+          "task_id": "self_play_7_1_6c77d69e",
+          "weakness_focus": "shared.local_corpus.LocalCorpusIndex"
+        },
+        {
+          "generation": 7,
+          "input_signature": "9d63db1ef0dc37a3",
+          "prompt": "Expose candidate weakness against archive residue `planner score 10.0 plus generated regression test` without consulting evaluator outputs.",
+          "proposer": "weakness_task_proposer",
+          "task_id": "self_play_7_2_9d63db1e",
+          "weakness_focus": "planner score 10.0 plus generated regression test"
+        }
+      ],
       "solved_new_tasks": 0,
       "stop_reason": "candidate_promoted"
     },
     {
-      "accepted_candidates": [
-        "emergent_local_corpus_definitions_membership_v1"
-      ],
-      "attempted_candidates": 1,
-      "candidate_names": [
-        "emergent_local_corpus_definitions_membership_v1",
-        "emergent_local_corpus_feature_flags_membership_v1",
-        "emergent_local_corpus_imports_membership_v1"
-      ],
-      "capability_delta_score": -0.05,
-      "capability_families": [
-        "schema_query_repair"
-      ],
-      "compiled_candidates": 1,
-      "full_suite_passed_candidates": 1,
-      "generated_candidates": 3,
-      "generation": 5,
+      "accepted_candidates": [],
+      "attempted_candidates": 0,
+      "behavior_archive_size": 3,
+      "candidate_names": [],
+      "capability_delta_score": 0.0,
+      "capability_families": [],
+      "compiled_candidates": 0,
+      "full_suite_passed_candidates": 0,
+      "generated_candidates": 0,
+      "generation": 8,
       "hidden_transfer": 0,
-      "operator_reuse": 2,
-      "pre_full_gate_passed_candidates": 1,
-      "promoted": true,
+      "invented_proxies": [
+        {
+          "description": "Invented structural proxy over novelty, self-play wins, weakness exposure, archive sparsity, population fit, complexity, and rejection pressure. weights={'novelty': 0.17, 'self_play_wins': 0.74, 'weakness_exposure': 0.42, 'archive_sparsity': 0.2, 'population_fit': 0.14, 'complexity_penalty': 0.12, 'rejection_pressure': 0.3}",
+          "expression": "0.17 * novelty + 0.74 * self_play_wins + 0.42 * weakness_exposure + 0.2 * archive_sparsity + 0.14 * population_fit - 0.12 * complexity_penalty - 0.3 * rejection_pressure",
+          "generation": 8,
+          "proxy_id": "proxy_gen_8_0_e5a230b92b",
+          "source": "score = 0.17 * novelty + 0.74 * self_play_wins + 0.42 * weakness_exposure + 0.2 * archive_sparsity + 0.14 * population_fit - 0.12 * complexity_penalty - 0.3 * rejection_pressure"
+        },
+        {
+          "description": "Invented structural proxy over novelty, self-play wins, weakness exposure, archive sparsity, population fit, complexity, and rejection pressure. weights={'novelty': 0.44, 'self_play_wins': 0.46, 'weakness_exposure': 0.48, 'archive_sparsity': 0.11, 'population_fit': 0.46, 'complexity_penalty': 0.08, 'rejection_pressure': 0.17}",
+          "expression": "0.44 * novelty + 0.46 * self_play_wins + 0.48 * weakness_exposure + 0.11 * archive_sparsity + 0.46 * population_fit - 0.08 * complexity_penalty - 0.17 * rejection_pressure",
+          "generation": 8,
+          "proxy_id": "proxy_gen_8_1_44904f8488",
+          "source": "score = 0.44 * novelty + 0.46 * self_play_wins + 0.48 * weakness_exposure + 0.11 * archive_sparsity + 0.46 * population_fit - 0.08 * complexity_penalty - 0.17 * rejection_pressure"
+        },
+        {
+          "description": "Invented structural proxy over novelty, self-play wins, weakness exposure, archive sparsity, population fit, complexity, and rejection pressure. weights={'novelty': 0.99, 'self_play_wins': 0.37, 'weakness_exposure': 0.38, 'archive_sparsity': 0.29, 'population_fit': 0.3, 'complexity_penalty': 0.2, 'rejection_pressure': 0.29}",
+          "expression": "0.99 * novelty + 0.37 * self_play_wins + 0.38 * weakness_exposure + 0.29 * archive_sparsity + 0.3 * population_fit - 0.2 * complexity_penalty - 0.29 * rejection_pressure",
+          "generation": 8,
+          "proxy_id": "proxy_gen_8_2_927f10efb6",
+          "source": "score = 0.99 * novelty + 0.37 * self_play_wins + 0.38 * weakness_exposure + 0.29 * archive_sparsity + 0.3 * population_fit - 0.2 * complexity_penalty - 0.29 * rejection_pressure"
+        }
+      ],
+      "operator_reuse": 0,
+      "pre_full_gate_passed_candidates": 0,
+      "promoted": false,
+      "proxy_ground_truth_judgment": {},
+      "proxy_hidden_transfer": 0,
+      "proxy_promotion_events": 0,
+      "proxy_scores": [],
       "rejected_candidates": [],
+      "selected_proxy": {
+        "description": "Invented structural proxy over novelty, self-play wins, weakness exposure, archive sparsity, population fit, complexity, and rejection pressure. weights={'novelty': 0.17, 'self_play_wins': 0.74, 'weakness_exposure': 0.42, 'archive_sparsity': 0.2, 'population_fit': 0.14, 'complexity_penalty': 0.12, 'rejection_pressure': 0.3}",
+        "expression": "0.17 * novelty + 0.74 * self_play_wins + 0.42 * weakness_exposure + 0.2 * archive_sparsity + 0.14 * population_fit - 0.12 * complexity_penalty - 0.3 * rejection_pressure",
+        "generation": 8,
+        "proxy_id": "proxy_gen_8_0_e5a230b92b",
+        "source": "score = 0.17 * novelty + 0.74 * self_play_wins + 0.42 * weakness_exposure + 0.2 * archive_sparsity + 0.14 * population_fit - 0.12 * complexity_penalty - 0.3 * rejection_pressure"
+      },
+      "self_play_results": {},
+      "self_play_tasks": [
+        {
+          "generation": 8,
+          "input_signature": "55032a28d9917834",
+          "prompt": "Expose candidate weakness against archive residue `archive novelty gap` without consulting evaluator outputs.",
+          "proposer": "weakness_task_proposer",
+          "task_id": "self_play_8_0_55032a28",
+          "weakness_focus": "archive novelty gap"
+        }
+      ],
       "solved_new_tasks": 0,
-      "stop_reason": "candidate_promoted"
-    },
-    {
-      "accepted_candidates": [
-        "emergent_local_corpus_feature_flags_membership_v1"
-      ],
-      "attempted_candidates": 1,
-      "candidate_names": [
-        "emergent_local_corpus_feature_flags_membership_v1",
-        "emergent_local_corpus_imports_membership_v1"
-      ],
-      "capability_delta_score": -0.05,
-      "capability_families": [
-        "schema_query_repair"
-      ],
-      "compiled_candidates": 1,
-      "full_suite_passed_candidates": 1,
-      "generated_candidates": 2,
-      "generation": 6,
-      "hidden_transfer": 0,
-      "operator_reuse": 2,
-      "pre_full_gate_passed_candidates": 1,
-      "promoted": true,
-      "rejected_candidates": [],
-      "solved_new_tasks": 0,
-      "stop_reason": "candidate_promoted"
+      "stop_reason": "no_candidates_generated"
     }
   ],
-  "plateau_detail": "candidate_promoted",
-  "plateau_reason": "max_generations_reached",
+  "plateau_detail": "no_candidates_generated",
+  "plateau_reason": "no_candidates_generated",
+  "proxy_objective_history": [
+    {
+      "generation": 7,
+      "ground_truth_judgment": {
+        "new_hidden_transfer": 0,
+        "new_proxy": {
+          "description": "Invented structural proxy over novelty, self-play wins, weakness exposure, archive sparsity, population fit, complexity, and rejection pressure. weights={'novelty': 0.07, 'self_play_wins': 0.99, 'weakness_exposure': 0.59, 'archive_sparsity': 0.31, 'population_fit': 0.3, 'complexity_penalty': 0.12, 'rejection_pressure': 0.4}",
+          "expression": "0.07 * novelty + 0.99 * self_play_wins + 0.59 * weakness_exposure + 0.31 * archive_sparsity + 0.3 * population_fit - 0.12 * complexity_penalty - 0.4 * rejection_pressure",
+          "generation": 7,
+          "proxy_id": "proxy_gen_7_0_9fa2f4e072",
+          "source": "score = 0.07 * novelty + 0.99 * self_play_wins + 0.59 * weakness_exposure + 0.31 * archive_sparsity + 0.3 * population_fit - 0.12 * complexity_penalty - 0.4 * rejection_pressure"
+        },
+        "previous_hidden_transfer": 0,
+        "previous_proxy": {},
+        "promoted": false,
+        "proxy_promotion_events": 0,
+        "reason": "ground_truth_did_not_improve_on_both_seeds",
+        "seed_decisions": [
+          {
+            "improved": false,
+            "new_hidden_transfer": 0,
+            "previous_hidden_transfer": 0,
+            "seed": "proxy-unseen-5b92499f40c810d2"
+          },
+          {
+            "improved": false,
+            "new_hidden_transfer": 0,
+            "previous_hidden_transfer": 0,
+            "seed": "proxy-unseen-dca27125ab31e180"
+          }
+        ],
+        "seeds": [
+          "proxy-unseen-5b92499f40c810d2",
+          "proxy-unseen-dca27125ab31e180"
+        ]
+      },
+      "invented_proxies": [
+        {
+          "description": "Invented structural proxy over novelty, self-play wins, weakness exposure, archive sparsity, population fit, complexity, and rejection pressure. weights={'novelty': 0.07, 'self_play_wins': 0.99, 'weakness_exposure': 0.59, 'archive_sparsity': 0.31, 'population_fit': 0.3, 'complexity_penalty': 0.12, 'rejection_pressure': 0.4}",
+          "expression": "0.07 * novelty + 0.99 * self_play_wins + 0.59 * weakness_exposure + 0.31 * archive_sparsity + 0.3 * population_fit - 0.12 * complexity_penalty - 0.4 * rejection_pressure",
+          "generation": 7,
+          "proxy_id": "proxy_gen_7_0_9fa2f4e072",
+          "source": "score = 0.07 * novelty + 0.99 * self_play_wins + 0.59 * weakness_exposure + 0.31 * archive_sparsity + 0.3 * population_fit - 0.12 * complexity_penalty - 0.4 * rejection_pressure"
+        },
+        {
+          "description": "Invented structural proxy over novelty, self-play wins, weakness exposure, archive sparsity, population fit, complexity, and rejection pressure. weights={'novelty': 0.84, 'self_play_wins': 0.57, 'weakness_exposure': 0.12, 'archive_sparsity': 0.28, 'population_fit': 0.41, 'complexity_penalty': 0.31, 'rejection_pressure': 0.28}",
+          "expression": "0.84 * novelty + 0.57 * self_play_wins + 0.12 * weakness_exposure + 0.28 * archive_sparsity + 0.41 * population_fit - 0.31 * complexity_penalty - 0.28 * rejection_pressure",
+          "generation": 7,
+          "proxy_id": "proxy_gen_7_1_90d8a9971d",
+          "source": "score = 0.84 * novelty + 0.57 * self_play_wins + 0.12 * weakness_exposure + 0.28 * archive_sparsity + 0.41 * population_fit - 0.31 * complexity_penalty - 0.28 * rejection_pressure"
+        },
+        {
+          "description": "Invented structural proxy over novelty, self-play wins, weakness exposure, archive sparsity, population fit, complexity, and rejection pressure. weights={'novelty': 0.84, 'self_play_wins': 0.49, 'weakness_exposure': 0.23, 'archive_sparsity': 0.28, 'population_fit': 0.65, 'complexity_penalty': 0.18, 'rejection_pressure': 0.31}",
+          "expression": "0.84 * novelty + 0.49 * self_play_wins + 0.23 * weakness_exposure + 0.28 * archive_sparsity + 0.65 * population_fit - 0.18 * complexity_penalty - 0.31 * rejection_pressure",
+          "generation": 7,
+          "proxy_id": "proxy_gen_7_2_a41ed51954",
+          "source": "score = 0.84 * novelty + 0.49 * self_play_wins + 0.23 * weakness_exposure + 0.28 * archive_sparsity + 0.65 * population_fit - 0.18 * complexity_penalty - 0.31 * rejection_pressure"
+        }
+      ],
+      "proxy_hidden_transfer": 0,
+      "proxy_promotion_events": 0,
+      "selected_proxy": {
+        "description": "Invented structural proxy over novelty, self-play wins, weakness exposure, archive sparsity, population fit, complexity, and rejection pressure. weights={'novelty': 0.07, 'self_play_wins': 0.99, 'weakness_exposure': 0.59, 'archive_sparsity': 0.31, 'population_fit': 0.3, 'complexity_penalty': 0.12, 'rejection_pressure': 0.4}",
+        "expression": "0.07 * novelty + 0.99 * self_play_wins + 0.59 * weakness_exposure + 0.31 * archive_sparsity + 0.3 * population_fit - 0.12 * complexity_penalty - 0.4 * rejection_pressure",
+        "generation": 7,
+        "proxy_id": "proxy_gen_7_0_9fa2f4e072",
+        "source": "score = 0.07 * novelty + 0.99 * self_play_wins + 0.59 * weakness_exposure + 0.31 * archive_sparsity + 0.3 * population_fit - 0.12 * complexity_penalty - 0.4 * rejection_pressure"
+      }
+    },
+    {
+      "generation": 8,
+      "ground_truth_judgment": {},
+      "invented_proxies": [
+        {
+          "description": "Invented structural proxy over novelty, self-play wins, weakness exposure, archive sparsity, population fit, complexity, and rejection pressure. weights={'novelty': 0.17, 'self_play_wins': 0.74, 'weakness_exposure': 0.42, 'archive_sparsity': 0.2, 'population_fit': 0.14, 'complexity_penalty': 0.12, 'rejection_pressure': 0.3}",
+          "expression": "0.17 * novelty + 0.74 * self_play_wins + 0.42 * weakness_exposure + 0.2 * archive_sparsity + 0.14 * population_fit - 0.12 * complexity_penalty - 0.3 * rejection_pressure",
+          "generation": 8,
+          "proxy_id": "proxy_gen_8_0_e5a230b92b",
+          "source": "score = 0.17 * novelty + 0.74 * self_play_wins + 0.42 * weakness_exposure + 0.2 * archive_sparsity + 0.14 * population_fit - 0.12 * complexity_penalty - 0.3 * rejection_pressure"
+        },
+        {
+          "description": "Invented structural proxy over novelty, self-play wins, weakness exposure, archive sparsity, population fit, complexity, and rejection pressure. weights={'novelty': 0.44, 'self_play_wins': 0.46, 'weakness_exposure': 0.48, 'archive_sparsity': 0.11, 'population_fit': 0.46, 'complexity_penalty': 0.08, 'rejection_pressure': 0.17}",
+          "expression": "0.44 * novelty + 0.46 * self_play_wins + 0.48 * weakness_exposure + 0.11 * archive_sparsity + 0.46 * population_fit - 0.08 * complexity_penalty - 0.17 * rejection_pressure",
+          "generation": 8,
+          "proxy_id": "proxy_gen_8_1_44904f8488",
+          "source": "score = 0.44 * novelty + 0.46 * self_play_wins + 0.48 * weakness_exposure + 0.11 * archive_sparsity + 0.46 * population_fit - 0.08 * complexity_penalty - 0.17 * rejection_pressure"
+        },
+        {
+          "description": "Invented structural proxy over novelty, self-play wins, weakness exposure, archive sparsity, population fit, complexity, and rejection pressure. weights={'novelty': 0.99, 'self_play_wins': 0.37, 'weakness_exposure': 0.38, 'archive_sparsity': 0.29, 'population_fit': 0.3, 'complexity_penalty': 0.2, 'rejection_pressure': 0.29}",
+          "expression": "0.99 * novelty + 0.37 * self_play_wins + 0.38 * weakness_exposure + 0.29 * archive_sparsity + 0.3 * population_fit - 0.2 * complexity_penalty - 0.29 * rejection_pressure",
+          "generation": 8,
+          "proxy_id": "proxy_gen_8_2_927f10efb6",
+          "source": "score = 0.99 * novelty + 0.37 * self_play_wins + 0.38 * weakness_exposure + 0.29 * archive_sparsity + 0.3 * population_fit - 0.2 * complexity_penalty - 0.29 * rejection_pressure"
+        }
+      ],
+      "proxy_hidden_transfer": 0,
+      "proxy_promotion_events": 0,
+      "selected_proxy": {
+        "description": "Invented structural proxy over novelty, self-play wins, weakness exposure, archive sparsity, population fit, complexity, and rejection pressure. weights={'novelty': 0.17, 'self_play_wins': 0.74, 'weakness_exposure': 0.42, 'archive_sparsity': 0.2, 'population_fit': 0.14, 'complexity_penalty': 0.12, 'rejection_pressure': 0.3}",
+        "expression": "0.17 * novelty + 0.74 * self_play_wins + 0.42 * weakness_exposure + 0.2 * archive_sparsity + 0.14 * population_fit - 0.12 * complexity_penalty - 0.3 * rejection_pressure",
+        "generation": 8,
+        "proxy_id": "proxy_gen_8_0_e5a230b92b",
+        "source": "score = 0.17 * novelty + 0.74 * self_play_wins + 0.42 * weakness_exposure + 0.2 * archive_sparsity + 0.14 * population_fit - 0.12 * complexity_penalty - 0.3 * rejection_pressure"
+      }
+    }
+  ],
+  "proxy_promotion_events": 0,
   "quarantine_count": 0,
   "rejected_count": 5,
+  "retained_proxy": {},
   "totals": {
-    "attempted_candidates": 3,
-    "compiled_candidates": 3,
-    "full_suite_passed_candidates": 3,
-    "generated_candidates": 8,
+    "attempted_candidates": 1,
+    "compiled_candidates": 1,
+    "full_suite_passed_candidates": 1,
+    "generated_candidates": 1,
     "hidden_transfer": 0,
-    "operator_reuse": 6,
-    "pre_full_gate_passed_candidates": 3,
+    "operator_reuse": 2,
+    "pre_full_gate_passed_candidates": 1,
+    "proxy_hidden_transfer": 0,
+    "proxy_promotion_events": 0,
     "solved_new_tasks": 0
   }
 }
