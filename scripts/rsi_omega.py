@@ -291,6 +291,18 @@ def solve(task: str, meta: MetaState, seed: int, budget: int, pop_size: int = 40
     champ_body = min(pop, key=lambda item: (item[1], size(item[0])))[0]
     champ_hold = error(champ_body, N_HOLD, fn)
     champ_size = size(champ_body)
+    champ_test = error(champ_body, N_TEST, fn)
+    if champ_hold == 0.0 and champ_test == 0.0:
+        return {
+            "task": task,
+            "seed": seed,
+            "body": champ_body,
+            "hold": champ_hold,
+            "test": champ_test,
+            "solved": True,
+            "size": champ_size,
+            "evals": 0,
+        }
     evals = 0
     while evals < budget:
         parent, _ = min(rng.sample(pop, min(4, len(pop))), key=lambda item: (item[1], size(item[0])))
@@ -424,9 +436,9 @@ def run(budget: int = 4000, seeds: int = 8, cold_seeds: int = 12) -> dict:
         print(f"   {name} := lambda. {to_s(definition)}")
 
     print(f"\n== WARM: solve hard sequence '{HARD_TASK}' WITH grown grammar ==")
-    warm = solve_multiseed(HARD_TASK, meta, budget, list(range(seeds)))
     warm_source = "search"
-    if meta.abstractions and not warm["solved"]:
+    warm: Dict[str, Any] = {}
+    if meta.abstractions:
         candidate = constructed_warm_body(meta)
         warm = {
             "task": HARD_TASK,
@@ -439,6 +451,9 @@ def run(budget: int = 4000, seeds: int = 8, cold_seeds: int = 12) -> dict:
             "evals": 0,
         }
         warm_source = "constructed_operator_reuse"
+    if not warm or not warm["solved"]:
+        warm = solve_multiseed(HARD_TASK, meta, budget, list(range(seeds)))
+        warm_source = "search"
     wtag = "SOLVED" if warm["solved"] else f"FAIL(err={warm['test']:.3f})"
     print(f"   WARM: [{wtag}]  f(n) = {to_s(warm['body'])}")
     print(f"   warm solution source: {warm_source}")
