@@ -145,12 +145,18 @@ class MetaState:
 class SafeInterpreter:
     """Safe interpreter for recursive integer BSExpr bodies."""
 
-    def __init__(self, limit: int = 20000):
+    def __init__(self, limit: int = 20000, max_abs: int = 10**12):
         self.limit = int(limit)
+        self.max_abs = int(max_abs)
 
     def run_recursive(self, body: Any, n: int, base_k: int, base_v: int) -> int:
         steps = [0]
         memo: Dict[int, int] = {}
+
+        def bounded(value: int) -> int:
+            if abs(value) > self.max_abs:
+                raise OverflowError("interpreter magnitude limit exceeded")
+            return value
 
         def eval_expr(expr: Any, current_n: int, args: Tuple[Any, ...]) -> int:
             steps[0] += 1
@@ -170,11 +176,11 @@ class SafeInterpreter:
                 left = eval_expr(expr.left, current_n, args)
                 right = eval_expr(expr.right, current_n, args)
                 if expr.op == "+":
-                    return left + right
+                    return bounded(left + right)
                 if expr.op == "-":
-                    return left - right
+                    return bounded(left - right)
                 if expr.op == "*":
-                    return left * right
+                    return bounded(left * right)
                 raise ValueError(f"bad operator {expr.op}")
             if isinstance(expr, BSRecCall):
                 next_n = eval_expr(expr.arg, current_n, args)

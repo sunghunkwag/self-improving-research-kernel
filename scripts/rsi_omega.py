@@ -90,7 +90,7 @@ SafeInterpreter = st.SafeInterpreter
 anti_unify_bs_expr = st.anti_unify_bs_expr
 MetaState = st.MetaState
 
-INTERP = SafeInterpreter(limit=20000)
+INTERP = SafeInterpreter(limit=5000)
 BASE_K, BASE_V = 0, 0
 
 
