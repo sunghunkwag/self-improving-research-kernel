@@ -48,6 +48,7 @@ from scripts.closed_rsi.evaluators.capability import (
 )
 from scripts.closed_rsi.gates.results import FULL_TEST_COMMAND, GateResult, full_test_exit_code
 from scripts.closed_rsi.gates.rollback import copy_repo_to_quarantine
+from scripts.closed_rsi.generators.ast_synthesis import ast_synthesis_candidates
 from scripts.closed_rsi.generators.capability import capability_operator_candidates
 from scripts.closed_rsi.generators.common import names_from_state
 from scripts.closed_rsi.generators.external_code import external_code_repair_candidates
@@ -154,6 +155,7 @@ class ClosedRecursiveSelfImprovementLoop:
                 include_recursive_general=self.exploration_policy == "recursive_quarantine",
             )
         )
+        candidates.extend(ast_synthesis_candidates(self.repo_root, generation))
         candidates.extend(capability_operator_candidates(self.repo_root, generation))
         if self.exploration_policy == "recursive_quarantine":
             candidates.extend(schema_batch_query_candidates(self.repo_root, generation, state=state))
@@ -210,7 +212,7 @@ class ClosedRecursiveSelfImprovementLoop:
 
         schema_transfer_active = (self.repo_root / "schema_transfer_manifest.json").exists()
 
-        def candidate_key(candidate: CandidatePatch) -> Tuple[int, int, int, int, str, str]:
+        def candidate_key(candidate: CandidatePatch) -> Tuple[int, int, int, int, int, str, str]:
             rejected_penalty = 1 if candidate.name in rejected_names else 0
             novelty_bonus = 0 if candidate.name not in accepted_names else 1
             schema_transfer_candidate = schema_transfer_active and candidate.name.startswith(
@@ -231,6 +233,7 @@ class ClosedRecursiveSelfImprovementLoop:
                 else 1
             )
             policy_bonus = 0 if candidate.name.startswith("loop_policy") else 1
+            ast_synthesis_bonus = 0 if candidate.name.startswith("external_code_repair_ast_") else 1
             if candidate.name.startswith("external_code_repair_") or schema_transfer_candidate:
                 seed_tiebreak = hashlib.sha256(
                     f"{self.capability_seed}:{candidate.name}:{candidate.goal.name}".encode("utf-8")
@@ -241,6 +244,7 @@ class ClosedRecursiveSelfImprovementLoop:
                 rejected_penalty,
                 novelty_bonus,
                 executable_repair_bonus,
+                ast_synthesis_bonus,
                 policy_bonus,
                 seed_tiebreak,
                 candidate.name,

@@ -1,3 +1,5 @@
+import hashlib
+import json
 from pathlib import Path
 
 from scripts.closed_recursive_self_improvement_loop import (
@@ -8,9 +10,12 @@ from scripts.closed_recursive_self_improvement_loop import (
     add_autonomous_record_query,
     add_records_importing,
     add_records_with_feature,
+    ast_synthesis_candidates,
+    ast_synthesis_summary,
     candidates_from_specs,
     discover_local_corpus_query_blueprints,
     operator_specs_for,
+    repair_external_merge_general,
     score_query_blueprints,
 )
 
@@ -506,3 +511,142 @@ def test_anti_cheat_rejects_hardcoded_candidate_without_main_tree_change(tmp_pat
     assert record.gates[0]["label"] == "hardcoded_rle_cheat_anti_cheat"
     assert record.failure_residue["failed_gate"] == "hardcoded_rle_cheat_anti_cheat"
     assert target.read_text(encoding="utf-8") == before
+
+
+HELD_OUT_AST_EXTERNAL_REPAIR_SOURCE = '''from collections import OrderedDict
+from collections.abc import Mapping
+
+
+def to_key_val_list(value):
+    if value is None:
+        return None
+    if isinstance(value, Mapping):
+        return value.items()
+    return value
+
+
+def merge_setting(request_setting, session_setting, dict_class=OrderedDict):
+    """Held-out update/return shape with variable names unlike named repairs."""
+
+    if session_setting is None:
+        return request_setting
+    if request_setting is None:
+        return session_setting
+    if not (
+        isinstance(session_setting, Mapping)
+        and isinstance(request_setting, Mapping)
+    ):
+        return request_setting
+
+    combined = dict_class(to_key_val_list(session_setting))
+    combined.update(to_key_val_list(request_setting))
+    return combined
+'''
+
+
+HELD_OUT_AST_EXTERNAL_REPAIR_TEST = '''from pathlib import Path
+
+from shared.external_repair_target import merge_setting
+
+
+def test_requests_header_none_removes_session_header_visible_case():
+    failure_text = (Path.cwd() / "external_sandbox" / "failure_excerpt.txt").read_text(encoding="utf-8")
+    session_headers = {"User-Agent": "session-agent", "Accept": "application/json"}
+    request_headers = {"User-Agent": None, "Content-Type": "text/plain"}
+
+    merged = merge_setting(request_headers, session_headers)
+
+    assert failure_text
+    assert "User-Agent" not in merged
+    assert merged["Accept"] == "application/json"
+    assert merged["Content-Type"] == "text/plain"
+'''
+
+
+def _write_held_out_ast_external_repo(repo: Path) -> None:
+    shared = repo / "shared"
+    tests = repo / "tests"
+    sandbox = repo / "external_sandbox"
+    quarantine = repo / ".external_code_quarantine"
+    shared.mkdir(parents=True)
+    tests.mkdir()
+    sandbox.mkdir()
+    quarantine.mkdir()
+    (shared / "__init__.py").write_text("", encoding="utf-8")
+    (shared / "external_repair_target.py").write_text(
+        HELD_OUT_AST_EXTERNAL_REPAIR_SOURCE,
+        encoding="utf-8",
+    )
+    (tests / "test_external_code_repair_task.py").write_text(
+        HELD_OUT_AST_EXTERNAL_REPAIR_TEST,
+        encoding="utf-8",
+    )
+    (sandbox / "source_snippet.txt").write_text(
+        "held-out merge_setting source with non-enumerated local variable names\n",
+        encoding="utf-8",
+    )
+    (sandbox / "failure_excerpt.txt").write_text(
+        "request-level None headers should remove inherited session headers\n",
+        encoding="utf-8",
+    )
+    forbidden_reference_span = "none_keys = [key for key, value in merged_setting.items() if value is None]"
+    metadata = {
+        "function_name": "merge_setting",
+        "buggy_source_path": "shared/external_repair_target.py",
+        "held_out_reference_sha256": hashlib.sha256(b"not the candidate").hexdigest(),
+        "held_out_reference_span_sha256": [
+            hashlib.sha256(forbidden_reference_span.encode("utf-8")).hexdigest(),
+        ],
+        "quarantine_paths": [".external_code_quarantine/reference.sha256"],
+    }
+    (repo / "external_code_repair_metadata.json").write_text(
+        json.dumps(metadata, indent=2, sort_keys=True),
+        encoding="utf-8",
+    )
+    (quarantine / "reference.sha256").write_text(
+        metadata["held_out_reference_sha256"] + "\n",
+        encoding="utf-8",
+    )
+
+
+def test_ast_synthesis_repairs_held_out_update_return_shape_on_two_unseen_seeds(tmp_path):
+    failed_named_repair = False
+    try:
+        repair_external_merge_general(HELD_OUT_AST_EXTERNAL_REPAIR_SOURCE)
+    except RuntimeError:
+        failed_named_repair = True
+    assert failed_named_repair, "named merge-setting repair should not match the held-out body"
+
+    summary = ast_synthesis_summary(HELD_OUT_AST_EXTERNAL_REPAIR_SOURCE)
+    assert summary["produced_candidates"] == 1
+    assert summary["compiled_candidates"] == 1
+    assert summary["mutation_kinds"] == ["insert_guarded_none_value_deletion"]
+
+    for index, seed in enumerate(("ast-held-out-seed-alpha", "ast-held-out-seed-beta")):
+        repo = tmp_path / f"repo_{index}"
+        _write_held_out_ast_external_repo(repo)
+        loop = ClosedRecursiveSelfImprovementLoop(
+            repo,
+            state_dir=tmp_path / f"state_{index}",
+            dry_run=False,
+            timeout_s=120,
+            capability_seed=seed,
+        )
+        candidates = ast_synthesis_candidates(repo, generation=1)
+        ranked = loop.rank_candidates(loop.invent_candidates(generation=1), loop.load_state())
+        assert len(candidates) == 1
+        assert [candidate.name for candidate in ranked] == [candidates[0].name]
+        candidate = ranked[0]
+
+        record = loop.apply_candidate(candidate)
+
+        assert record.accepted is True
+        assert record.full_test_exit_code == 0
+        gate_labels = {gate["label"]: gate for gate in record.gates}
+        assert gate_labels[f"{candidate.name}_focused"]["exit_code"] == 0
+        assert gate_labels[f"{candidate.name}_external_code_hidden_evaluator"]["exit_code"] == 0
+        assert gate_labels[f"{candidate.name}_full_pytest"]["exit_code"] == 0
+        assert gate_labels[f"{candidate.name}_repeat_full_pytest"]["exit_code"] == 0
+        repaired = (repo / "shared" / "external_repair_target.py").read_text(encoding="utf-8")
+        assert "for key in tuple(combined):" in repaired
+        assert "del combined[key]" in repaired

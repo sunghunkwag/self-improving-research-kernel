@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Sequence, Tuple
 
+from shared.capability_benchmarks import synthesize_operator_specs
 from scripts.closed_rsi.gates.results import FULL_TEST_COMMAND
 
 
