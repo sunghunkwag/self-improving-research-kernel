@@ -583,6 +583,8 @@ def copy_required_file(src: Path, dst: Path, relative_path: str) -> None:
 
 def copy_required_tree(src: Path, dst: Path, relative_path: str) -> None:
     source = src / relative_path
+    if not source.exists():
+        return
     target = dst / relative_path
     target.parent.mkdir(parents=True, exist_ok=True)
     if target.exists():

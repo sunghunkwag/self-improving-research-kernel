@@ -241,7 +241,7 @@ def test_schema_transfer_manifest_rejects_partial_schema_candidate_before_full_p
 
     gate = loop.schema_transfer_evaluator_gate(candidate)
 
-    assert gate is not None
+    assert gate is not None, "manifest gate should reject partial schema candidates"
     assert gate.exit_code == 1
     assert gate.label == "partial_schema_query_schema_transfer_manifest"
     assert "partial_schema_candidate_failed_composite_manifest" in gate.stderr_tail
