@@ -2,6 +2,7 @@ import hashlib
 import json
 from pathlib import Path
 
+from scripts.closed_rsi.growth_report import build_growth_report, render_growth_markdown
 from scripts.closed_recursive_self_improvement_loop import (
     CandidatePatch,
     ClosedRecursiveSelfImprovementLoop,
@@ -509,6 +510,78 @@ def test_candidate_promotion_records_passing_full_pytest(tmp_path):
     assert record.full_test_command == "python -m pytest -q"
     assert record.full_test_required is True
     assert record.accepted is True
+
+
+def test_growth_report_renders_generation_accounting_and_plateau():
+    summary = {
+        "full_test_command": "python -m pytest -q",
+        "full_test_required": True,
+        "full_test_exit_code": 0,
+        "active_generation": 2,
+        "active_base": "candidate_b",
+        "plateau_reason": "candidate_budget_exhausted_without_promotion",
+        "generations": [
+            {
+                "generation": 1,
+                "generated_candidates": 4,
+                "attempted_candidates": 2,
+                "compiled_candidates": 2,
+                "pre_full_gate_passed_candidates": 1,
+                "full_suite_passed_candidates": 1,
+                "accepted_candidates": ["candidate_a"],
+                "rejected_candidates": ["candidate_bad"],
+                "capability_families": ["algorithm_synthesis"],
+                "solved_new_tasks": 1,
+                "hidden_transfer": 1,
+                "operator_reuse": 2,
+                "stop_reason": "candidate_promoted",
+            },
+            {
+                "generation": 2,
+                "generated_candidates": 3,
+                "attempted_candidates": 3,
+                "compiled_candidates": 2,
+                "pre_full_gate_passed_candidates": 0,
+                "full_suite_passed_candidates": 0,
+                "accepted_candidates": [],
+                "rejected_candidates": ["candidate_b", "candidate_c", "candidate_d"],
+                "capability_families": ["residue_regression"],
+                "solved_new_tasks": 0,
+                "hidden_transfer": 0,
+                "operator_reuse": 0,
+                "stop_reason": "candidate_budget_exhausted_without_promotion",
+            },
+        ],
+    }
+    state = {
+        "accepted": [{"name": "candidate_a", "accepted": True, "capability_delta": {"score": 1.0}}],
+        "rejected": [{"name": "candidate_bad", "accepted": False}],
+        "quarantine_exploration": [],
+    }
+
+    report = build_growth_report(summary, state)
+    markdown = render_growth_markdown(report)
+
+    assert report["totals"]["generated_candidates"] == 7
+    assert report["totals"]["compiled_candidates"] == 4
+    assert report["totals"]["full_suite_passed_candidates"] == 1
+    assert report["plateau_reason"] == "candidate_budget_exhausted_without_promotion"
+    assert "candidate_budget_exhausted_without_promotion" in markdown
+    assert "not evidence of unlimited growth" in markdown
+
+
+def test_loop_summary_records_no_candidate_plateau_without_fabricated_growth(tmp_path):
+    repo = tmp_path / "repo"
+    (repo / "shared").mkdir(parents=True)
+    (repo / "tests").mkdir()
+    loop = ClosedRecursiveSelfImprovementLoop(repo, state_dir=tmp_path / "state")
+
+    summary = loop.run(max_generations=1, max_candidates=1, wall_seconds=30)
+
+    assert summary["plateau_reason"] == "no_candidates_generated"
+    assert summary["generations"][0]["generated_candidates"] == 0
+    assert summary["generations"][0]["attempted_candidates"] == 0
+    assert summary["generations"][0]["full_suite_passed_candidates"] == 0
 
 
 def _fingerprint_files(root: Path):

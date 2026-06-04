@@ -1056,34 +1056,103 @@ print(json.dumps(payload, sort_keys=True))
         accepted_this_run: List[dict] = []
         rejected_this_run: List[dict] = []
         quarantine_exploration: List[dict] = []
+        generation_summaries: List[dict] = []
+        plateau_reason = "max_generations_reached"
 
         for _ in range(max_generations):
             if self.kill_switch_path.exists():
+                plateau_reason = "kill_switch_present"
                 break
             if time.monotonic() - started > wall_seconds:
+                plateau_reason = "wall_seconds_exhausted"
                 break
             generation = int(state.get("active_generation", 0)) + 1
             candidates = self.rank_candidates(self.invent_candidates(generation, state), state)
+            generation_summary = {
+                "generation": generation,
+                "generated_candidates": len(candidates),
+                "candidate_names": [candidate.name for candidate in candidates],
+                "attempted_candidates": 0,
+                "compiled_candidates": 0,
+                "pre_full_gate_passed_candidates": 0,
+                "full_suite_passed_candidates": 0,
+                "accepted_candidates": [],
+                "rejected_candidates": [],
+                "capability_families": [],
+                "capability_delta_score": 0.0,
+                "solved_new_tasks": 0,
+                "hidden_transfer": 0,
+                "operator_reuse": 0,
+                "promoted": False,
+                "stop_reason": "",
+            }
             if not candidates:
+                generation_summary["stop_reason"] = "no_candidates_generated"
+                generation_summaries.append(generation_summary)
+                plateau_reason = "no_candidates_generated"
                 break
 
             promoted = False
             for candidate in candidates[:max_candidates]:
                 record = self.apply_candidate(candidate)
+                payload = asdict(record)
+                generation_summary["attempted_candidates"] += 1
+                if any(
+                    str(gate.get("label", "")).endswith("_compile")
+                    and int(gate.get("exit_code", 1)) == 0
+                    for gate in payload.get("gates", [])
+                ):
+                    generation_summary["compiled_candidates"] += 1
+                pre_full_gates = [
+                    gate
+                    for gate in payload.get("gates", [])
+                    if not str(gate.get("label", "")).endswith("_full_pytest")
+                    and not str(gate.get("label", "")).endswith("_repeat_full_pytest")
+                    and "root_broad" not in str(gate.get("label", ""))
+                    and "thdse_full" not in str(gate.get("label", ""))
+                ]
+                if pre_full_gates and all(int(gate.get("exit_code", 1)) == 0 for gate in pre_full_gates):
+                    generation_summary["pre_full_gate_passed_candidates"] += 1
+                if payload.get("full_test_exit_code") == 0:
+                    generation_summary["full_suite_passed_candidates"] += 1
+                if candidate.capability_family:
+                    families = set(generation_summary["capability_families"])
+                    families.add(candidate.capability_family)
+                    generation_summary["capability_families"] = sorted(families)
+                delta = payload.get("capability_delta", {}) if isinstance(payload.get("capability_delta"), dict) else {}
+                generation_summary["capability_delta_score"] = round(
+                    float(generation_summary["capability_delta_score"]) + float(delta.get("score", 0.0) or 0.0),
+                    3,
+                )
+                generation_summary["solved_new_tasks"] += int(delta.get("solved_new_tasks", 0) or 0)
+                generation_summary["hidden_transfer"] += int(delta.get("hidden_transfer", 0) or 0)
+                generation_summary["operator_reuse"] += int(delta.get("operator_reuse", 0) or 0)
                 if record.accepted:
                     state["active_generation"] = generation
                     state["active_base"] = candidate.name
-                    state["accepted"].append(asdict(record))
-                    accepted_this_run.append(asdict(record))
+                    state["accepted"].append(payload)
+                    accepted_this_run.append(payload)
+                    generation_summary["accepted_candidates"].append(candidate.name)
+                    generation_summary["promoted"] = True
+                    generation_summary["stop_reason"] = "candidate_promoted"
                     promoted = True
                     self.save_state(state)
                     break
-                state["rejected"].append(asdict(record))
-                rejected_this_run.append(asdict(record))
+                state["rejected"].append(payload)
+                rejected_this_run.append(payload)
+                generation_summary["rejected_candidates"].append(candidate.name)
                 self.save_state(state)
 
+            if not generation_summary["stop_reason"]:
+                generation_summary["stop_reason"] = (
+                    "candidate_promoted" if promoted else "candidate_budget_exhausted_without_promotion"
+                )
+            generation_summaries.append(generation_summary)
             if not promoted:
+                plateau_reason = "candidate_budget_exhausted_without_promotion"
                 break
+        else:
+            plateau_reason = "max_generations_reached"
 
         if not self.kill_switch_path.exists() and time.monotonic() - started <= wall_seconds:
             quarantine_exploration = self.run_quarantine_exploration(
@@ -1118,6 +1187,8 @@ print(json.dumps(payload, sort_keys=True))
             "accepted_this_run": accepted_this_run,
             "rejected_this_run": rejected_this_run,
             "quarantine_exploration": quarantine_exploration,
+            "generations": generation_summaries,
+            "plateau_reason": plateau_reason,
             "active_generation": state.get("active_generation", 0),
             "active_base": state.get("active_base", "initial"),
             "total_accepted": len(state.get("accepted", [])),
