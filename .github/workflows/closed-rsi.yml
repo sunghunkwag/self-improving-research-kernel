@@ -100,6 +100,14 @@ jobs:
             echo "No closed RSI summary was produced."
           fi
 
+      - name: Generate growth report
+        if: always()
+        run: |
+          python -m scripts.closed_rsi.growth_report \
+            --state-dir .omega_rsi_runs \
+            --output .omega_rsi_runs/closed_rsi_growth_report.md \
+            --json-output .omega_rsi_runs/closed_rsi_growth_report.json
+
       - name: Commit accepted state
         run: |
           git status --short
@@ -118,5 +126,6 @@ jobs:
           name: closed-rsi-records
           path: |
             .omega_rsi_runs/*.json
+            .omega_rsi_runs/*.md
           if-no-files-found: ignore
           retention-days: 14

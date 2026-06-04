@@ -1,0 +1,105 @@
+{
+  "accepted_count": 6,
+  "active_base": "emergent_local_corpus_feature_flags_membership_v1",
+  "active_generation": 6,
+  "capability_families_touched": [
+    "schema_query_repair"
+  ],
+  "dry_run": false,
+  "full_test_command": "python -m pytest -q",
+  "full_test_exit_code": 0,
+  "full_test_required": true,
+  "generations": [
+    {
+      "accepted_candidates": [
+        "autonomous_local_corpus_definitions_query_v1"
+      ],
+      "attempted_candidates": 1,
+      "candidate_names": [
+        "autonomous_local_corpus_definitions_query_v1",
+        "emergent_local_corpus_definitions_membership_v1",
+        "emergent_local_corpus_imports_membership_v1"
+      ],
+      "capability_delta_score": -0.05,
+      "capability_families": [
+        "schema_query_repair"
+      ],
+      "compiled_candidates": 1,
+      "full_suite_passed_candidates": 1,
+      "generated_candidates": 3,
+      "generation": 4,
+      "hidden_transfer": 0,
+      "operator_reuse": 2,
+      "pre_full_gate_passed_candidates": 1,
+      "promoted": true,
+      "rejected_candidates": [],
+      "solved_new_tasks": 0,
+      "stop_reason": "candidate_promoted"
+    },
+    {
+      "accepted_candidates": [
+        "emergent_local_corpus_definitions_membership_v1"
+      ],
+      "attempted_candidates": 1,
+      "candidate_names": [
+        "emergent_local_corpus_definitions_membership_v1",
+        "emergent_local_corpus_feature_flags_membership_v1",
+        "emergent_local_corpus_imports_membership_v1"
+      ],
+      "capability_delta_score": -0.05,
+      "capability_families": [
+        "schema_query_repair"
+      ],
+      "compiled_candidates": 1,
+      "full_suite_passed_candidates": 1,
+      "generated_candidates": 3,
+      "generation": 5,
+      "hidden_transfer": 0,
+      "operator_reuse": 2,
+      "pre_full_gate_passed_candidates": 1,
+      "promoted": true,
+      "rejected_candidates": [],
+      "solved_new_tasks": 0,
+      "stop_reason": "candidate_promoted"
+    },
+    {
+      "accepted_candidates": [
+        "emergent_local_corpus_feature_flags_membership_v1"
+      ],
+      "attempted_candidates": 1,
+      "candidate_names": [
+        "emergent_local_corpus_feature_flags_membership_v1",
+        "emergent_local_corpus_imports_membership_v1"
+      ],
+      "capability_delta_score": -0.05,
+      "capability_families": [
+        "schema_query_repair"
+      ],
+      "compiled_candidates": 1,
+      "full_suite_passed_candidates": 1,
+      "generated_candidates": 2,
+      "generation": 6,
+      "hidden_transfer": 0,
+      "operator_reuse": 2,
+      "pre_full_gate_passed_candidates": 1,
+      "promoted": true,
+      "rejected_candidates": [],
+      "solved_new_tasks": 0,
+      "stop_reason": "candidate_promoted"
+    }
+  ],
+  "plateau_detail": "candidate_promoted",
+  "plateau_reason": "max_generations_reached",
+  "quarantine_count": 0,
+  "rejected_count": 5,
+  "totals": {
+    "attempted_candidates": 3,
+    "compiled_candidates": 3,
+    "full_suite_passed_candidates": 3,
+    "generated_candidates": 8,
+    "hidden_transfer": 0,
+    "operator_reuse": 6,
+    "pre_full_gate_passed_candidates": 3,
+    "solved_new_tasks": 0
+  }
+}
