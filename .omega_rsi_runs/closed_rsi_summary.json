@@ -1,14 +1,944 @@
 {
-  "accepted_this_run": [],
-  "active_base": "loop_policy_registry_v1",
-  "active_generation": 3,
+  "accepted_this_run": [
+    {
+      "accepted": true,
+      "capability_delta": {
+        "compute_cost": 606.087,
+        "hidden_transfer": 0,
+        "operator_reuse": 2,
+        "regression_protection": 1,
+        "score": -0.05,
+        "solved_new_tasks": 0
+      },
+      "chain_depth": 0,
+      "error": "",
+      "extra_paths": [],
+      "failure_residue": {},
+      "finished_at": "2026-06-04T05:32:56Z",
+      "full_test_command": "python -m pytest -q",
+      "full_test_exit_code": 0,
+      "full_test_required": true,
+      "gates": [
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "pytest",
+            "--collect-only",
+            "-q"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
+          "elapsed_s": 3.596,
+          "exit_code": 0,
+          "label": "autonomous_local_corpus_definitions_query_v1_pre_collect",
+          "stderr_tail": "",
+          "stdout_tail": "e/tests/test_structural_diff.py::TestIdenticalFiles::test_all_layers_high\nthdse/tests/test_structural_diff.py::TestIdenticalFiles::test_diagnosis_not_empty\nthdse/tests/test_structural_diff.py::TestDifferentFiles::test_all_layers_low\nthdse/tests/test_structural_diff.py::TestASTSameCFGDifferent::test_ast_higher_than_cfg\nthdse/tests/test_structural_diff.py::TestASTSameCFGDifferent::test_dominant_layer_reported\nthdse/tests/test_structural_diff.py::TestStructuralDelta::test_delta_with_vocab\nthdse/tests/test_structural_diff.py::TestStructuralDelta::test_delta_without_vocab\nthdse/tests/test_structural_diff.py::TestSerialization::test_to_dict\nthdse/tests/test_swarm.py::test_agent_initialization\nthdse/tests/test_swarm.py::test_agent_local_synthesis\nthdse/tests/test_swarm.py::test_wall_broadcast\nthdse/tests/test_swarm.py::test_consensus_identical\nthdse/tests/test_swarm.py::test_consensus_orthogonal\nthdse/tests/test_swarm.py::test_two_agent_swarm\nthdse/tests/test_swarm.py::test_heterogeneous_candidates\nthdse/tests/test_swarm.py::test_global_quotient_collapse\nthdse/tests/test_swarm.py::test_protocol_serialization\nthdse/tests/test_swarm.py::test_swarm_serl_entry_point\nthdse/tests/test_swarm.py::test_layered_consensus_cfg_isomorphism\nthdse/tests/test_swarm.py::test_layered_consensus_full_match_still_works\nthdse/tests/test_swarm.py::test_localized_quotient_isolation\nthdse/tests/test_swarm.py::test_weighted_bundle_phases\nthdse/tests/test_swarm.py::test_weighted_bundle_unit_magnitude\nthdse/tests/test_swarm.py::test_consensus_reports_adjacency_rules\nthdse/tests/test_swarm.py::test_algo_iso_effective_scoring\nthdse/tests/test_swarm.py::test_quantized_serialization_preserves_correlation\nthdse/tests/test_swarm.py::test_quantized_serialization_none_layers\nthdse/tests/test_swarm.py::test_drift_reconciliation\nthdse/tests/test_swarm.py::test_drift_reconciliation_idempotent\nthdse/tests/test_swarm.py::test_wall_ledger_tracking\nthdse/tests/test_template_decoder.py::TestTemplateExtraction::test_extract_template_from_corpus\nthdse/tests/test_template_decoder.py::TestTemplateExtraction::test_extract_multiple_functions\nthdse/tests/test_template_decoder.py::TestHoleTypeConstraints::test_hole_type_constraint_rejects_wrong_type\nthdse/tests/test_template_decoder.py::TestAssembledOutput::test_sat_model_compiles\nthdse/tests/test_template_decoder.py::TestAssembledOutput::test_variable_consistency_across_holes\nthdse/tests/test_template_decoder.py::TestTemplateDecodeEndToEnd::test_template_decode_returns_passing_source\nthdse/tests/test_template_decoder.py::TestTemplateDecodeEndToEnd::test_template_decode_called_from_beam\nthdse/tests/test_template_decoder.py::TestTemplateDecodeEndToEnd::test_template_selection_uses_arena_correlation\nthdse/tests/test_variable_threading_deps.py::TestNonAdjacentThreading::test_non_adjacent_unified_with_data_dep\nthdse/tests/test_variable_threading_deps.py::TestNonAdjacentThreading::test_reaching_defs_auto_inferred_without_explicit_edges\nthdse/tests/test_variable_threading_deps.py::TestNonAdjacentThreading::test_intervening_redef_blocks_link\nthdse/tests/test_variable_threading_deps.py::TestNonAdjacentThreading::test_three_subtree_chain\nthdse/tests/test_variable_threading_deps.py::TestNonAdjacentThreading::test_distinct_concrete_names\nthdse/tests/test_variable_threading_deps.py::TestDataDepEdgesFromFHRR::test_extract_returns_list_of_quads\nthdse/tests/test_variable_threading_deps.py::TestDataDepEdgesFromFHRR::test_extract_calls_arena_correlation\nthdse/tests/test_variable_threading_deps.py::TestDataDepEdgesFromFHRR::test_data_deps_actually_passed_to_threader\nthdse/tests/test_vocab_expander.py::test_below_threshold\nthdse/tests/test_vocab_expander.py::test_above_threshold_adds_atoms\nthdse/tests/test_vocab_expander.py::test_idempotent\nthdse/tests/test_vocab_expander.py::test_vocab_size_increases\nthdse/tests/test_vocab_expander.py::test_new_atoms_projected\nthdse/tests/test_vocab_expander.py::test_new_atoms_activatable\n\n768 tests collected in 2.78s\n",
+          "timed_out": false
+        },
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "pytest",
+            "--collect-only",
+            "-q"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
+          "elapsed_s": 1.742,
+          "exit_code": 0,
+          "label": "autonomous_local_corpus_definitions_query_v1_post_collect",
+          "stderr_tail": "",
+          "stdout_tail": "e/tests/test_structural_diff.py::TestIdenticalFiles::test_all_layers_high\nthdse/tests/test_structural_diff.py::TestIdenticalFiles::test_diagnosis_not_empty\nthdse/tests/test_structural_diff.py::TestDifferentFiles::test_all_layers_low\nthdse/tests/test_structural_diff.py::TestASTSameCFGDifferent::test_ast_higher_than_cfg\nthdse/tests/test_structural_diff.py::TestASTSameCFGDifferent::test_dominant_layer_reported\nthdse/tests/test_structural_diff.py::TestStructuralDelta::test_delta_with_vocab\nthdse/tests/test_structural_diff.py::TestStructuralDelta::test_delta_without_vocab\nthdse/tests/test_structural_diff.py::TestSerialization::test_to_dict\nthdse/tests/test_swarm.py::test_agent_initialization\nthdse/tests/test_swarm.py::test_agent_local_synthesis\nthdse/tests/test_swarm.py::test_wall_broadcast\nthdse/tests/test_swarm.py::test_consensus_identical\nthdse/tests/test_swarm.py::test_consensus_orthogonal\nthdse/tests/test_swarm.py::test_two_agent_swarm\nthdse/tests/test_swarm.py::test_heterogeneous_candidates\nthdse/tests/test_swarm.py::test_global_quotient_collapse\nthdse/tests/test_swarm.py::test_protocol_serialization\nthdse/tests/test_swarm.py::test_swarm_serl_entry_point\nthdse/tests/test_swarm.py::test_layered_consensus_cfg_isomorphism\nthdse/tests/test_swarm.py::test_layered_consensus_full_match_still_works\nthdse/tests/test_swarm.py::test_localized_quotient_isolation\nthdse/tests/test_swarm.py::test_weighted_bundle_phases\nthdse/tests/test_swarm.py::test_weighted_bundle_unit_magnitude\nthdse/tests/test_swarm.py::test_consensus_reports_adjacency_rules\nthdse/tests/test_swarm.py::test_algo_iso_effective_scoring\nthdse/tests/test_swarm.py::test_quantized_serialization_preserves_correlation\nthdse/tests/test_swarm.py::test_quantized_serialization_none_layers\nthdse/tests/test_swarm.py::test_drift_reconciliation\nthdse/tests/test_swarm.py::test_drift_reconciliation_idempotent\nthdse/tests/test_swarm.py::test_wall_ledger_tracking\nthdse/tests/test_template_decoder.py::TestTemplateExtraction::test_extract_template_from_corpus\nthdse/tests/test_template_decoder.py::TestTemplateExtraction::test_extract_multiple_functions\nthdse/tests/test_template_decoder.py::TestHoleTypeConstraints::test_hole_type_constraint_rejects_wrong_type\nthdse/tests/test_template_decoder.py::TestAssembledOutput::test_sat_model_compiles\nthdse/tests/test_template_decoder.py::TestAssembledOutput::test_variable_consistency_across_holes\nthdse/tests/test_template_decoder.py::TestTemplateDecodeEndToEnd::test_template_decode_returns_passing_source\nthdse/tests/test_template_decoder.py::TestTemplateDecodeEndToEnd::test_template_decode_called_from_beam\nthdse/tests/test_template_decoder.py::TestTemplateDecodeEndToEnd::test_template_selection_uses_arena_correlation\nthdse/tests/test_variable_threading_deps.py::TestNonAdjacentThreading::test_non_adjacent_unified_with_data_dep\nthdse/tests/test_variable_threading_deps.py::TestNonAdjacentThreading::test_reaching_defs_auto_inferred_without_explicit_edges\nthdse/tests/test_variable_threading_deps.py::TestNonAdjacentThreading::test_intervening_redef_blocks_link\nthdse/tests/test_variable_threading_deps.py::TestNonAdjacentThreading::test_three_subtree_chain\nthdse/tests/test_variable_threading_deps.py::TestNonAdjacentThreading::test_distinct_concrete_names\nthdse/tests/test_variable_threading_deps.py::TestDataDepEdgesFromFHRR::test_extract_returns_list_of_quads\nthdse/tests/test_variable_threading_deps.py::TestDataDepEdgesFromFHRR::test_extract_calls_arena_correlation\nthdse/tests/test_variable_threading_deps.py::TestDataDepEdgesFromFHRR::test_data_deps_actually_passed_to_threader\nthdse/tests/test_vocab_expander.py::test_below_threshold\nthdse/tests/test_vocab_expander.py::test_above_threshold_adds_atoms\nthdse/tests/test_vocab_expander.py::test_idempotent\nthdse/tests/test_vocab_expander.py::test_vocab_size_increases\nthdse/tests/test_vocab_expander.py::test_new_atoms_projected\nthdse/tests/test_vocab_expander.py::test_new_atoms_activatable\n\n769 tests collected in 1.27s\n",
+          "timed_out": false
+        },
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "py_compile",
+            "shared/local_corpus.py",
+            "tests/test_autonomous_local_corpus_definitions_query_v1.py"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
+          "elapsed_s": 0.036,
+          "exit_code": 0,
+          "label": "autonomous_local_corpus_definitions_query_v1_compile",
+          "stderr_tail": "",
+          "stdout_tail": "",
+          "timed_out": false
+        },
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "pytest",
+            "-q",
+            "--import-mode=importlib",
+            "--maxfail=5",
+            "--disable-warnings",
+            "tests/test_autonomous_local_corpus_definitions_query_v1.py"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
+          "elapsed_s": 0.202,
+          "exit_code": 0,
+          "label": "autonomous_local_corpus_definitions_query_v1_focused",
+          "stderr_tail": "",
+          "stdout_tail": ".                                                                        [100%]\n1 passed in 0.02s\n",
+          "timed_out": false
+        },
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-c",
+            "\nfrom shared.local_corpus import LocalCorpusIndex, LocalCorpusSummary, LocalPythonFileRecord\n\nhidden_inputs = {'definitions': 'hidden_definitions_429f346a05'}\nmethods = {'definitions': 'records_with_definition'}\nrecords = []\nfor offset, (field, value) in enumerate(hidden_inputs.items()):\n    kwargs = dict(\n        path=f\"hidden_{offset}.py\",\n        sha256=str(offset),\n        size_bytes=1,\n        line_count=1,\n        syntax_ok=True,\n    )\n    kwargs[field] = (value,)\n    records.append(LocalPythonFileRecord(**kwargs))\n\nindex = LocalCorpusIndex(\n    summary=LocalCorpusSummary(\n        file_count=len(records),\n        syntax_ok_count=len(records),\n        syntax_error_count=0,\n        unique_sha256_count=len(records),\n        duplicate_file_instances=0,\n        feature_counts={},\n        import_edge_count=0,\n        definition_count=0,\n    ),\n    records=tuple(records),\n    import_edges=(),\n)\n\nfor offset, (field, value) in enumerate(hidden_inputs.items()):\n    method = getattr(index, methods[field])\n    assert tuple(record.path for record in method(value)) == (f\"hidden_{offset}.py\",)\nprint({\"seed\": 'closed_rsi_capability_dynamic_v1', \"hidden_inputs\": hidden_inputs, \"methods\": methods})\n"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
+          "elapsed_s": 0.047,
+          "exit_code": 0,
+          "label": "autonomous_local_corpus_definitions_query_v1_schema_transfer_evaluator",
+          "stderr_tail": "",
+          "stdout_tail": "{'seed': 'closed_rsi_capability_dynamic_v1', 'hidden_inputs': {'definitions': 'hidden_definitions_429f346a05'}, 'methods': {'definitions': 'records_with_definition'}}\n",
+          "timed_out": false
+        },
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "pytest",
+            "-q"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
+          "elapsed_s": 169.495,
+          "exit_code": 0,
+          "label": "autonomous_local_corpus_definitions_query_v1_full_pytest",
+          "stderr_tail": "",
+          "stdout_tail": "........................................................................ [  9%]\n........................................................................ [ 18%]\n........................................................................ [ 28%]\n........................................................................ [ 37%]\n........................................................................ [ 46%]\n........................................................................ [ 56%]\n.s...................................................................... [ 65%]\n........................................................................ [ 74%]\n..............................s......................................... [ 84%]\n..........................s.ss.......................................... [ 93%]\n...............................s.................                        [100%]\n763 passed, 8 skipped in 168.76s (0:02:48)\n",
+          "timed_out": false
+        },
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "pytest",
+            "-q"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
+          "elapsed_s": 177.885,
+          "exit_code": 0,
+          "label": "autonomous_local_corpus_definitions_query_v1_repeat_full_pytest",
+          "stderr_tail": "",
+          "stdout_tail": "........................................................................ [  9%]\n........................................................................ [ 18%]\n........................................................................ [ 28%]\n........................................................................ [ 37%]\n........................................................................ [ 46%]\n........................................................................ [ 56%]\n.s...................................................................... [ 65%]\n........................................................................ [ 74%]\n..............................s......................................... [ 84%]\n..........................s.ss.......................................... [ 93%]\n...............................s.................                        [100%]\n763 passed, 8 skipped in 177.18s (0:02:57)\n",
+          "timed_out": false
+        },
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "pytest",
+            "-q"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
+          "elapsed_s": 175.081,
+          "exit_code": 0,
+          "label": "autonomous_local_corpus_definitions_query_v1_root_broad",
+          "stderr_tail": "",
+          "stdout_tail": "........................................................................ [  9%]\n........................................................................ [ 18%]\n........................................................................ [ 28%]\n........................................................................ [ 37%]\n........................................................................ [ 46%]\n........................................................................ [ 56%]\n.s...................................................................... [ 65%]\n........................................................................ [ 74%]\n..............................s......................................... [ 84%]\n..........................s.ss.......................................... [ 93%]\n...............................s.................                        [100%]\n763 passed, 8 skipped in 174.34s (0:02:54)\n",
+          "timed_out": false
+        },
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "pytest",
+            "-q"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel/thdse",
+          "elapsed_s": 78.003,
+          "exit_code": 0,
+          "label": "autonomous_local_corpus_definitions_query_v1_thdse_full",
+          "stderr_tail": "",
+          "stdout_tail": ".....................................................s.ss............... [ 48%]\n..........................................................s............. [ 97%]\n....                                                                     [100%]\n144 passed, 4 skipped in 77.59s (0:01:17)\n",
+          "timed_out": false
+        }
+      ],
+      "generation": 4,
+      "generator_improvement": {
+        "evidence": "records_with_definition is generated from definitions and locked by a focused test",
+        "mechanism": "adds a reusable tuple-membership operator surface inferred from dataclass fields",
+        "surface": "schema-driven query planner"
+      },
+      "goal": {
+        "metric": "planner score 11.999 plus generated regression test",
+        "name": "autonomously_query_local_corpus_definitions",
+        "rationale": "The planner found a tuple-valued definitions field without a matching query API on LocalCorpusIndex. Evidence: field:definitions, method:records_with_definition, strategy:tuple_membership, canonical_strategy_bonus.",
+        "target": "shared.local_corpus.LocalCorpusIndex"
+      },
+      "name": "autonomous_local_corpus_definitions_query_v1",
+      "operator_synthesis": [
+        {
+          "family": "schema_query_repair",
+          "kind": "solver_primitive",
+          "name": "records_with_definition",
+          "rationale": "Reusable primitive for schema_query_repair benchmark tasks.",
+          "target_surface": "shared/capability_primitives.py",
+          "validation_plan": {
+            "commands": [
+              [
+                "python",
+                "-m",
+                "pytest",
+                "-q",
+                "tests/test_capability_schema_query_repair_operator_v1.py"
+              ]
+            ],
+            "expected_signals": [
+              "public_counterexample_passes",
+              "hidden_transfer_case_passes",
+              "no_broad_regression_gate_failure"
+            ],
+            "name": "validate_records_with_definition"
+          }
+        },
+        {
+          "family": "schema_query_repair",
+          "kind": "search_heuristic",
+          "name": "prefer_records_with_definition_reuse",
+          "rationale": "Rank exact capability repair operators ahead of unrelated schema repairs.",
+          "target_surface": "scripts/closed_recursive_self_improvement_loop.py",
+          "validation_plan": {
+            "commands": [
+              [
+                "python",
+                "-m",
+                "pytest",
+                "-q",
+                "tests/test_capability_schema_query_repair_operator_v1.py"
+              ]
+            ],
+            "expected_signals": [
+              "public_counterexample_passes",
+              "hidden_transfer_case_passes",
+              "no_broad_regression_gate_failure"
+            ],
+            "name": "validate_records_with_definition"
+          }
+        },
+        {
+          "family": "schema_query_repair",
+          "kind": "evaluator_mutation",
+          "name": "records_with_definition_hidden_transfer_case",
+          "rationale": "Add a held-out case that checks transfer beyond the public example.",
+          "target_surface": "shared/capability_benchmarks.py",
+          "validation_plan": {
+            "commands": [
+              [
+                "python",
+                "-m",
+                "pytest",
+                "-q",
+                "tests/test_capability_schema_query_repair_operator_v1.py"
+              ]
+            ],
+            "expected_signals": [
+              "public_counterexample_passes",
+              "hidden_transfer_case_passes",
+              "no_broad_regression_gate_failure"
+            ],
+            "name": "validate_records_with_definition"
+          }
+        },
+        {
+          "family": "schema_query_repair",
+          "kind": "counterexample_test",
+          "name": "test_records_with_definition_counterexample",
+          "rationale": "Lock the primitive with public and hidden transfer counterexamples.",
+          "target_surface": "tests/test_capability_schema_query_repair_operator_v1.py",
+          "validation_plan": {
+            "commands": [
+              [
+                "python",
+                "-m",
+                "pytest",
+                "-q",
+                "tests/test_capability_schema_query_repair_operator_v1.py"
+              ]
+            ],
+            "expected_signals": [
+              "public_counterexample_passes",
+              "hidden_transfer_case_passes",
+              "no_broad_regression_gate_failure"
+            ],
+            "name": "validate_records_with_definition"
+          }
+        }
+      ],
+      "promoted": true,
+      "quarantine": false,
+      "started_at": "2026-06-04T05:22:50Z",
+      "target_path": "shared/local_corpus.py",
+      "test_path": "tests/test_autonomous_local_corpus_definitions_query_v1.py"
+    },
+    {
+      "accepted": true,
+      "capability_delta": {
+        "compute_cost": 620.294,
+        "hidden_transfer": 0,
+        "operator_reuse": 2,
+        "regression_protection": 1,
+        "score": -0.05,
+        "solved_new_tasks": 0
+      },
+      "chain_depth": 0,
+      "error": "",
+      "extra_paths": [],
+      "failure_residue": {},
+      "finished_at": "2026-06-04T05:43:16Z",
+      "full_test_command": "python -m pytest -q",
+      "full_test_exit_code": 0,
+      "full_test_required": true,
+      "gates": [
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "pytest",
+            "--collect-only",
+            "-q"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
+          "elapsed_s": 1.787,
+          "exit_code": 0,
+          "label": "emergent_local_corpus_definitions_membership_v1_pre_collect",
+          "stderr_tail": "",
+          "stdout_tail": "e/tests/test_structural_diff.py::TestIdenticalFiles::test_all_layers_high\nthdse/tests/test_structural_diff.py::TestIdenticalFiles::test_diagnosis_not_empty\nthdse/tests/test_structural_diff.py::TestDifferentFiles::test_all_layers_low\nthdse/tests/test_structural_diff.py::TestASTSameCFGDifferent::test_ast_higher_than_cfg\nthdse/tests/test_structural_diff.py::TestASTSameCFGDifferent::test_dominant_layer_reported\nthdse/tests/test_structural_diff.py::TestStructuralDelta::test_delta_with_vocab\nthdse/tests/test_structural_diff.py::TestStructuralDelta::test_delta_without_vocab\nthdse/tests/test_structural_diff.py::TestSerialization::test_to_dict\nthdse/tests/test_swarm.py::test_agent_initialization\nthdse/tests/test_swarm.py::test_agent_local_synthesis\nthdse/tests/test_swarm.py::test_wall_broadcast\nthdse/tests/test_swarm.py::test_consensus_identical\nthdse/tests/test_swarm.py::test_consensus_orthogonal\nthdse/tests/test_swarm.py::test_two_agent_swarm\nthdse/tests/test_swarm.py::test_heterogeneous_candidates\nthdse/tests/test_swarm.py::test_global_quotient_collapse\nthdse/tests/test_swarm.py::test_protocol_serialization\nthdse/tests/test_swarm.py::test_swarm_serl_entry_point\nthdse/tests/test_swarm.py::test_layered_consensus_cfg_isomorphism\nthdse/tests/test_swarm.py::test_layered_consensus_full_match_still_works\nthdse/tests/test_swarm.py::test_localized_quotient_isolation\nthdse/tests/test_swarm.py::test_weighted_bundle_phases\nthdse/tests/test_swarm.py::test_weighted_bundle_unit_magnitude\nthdse/tests/test_swarm.py::test_consensus_reports_adjacency_rules\nthdse/tests/test_swarm.py::test_algo_iso_effective_scoring\nthdse/tests/test_swarm.py::test_quantized_serialization_preserves_correlation\nthdse/tests/test_swarm.py::test_quantized_serialization_none_layers\nthdse/tests/test_swarm.py::test_drift_reconciliation\nthdse/tests/test_swarm.py::test_drift_reconciliation_idempotent\nthdse/tests/test_swarm.py::test_wall_ledger_tracking\nthdse/tests/test_template_decoder.py::TestTemplateExtraction::test_extract_template_from_corpus\nthdse/tests/test_template_decoder.py::TestTemplateExtraction::test_extract_multiple_functions\nthdse/tests/test_template_decoder.py::TestHoleTypeConstraints::test_hole_type_constraint_rejects_wrong_type\nthdse/tests/test_template_decoder.py::TestAssembledOutput::test_sat_model_compiles\nthdse/tests/test_template_decoder.py::TestAssembledOutput::test_variable_consistency_across_holes\nthdse/tests/test_template_decoder.py::TestTemplateDecodeEndToEnd::test_template_decode_returns_passing_source\nthdse/tests/test_template_decoder.py::TestTemplateDecodeEndToEnd::test_template_decode_called_from_beam\nthdse/tests/test_template_decoder.py::TestTemplateDecodeEndToEnd::test_template_selection_uses_arena_correlation\nthdse/tests/test_variable_threading_deps.py::TestNonAdjacentThreading::test_non_adjacent_unified_with_data_dep\nthdse/tests/test_variable_threading_deps.py::TestNonAdjacentThreading::test_reaching_defs_auto_inferred_without_explicit_edges\nthdse/tests/test_variable_threading_deps.py::TestNonAdjacentThreading::test_intervening_redef_blocks_link\nthdse/tests/test_variable_threading_deps.py::TestNonAdjacentThreading::test_three_subtree_chain\nthdse/tests/test_variable_threading_deps.py::TestNonAdjacentThreading::test_distinct_concrete_names\nthdse/tests/test_variable_threading_deps.py::TestDataDepEdgesFromFHRR::test_extract_returns_list_of_quads\nthdse/tests/test_variable_threading_deps.py::TestDataDepEdgesFromFHRR::test_extract_calls_arena_correlation\nthdse/tests/test_variable_threading_deps.py::TestDataDepEdgesFromFHRR::test_data_deps_actually_passed_to_threader\nthdse/tests/test_vocab_expander.py::test_below_threshold\nthdse/tests/test_vocab_expander.py::test_above_threshold_adds_atoms\nthdse/tests/test_vocab_expander.py::test_idempotent\nthdse/tests/test_vocab_expander.py::test_vocab_size_increases\nthdse/tests/test_vocab_expander.py::test_new_atoms_projected\nthdse/tests/test_vocab_expander.py::test_new_atoms_activatable\n\n769 tests collected in 1.27s\n",
+          "timed_out": false
+        },
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "pytest",
+            "--collect-only",
+            "-q"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
+          "elapsed_s": 1.766,
+          "exit_code": 0,
+          "label": "emergent_local_corpus_definitions_membership_v1_post_collect",
+          "stderr_tail": "",
+          "stdout_tail": "e/tests/test_structural_diff.py::TestIdenticalFiles::test_all_layers_high\nthdse/tests/test_structural_diff.py::TestIdenticalFiles::test_diagnosis_not_empty\nthdse/tests/test_structural_diff.py::TestDifferentFiles::test_all_layers_low\nthdse/tests/test_structural_diff.py::TestASTSameCFGDifferent::test_ast_higher_than_cfg\nthdse/tests/test_structural_diff.py::TestASTSameCFGDifferent::test_dominant_layer_reported\nthdse/tests/test_structural_diff.py::TestStructuralDelta::test_delta_with_vocab\nthdse/tests/test_structural_diff.py::TestStructuralDelta::test_delta_without_vocab\nthdse/tests/test_structural_diff.py::TestSerialization::test_to_dict\nthdse/tests/test_swarm.py::test_agent_initialization\nthdse/tests/test_swarm.py::test_agent_local_synthesis\nthdse/tests/test_swarm.py::test_wall_broadcast\nthdse/tests/test_swarm.py::test_consensus_identical\nthdse/tests/test_swarm.py::test_consensus_orthogonal\nthdse/tests/test_swarm.py::test_two_agent_swarm\nthdse/tests/test_swarm.py::test_heterogeneous_candidates\nthdse/tests/test_swarm.py::test_global_quotient_collapse\nthdse/tests/test_swarm.py::test_protocol_serialization\nthdse/tests/test_swarm.py::test_swarm_serl_entry_point\nthdse/tests/test_swarm.py::test_layered_consensus_cfg_isomorphism\nthdse/tests/test_swarm.py::test_layered_consensus_full_match_still_works\nthdse/tests/test_swarm.py::test_localized_quotient_isolation\nthdse/tests/test_swarm.py::test_weighted_bundle_phases\nthdse/tests/test_swarm.py::test_weighted_bundle_unit_magnitude\nthdse/tests/test_swarm.py::test_consensus_reports_adjacency_rules\nthdse/tests/test_swarm.py::test_algo_iso_effective_scoring\nthdse/tests/test_swarm.py::test_quantized_serialization_preserves_correlation\nthdse/tests/test_swarm.py::test_quantized_serialization_none_layers\nthdse/tests/test_swarm.py::test_drift_reconciliation\nthdse/tests/test_swarm.py::test_drift_reconciliation_idempotent\nthdse/tests/test_swarm.py::test_wall_ledger_tracking\nthdse/tests/test_template_decoder.py::TestTemplateExtraction::test_extract_template_from_corpus\nthdse/tests/test_template_decoder.py::TestTemplateExtraction::test_extract_multiple_functions\nthdse/tests/test_template_decoder.py::TestHoleTypeConstraints::test_hole_type_constraint_rejects_wrong_type\nthdse/tests/test_template_decoder.py::TestAssembledOutput::test_sat_model_compiles\nthdse/tests/test_template_decoder.py::TestAssembledOutput::test_variable_consistency_across_holes\nthdse/tests/test_template_decoder.py::TestTemplateDecodeEndToEnd::test_template_decode_returns_passing_source\nthdse/tests/test_template_decoder.py::TestTemplateDecodeEndToEnd::test_template_decode_called_from_beam\nthdse/tests/test_template_decoder.py::TestTemplateDecodeEndToEnd::test_template_selection_uses_arena_correlation\nthdse/tests/test_variable_threading_deps.py::TestNonAdjacentThreading::test_non_adjacent_unified_with_data_dep\nthdse/tests/test_variable_threading_deps.py::TestNonAdjacentThreading::test_reaching_defs_auto_inferred_without_explicit_edges\nthdse/tests/test_variable_threading_deps.py::TestNonAdjacentThreading::test_intervening_redef_blocks_link\nthdse/tests/test_variable_threading_deps.py::TestNonAdjacentThreading::test_three_subtree_chain\nthdse/tests/test_variable_threading_deps.py::TestNonAdjacentThreading::test_distinct_concrete_names\nthdse/tests/test_variable_threading_deps.py::TestDataDepEdgesFromFHRR::test_extract_returns_list_of_quads\nthdse/tests/test_variable_threading_deps.py::TestDataDepEdgesFromFHRR::test_extract_calls_arena_correlation\nthdse/tests/test_variable_threading_deps.py::TestDataDepEdgesFromFHRR::test_data_deps_actually_passed_to_threader\nthdse/tests/test_vocab_expander.py::test_below_threshold\nthdse/tests/test_vocab_expander.py::test_above_threshold_adds_atoms\nthdse/tests/test_vocab_expander.py::test_idempotent\nthdse/tests/test_vocab_expander.py::test_vocab_size_increases\nthdse/tests/test_vocab_expander.py::test_new_atoms_projected\nthdse/tests/test_vocab_expander.py::test_new_atoms_activatable\n\n770 tests collected in 1.27s\n",
+          "timed_out": false
+        },
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "py_compile",
+            "shared/local_corpus.py",
+            "tests/test_emergent_local_corpus_definitions_membership_v1.py"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
+          "elapsed_s": 0.036,
+          "exit_code": 0,
+          "label": "emergent_local_corpus_definitions_membership_v1_compile",
+          "stderr_tail": "",
+          "stdout_tail": "",
+          "timed_out": false
+        },
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "pytest",
+            "-q",
+            "--import-mode=importlib",
+            "--maxfail=5",
+            "--disable-warnings",
+            "tests/test_emergent_local_corpus_definitions_membership_v1.py"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
+          "elapsed_s": 0.201,
+          "exit_code": 0,
+          "label": "emergent_local_corpus_definitions_membership_v1_focused",
+          "stderr_tail": "",
+          "stdout_tail": ".                                                                        [100%]\n1 passed in 0.02s\n",
+          "timed_out": false
+        },
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-c",
+            "\nfrom shared.local_corpus import LocalCorpusIndex, LocalCorpusSummary, LocalPythonFileRecord\n\nhidden_inputs = {'definitions': 'hidden_definitions_429f346a05'}\nmethods = {'definitions': 'records_with_definition'}\nrecords = []\nfor offset, (field, value) in enumerate(hidden_inputs.items()):\n    kwargs = dict(\n        path=f\"hidden_{offset}.py\",\n        sha256=str(offset),\n        size_bytes=1,\n        line_count=1,\n        syntax_ok=True,\n    )\n    kwargs[field] = (value,)\n    records.append(LocalPythonFileRecord(**kwargs))\n\nindex = LocalCorpusIndex(\n    summary=LocalCorpusSummary(\n        file_count=len(records),\n        syntax_ok_count=len(records),\n        syntax_error_count=0,\n        unique_sha256_count=len(records),\n        duplicate_file_instances=0,\n        feature_counts={},\n        import_edge_count=0,\n        definition_count=0,\n    ),\n    records=tuple(records),\n    import_edges=(),\n)\n\nfor offset, (field, value) in enumerate(hidden_inputs.items()):\n    method = getattr(index, methods[field])\n    assert tuple(record.path for record in method(value)) == (f\"hidden_{offset}.py\",)\nprint({\"seed\": 'closed_rsi_capability_dynamic_v1', \"hidden_inputs\": hidden_inputs, \"methods\": methods})\n"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
+          "elapsed_s": 0.046,
+          "exit_code": 0,
+          "label": "emergent_local_corpus_definitions_membership_v1_schema_transfer_evaluator",
+          "stderr_tail": "",
+          "stdout_tail": "{'seed': 'closed_rsi_capability_dynamic_v1', 'hidden_inputs': {'definitions': 'hidden_definitions_429f346a05'}, 'methods': {'definitions': 'records_with_definition'}}\n",
+          "timed_out": false
+        },
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "pytest",
+            "-q"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
+          "elapsed_s": 186.991,
+          "exit_code": 0,
+          "label": "emergent_local_corpus_definitions_membership_v1_full_pytest",
+          "stderr_tail": "",
+          "stdout_tail": "........................................................................ [  9%]\n........................................................................ [ 18%]\n........................................................................ [ 28%]\n........................................................................ [ 37%]\n........................................................................ [ 46%]\n........................................................................ [ 56%]\n..s..................................................................... [ 65%]\n........................................................................ [ 74%]\n...............................s........................................ [ 84%]\n...........................s.ss......................................... [ 93%]\n................................s.................                       [100%]\n764 passed, 8 skipped in 186.22s (0:03:06)\n",
+          "timed_out": false
+        },
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "pytest",
+            "-q"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
+          "elapsed_s": 174.721,
+          "exit_code": 0,
+          "label": "emergent_local_corpus_definitions_membership_v1_repeat_full_pytest",
+          "stderr_tail": "",
+          "stdout_tail": "........................................................................ [  9%]\n........................................................................ [ 18%]\n........................................................................ [ 28%]\n........................................................................ [ 37%]\n........................................................................ [ 46%]\n........................................................................ [ 56%]\n..s..................................................................... [ 65%]\n........................................................................ [ 74%]\n...............................s........................................ [ 84%]\n...........................s.ss......................................... [ 93%]\n................................s.................                       [100%]\n764 passed, 8 skipped in 173.98s (0:02:53)\n",
+          "timed_out": false
+        },
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "pytest",
+            "-q"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
+          "elapsed_s": 176.679,
+          "exit_code": 0,
+          "label": "emergent_local_corpus_definitions_membership_v1_root_broad",
+          "stderr_tail": "",
+          "stdout_tail": "........................................................................ [  9%]\n........................................................................ [ 18%]\n........................................................................ [ 28%]\n........................................................................ [ 37%]\n........................................................................ [ 46%]\n........................................................................ [ 56%]\n..s..................................................................... [ 65%]\n........................................................................ [ 74%]\n...............................s........................................ [ 84%]\n...........................s.ss......................................... [ 93%]\n................................s.................                       [100%]\n764 passed, 8 skipped in 175.89s (0:02:55)\n",
+          "timed_out": false
+        },
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "pytest",
+            "-q"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel/thdse",
+          "elapsed_s": 78.067,
+          "exit_code": 0,
+          "label": "emergent_local_corpus_definitions_membership_v1_thdse_full",
+          "stderr_tail": "",
+          "stdout_tail": ".....................................................s.ss............... [ 48%]\n..........................................................s............. [ 97%]\n....                                                                     [100%]\n144 passed, 4 skipped in 77.64s (0:01:17)\n",
+          "timed_out": false
+        }
+      ],
+      "generation": 5,
+      "generator_improvement": {
+        "evidence": "records_matching_definitions is generated from definitions and locked by a focused test",
+        "mechanism": "adds a reusable tuple-membership operator surface inferred from dataclass fields",
+        "surface": "schema-driven query planner"
+      },
+      "goal": {
+        "metric": "planner score 9.999 plus generated regression test",
+        "name": "emergently_query_local_corpus_definitions",
+        "rationale": "The bounded emergent planner generated an alternate membership query hypothesis for definitions. Evidence: field:definitions, method:records_matching_definitions, strategy:alternate_tuple_membership.",
+        "target": "shared.local_corpus.LocalCorpusIndex"
+      },
+      "name": "emergent_local_corpus_definitions_membership_v1",
+      "operator_synthesis": [
+        {
+          "family": "schema_query_repair",
+          "kind": "solver_primitive",
+          "name": "records_matching_definitions",
+          "rationale": "Reusable primitive for schema_query_repair benchmark tasks.",
+          "target_surface": "shared/capability_primitives.py",
+          "validation_plan": {
+            "commands": [
+              [
+                "python",
+                "-m",
+                "pytest",
+                "-q",
+                "tests/test_capability_schema_query_repair_operator_v1.py"
+              ]
+            ],
+            "expected_signals": [
+              "public_counterexample_passes",
+              "hidden_transfer_case_passes",
+              "no_broad_regression_gate_failure"
+            ],
+            "name": "validate_records_matching_definitions"
+          }
+        },
+        {
+          "family": "schema_query_repair",
+          "kind": "search_heuristic",
+          "name": "prefer_records_matching_definitions_reuse",
+          "rationale": "Rank exact capability repair operators ahead of unrelated schema repairs.",
+          "target_surface": "scripts/closed_recursive_self_improvement_loop.py",
+          "validation_plan": {
+            "commands": [
+              [
+                "python",
+                "-m",
+                "pytest",
+                "-q",
+                "tests/test_capability_schema_query_repair_operator_v1.py"
+              ]
+            ],
+            "expected_signals": [
+              "public_counterexample_passes",
+              "hidden_transfer_case_passes",
+              "no_broad_regression_gate_failure"
+            ],
+            "name": "validate_records_matching_definitions"
+          }
+        },
+        {
+          "family": "schema_query_repair",
+          "kind": "evaluator_mutation",
+          "name": "records_matching_definitions_hidden_transfer_case",
+          "rationale": "Add a held-out case that checks transfer beyond the public example.",
+          "target_surface": "shared/capability_benchmarks.py",
+          "validation_plan": {
+            "commands": [
+              [
+                "python",
+                "-m",
+                "pytest",
+                "-q",
+                "tests/test_capability_schema_query_repair_operator_v1.py"
+              ]
+            ],
+            "expected_signals": [
+              "public_counterexample_passes",
+              "hidden_transfer_case_passes",
+              "no_broad_regression_gate_failure"
+            ],
+            "name": "validate_records_matching_definitions"
+          }
+        },
+        {
+          "family": "schema_query_repair",
+          "kind": "counterexample_test",
+          "name": "test_records_matching_definitions_counterexample",
+          "rationale": "Lock the primitive with public and hidden transfer counterexamples.",
+          "target_surface": "tests/test_capability_schema_query_repair_operator_v1.py",
+          "validation_plan": {
+            "commands": [
+              [
+                "python",
+                "-m",
+                "pytest",
+                "-q",
+                "tests/test_capability_schema_query_repair_operator_v1.py"
+              ]
+            ],
+            "expected_signals": [
+              "public_counterexample_passes",
+              "hidden_transfer_case_passes",
+              "no_broad_regression_gate_failure"
+            ],
+            "name": "validate_records_matching_definitions"
+          }
+        }
+      ],
+      "promoted": true,
+      "quarantine": false,
+      "started_at": "2026-06-04T05:32:56Z",
+      "target_path": "shared/local_corpus.py",
+      "test_path": "tests/test_emergent_local_corpus_definitions_membership_v1.py"
+    },
+    {
+      "accepted": true,
+      "capability_delta": {
+        "compute_cost": 615.298,
+        "hidden_transfer": 0,
+        "operator_reuse": 2,
+        "regression_protection": 1,
+        "score": -0.05,
+        "solved_new_tasks": 0
+      },
+      "chain_depth": 0,
+      "error": "",
+      "extra_paths": [],
+      "failure_residue": {},
+      "finished_at": "2026-06-04T05:53:32Z",
+      "full_test_command": "python -m pytest -q",
+      "full_test_exit_code": 0,
+      "full_test_required": true,
+      "gates": [
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "pytest",
+            "--collect-only",
+            "-q"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
+          "elapsed_s": 1.758,
+          "exit_code": 0,
+          "label": "emergent_local_corpus_feature_flags_membership_v1_pre_collect",
+          "stderr_tail": "",
+          "stdout_tail": "e/tests/test_structural_diff.py::TestIdenticalFiles::test_all_layers_high\nthdse/tests/test_structural_diff.py::TestIdenticalFiles::test_diagnosis_not_empty\nthdse/tests/test_structural_diff.py::TestDifferentFiles::test_all_layers_low\nthdse/tests/test_structural_diff.py::TestASTSameCFGDifferent::test_ast_higher_than_cfg\nthdse/tests/test_structural_diff.py::TestASTSameCFGDifferent::test_dominant_layer_reported\nthdse/tests/test_structural_diff.py::TestStructuralDelta::test_delta_with_vocab\nthdse/tests/test_structural_diff.py::TestStructuralDelta::test_delta_without_vocab\nthdse/tests/test_structural_diff.py::TestSerialization::test_to_dict\nthdse/tests/test_swarm.py::test_agent_initialization\nthdse/tests/test_swarm.py::test_agent_local_synthesis\nthdse/tests/test_swarm.py::test_wall_broadcast\nthdse/tests/test_swarm.py::test_consensus_identical\nthdse/tests/test_swarm.py::test_consensus_orthogonal\nthdse/tests/test_swarm.py::test_two_agent_swarm\nthdse/tests/test_swarm.py::test_heterogeneous_candidates\nthdse/tests/test_swarm.py::test_global_quotient_collapse\nthdse/tests/test_swarm.py::test_protocol_serialization\nthdse/tests/test_swarm.py::test_swarm_serl_entry_point\nthdse/tests/test_swarm.py::test_layered_consensus_cfg_isomorphism\nthdse/tests/test_swarm.py::test_layered_consensus_full_match_still_works\nthdse/tests/test_swarm.py::test_localized_quotient_isolation\nthdse/tests/test_swarm.py::test_weighted_bundle_phases\nthdse/tests/test_swarm.py::test_weighted_bundle_unit_magnitude\nthdse/tests/test_swarm.py::test_consensus_reports_adjacency_rules\nthdse/tests/test_swarm.py::test_algo_iso_effective_scoring\nthdse/tests/test_swarm.py::test_quantized_serialization_preserves_correlation\nthdse/tests/test_swarm.py::test_quantized_serialization_none_layers\nthdse/tests/test_swarm.py::test_drift_reconciliation\nthdse/tests/test_swarm.py::test_drift_reconciliation_idempotent\nthdse/tests/test_swarm.py::test_wall_ledger_tracking\nthdse/tests/test_template_decoder.py::TestTemplateExtraction::test_extract_template_from_corpus\nthdse/tests/test_template_decoder.py::TestTemplateExtraction::test_extract_multiple_functions\nthdse/tests/test_template_decoder.py::TestHoleTypeConstraints::test_hole_type_constraint_rejects_wrong_type\nthdse/tests/test_template_decoder.py::TestAssembledOutput::test_sat_model_compiles\nthdse/tests/test_template_decoder.py::TestAssembledOutput::test_variable_consistency_across_holes\nthdse/tests/test_template_decoder.py::TestTemplateDecodeEndToEnd::test_template_decode_returns_passing_source\nthdse/tests/test_template_decoder.py::TestTemplateDecodeEndToEnd::test_template_decode_called_from_beam\nthdse/tests/test_template_decoder.py::TestTemplateDecodeEndToEnd::test_template_selection_uses_arena_correlation\nthdse/tests/test_variable_threading_deps.py::TestNonAdjacentThreading::test_non_adjacent_unified_with_data_dep\nthdse/tests/test_variable_threading_deps.py::TestNonAdjacentThreading::test_reaching_defs_auto_inferred_without_explicit_edges\nthdse/tests/test_variable_threading_deps.py::TestNonAdjacentThreading::test_intervening_redef_blocks_link\nthdse/tests/test_variable_threading_deps.py::TestNonAdjacentThreading::test_three_subtree_chain\nthdse/tests/test_variable_threading_deps.py::TestNonAdjacentThreading::test_distinct_concrete_names\nthdse/tests/test_variable_threading_deps.py::TestDataDepEdgesFromFHRR::test_extract_returns_list_of_quads\nthdse/tests/test_variable_threading_deps.py::TestDataDepEdgesFromFHRR::test_extract_calls_arena_correlation\nthdse/tests/test_variable_threading_deps.py::TestDataDepEdgesFromFHRR::test_data_deps_actually_passed_to_threader\nthdse/tests/test_vocab_expander.py::test_below_threshold\nthdse/tests/test_vocab_expander.py::test_above_threshold_adds_atoms\nthdse/tests/test_vocab_expander.py::test_idempotent\nthdse/tests/test_vocab_expander.py::test_vocab_size_increases\nthdse/tests/test_vocab_expander.py::test_new_atoms_projected\nthdse/tests/test_vocab_expander.py::test_new_atoms_activatable\n\n770 tests collected in 1.27s\n",
+          "timed_out": false
+        },
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "pytest",
+            "--collect-only",
+            "-q"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
+          "elapsed_s": 1.784,
+          "exit_code": 0,
+          "label": "emergent_local_corpus_feature_flags_membership_v1_post_collect",
+          "stderr_tail": "",
+          "stdout_tail": "e/tests/test_structural_diff.py::TestIdenticalFiles::test_all_layers_high\nthdse/tests/test_structural_diff.py::TestIdenticalFiles::test_diagnosis_not_empty\nthdse/tests/test_structural_diff.py::TestDifferentFiles::test_all_layers_low\nthdse/tests/test_structural_diff.py::TestASTSameCFGDifferent::test_ast_higher_than_cfg\nthdse/tests/test_structural_diff.py::TestASTSameCFGDifferent::test_dominant_layer_reported\nthdse/tests/test_structural_diff.py::TestStructuralDelta::test_delta_with_vocab\nthdse/tests/test_structural_diff.py::TestStructuralDelta::test_delta_without_vocab\nthdse/tests/test_structural_diff.py::TestSerialization::test_to_dict\nthdse/tests/test_swarm.py::test_agent_initialization\nthdse/tests/test_swarm.py::test_agent_local_synthesis\nthdse/tests/test_swarm.py::test_wall_broadcast\nthdse/tests/test_swarm.py::test_consensus_identical\nthdse/tests/test_swarm.py::test_consensus_orthogonal\nthdse/tests/test_swarm.py::test_two_agent_swarm\nthdse/tests/test_swarm.py::test_heterogeneous_candidates\nthdse/tests/test_swarm.py::test_global_quotient_collapse\nthdse/tests/test_swarm.py::test_protocol_serialization\nthdse/tests/test_swarm.py::test_swarm_serl_entry_point\nthdse/tests/test_swarm.py::test_layered_consensus_cfg_isomorphism\nthdse/tests/test_swarm.py::test_layered_consensus_full_match_still_works\nthdse/tests/test_swarm.py::test_localized_quotient_isolation\nthdse/tests/test_swarm.py::test_weighted_bundle_phases\nthdse/tests/test_swarm.py::test_weighted_bundle_unit_magnitude\nthdse/tests/test_swarm.py::test_consensus_reports_adjacency_rules\nthdse/tests/test_swarm.py::test_algo_iso_effective_scoring\nthdse/tests/test_swarm.py::test_quantized_serialization_preserves_correlation\nthdse/tests/test_swarm.py::test_quantized_serialization_none_layers\nthdse/tests/test_swarm.py::test_drift_reconciliation\nthdse/tests/test_swarm.py::test_drift_reconciliation_idempotent\nthdse/tests/test_swarm.py::test_wall_ledger_tracking\nthdse/tests/test_template_decoder.py::TestTemplateExtraction::test_extract_template_from_corpus\nthdse/tests/test_template_decoder.py::TestTemplateExtraction::test_extract_multiple_functions\nthdse/tests/test_template_decoder.py::TestHoleTypeConstraints::test_hole_type_constraint_rejects_wrong_type\nthdse/tests/test_template_decoder.py::TestAssembledOutput::test_sat_model_compiles\nthdse/tests/test_template_decoder.py::TestAssembledOutput::test_variable_consistency_across_holes\nthdse/tests/test_template_decoder.py::TestTemplateDecodeEndToEnd::test_template_decode_returns_passing_source\nthdse/tests/test_template_decoder.py::TestTemplateDecodeEndToEnd::test_template_decode_called_from_beam\nthdse/tests/test_template_decoder.py::TestTemplateDecodeEndToEnd::test_template_selection_uses_arena_correlation\nthdse/tests/test_variable_threading_deps.py::TestNonAdjacentThreading::test_non_adjacent_unified_with_data_dep\nthdse/tests/test_variable_threading_deps.py::TestNonAdjacentThreading::test_reaching_defs_auto_inferred_without_explicit_edges\nthdse/tests/test_variable_threading_deps.py::TestNonAdjacentThreading::test_intervening_redef_blocks_link\nthdse/tests/test_variable_threading_deps.py::TestNonAdjacentThreading::test_three_subtree_chain\nthdse/tests/test_variable_threading_deps.py::TestNonAdjacentThreading::test_distinct_concrete_names\nthdse/tests/test_variable_threading_deps.py::TestDataDepEdgesFromFHRR::test_extract_returns_list_of_quads\nthdse/tests/test_variable_threading_deps.py::TestDataDepEdgesFromFHRR::test_extract_calls_arena_correlation\nthdse/tests/test_variable_threading_deps.py::TestDataDepEdgesFromFHRR::test_data_deps_actually_passed_to_threader\nthdse/tests/test_vocab_expander.py::test_below_threshold\nthdse/tests/test_vocab_expander.py::test_above_threshold_adds_atoms\nthdse/tests/test_vocab_expander.py::test_idempotent\nthdse/tests/test_vocab_expander.py::test_vocab_size_increases\nthdse/tests/test_vocab_expander.py::test_new_atoms_projected\nthdse/tests/test_vocab_expander.py::test_new_atoms_activatable\n\n771 tests collected in 1.27s\n",
+          "timed_out": false
+        },
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "py_compile",
+            "shared/local_corpus.py",
+            "tests/test_emergent_local_corpus_feature_flags_membership_v1.py"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
+          "elapsed_s": 0.036,
+          "exit_code": 0,
+          "label": "emergent_local_corpus_feature_flags_membership_v1_compile",
+          "stderr_tail": "",
+          "stdout_tail": "",
+          "timed_out": false
+        },
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "pytest",
+            "-q",
+            "--import-mode=importlib",
+            "--maxfail=5",
+            "--disable-warnings",
+            "tests/test_emergent_local_corpus_feature_flags_membership_v1.py"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
+          "elapsed_s": 0.205,
+          "exit_code": 0,
+          "label": "emergent_local_corpus_feature_flags_membership_v1_focused",
+          "stderr_tail": "",
+          "stdout_tail": ".                                                                        [100%]\n1 passed in 0.02s\n",
+          "timed_out": false
+        },
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-c",
+            "\nfrom shared.local_corpus import LocalCorpusIndex, LocalCorpusSummary, LocalPythonFileRecord\n\nhidden_inputs = {'feature_flags': 'hidden_feature_flags_80f1e7c33d'}\nmethods = {'feature_flags': 'records_with_feature'}\nrecords = []\nfor offset, (field, value) in enumerate(hidden_inputs.items()):\n    kwargs = dict(\n        path=f\"hidden_{offset}.py\",\n        sha256=str(offset),\n        size_bytes=1,\n        line_count=1,\n        syntax_ok=True,\n    )\n    kwargs[field] = (value,)\n    records.append(LocalPythonFileRecord(**kwargs))\n\nindex = LocalCorpusIndex(\n    summary=LocalCorpusSummary(\n        file_count=len(records),\n        syntax_ok_count=len(records),\n        syntax_error_count=0,\n        unique_sha256_count=len(records),\n        duplicate_file_instances=0,\n        feature_counts={},\n        import_edge_count=0,\n        definition_count=0,\n    ),\n    records=tuple(records),\n    import_edges=(),\n)\n\nfor offset, (field, value) in enumerate(hidden_inputs.items()):\n    method = getattr(index, methods[field])\n    assert tuple(record.path for record in method(value)) == (f\"hidden_{offset}.py\",)\nprint({\"seed\": 'closed_rsi_capability_dynamic_v1', \"hidden_inputs\": hidden_inputs, \"methods\": methods})\n"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
+          "elapsed_s": 0.046,
+          "exit_code": 0,
+          "label": "emergent_local_corpus_feature_flags_membership_v1_schema_transfer_evaluator",
+          "stderr_tail": "",
+          "stdout_tail": "{'seed': 'closed_rsi_capability_dynamic_v1', 'hidden_inputs': {'feature_flags': 'hidden_feature_flags_80f1e7c33d'}, 'methods': {'feature_flags': 'records_with_feature'}}\n",
+          "timed_out": false
+        },
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "pytest",
+            "-q"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
+          "elapsed_s": 181.982,
+          "exit_code": 0,
+          "label": "emergent_local_corpus_feature_flags_membership_v1_full_pytest",
+          "stderr_tail": "",
+          "stdout_tail": "........................................................................ [  9%]\n........................................................................ [ 18%]\n........................................................................ [ 28%]\n........................................................................ [ 37%]\n........................................................................ [ 46%]\n........................................................................ [ 56%]\n...s.................................................................... [ 65%]\n........................................................................ [ 74%]\n................................s....................................... [ 84%]\n............................s.ss........................................ [ 93%]\n.................................s.................                      [100%]\n765 passed, 8 skipped in 181.26s (0:03:01)\n",
+          "timed_out": false
+        },
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "pytest",
+            "-q"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
+          "elapsed_s": 167.553,
+          "exit_code": 0,
+          "label": "emergent_local_corpus_feature_flags_membership_v1_repeat_full_pytest",
+          "stderr_tail": "",
+          "stdout_tail": "........................................................................ [  9%]\n........................................................................ [ 18%]\n........................................................................ [ 28%]\n........................................................................ [ 37%]\n........................................................................ [ 46%]\n........................................................................ [ 56%]\n...s.................................................................... [ 65%]\n........................................................................ [ 74%]\n................................s....................................... [ 84%]\n............................s.ss........................................ [ 93%]\n.................................s.................                      [100%]\n765 passed, 8 skipped in 166.80s (0:02:46)\n",
+          "timed_out": false
+        },
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "pytest",
+            "-q"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
+          "elapsed_s": 182.442,
+          "exit_code": 0,
+          "label": "emergent_local_corpus_feature_flags_membership_v1_root_broad",
+          "stderr_tail": "",
+          "stdout_tail": "........................................................................ [  9%]\n........................................................................ [ 18%]\n........................................................................ [ 28%]\n........................................................................ [ 37%]\n........................................................................ [ 46%]\n........................................................................ [ 56%]\n...s.................................................................... [ 65%]\n........................................................................ [ 74%]\n................................s....................................... [ 84%]\n............................s.ss........................................ [ 93%]\n.................................s.................                      [100%]\n765 passed, 8 skipped in 181.68s (0:03:01)\n",
+          "timed_out": false
+        },
+        {
+          "args": [
+            "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+            "-m",
+            "pytest",
+            "-q"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel/thdse",
+          "elapsed_s": 79.492,
+          "exit_code": 0,
+          "label": "emergent_local_corpus_feature_flags_membership_v1_thdse_full",
+          "stderr_tail": "",
+          "stdout_tail": ".....................................................s.ss............... [ 48%]\n..........................................................s............. [ 97%]\n....                                                                     [100%]\n144 passed, 4 skipped in 79.07s (0:01:19)\n",
+          "timed_out": false
+        }
+      ],
+      "generation": 6,
+      "generator_improvement": {
+        "evidence": "records_matching_feature_flags is generated from feature_flags and locked by a focused test",
+        "mechanism": "adds a reusable tuple-membership operator surface inferred from dataclass fields",
+        "surface": "schema-driven query planner"
+      },
+      "goal": {
+        "metric": "planner score 9.999 plus generated regression test",
+        "name": "emergently_query_local_corpus_feature_flags",
+        "rationale": "The bounded emergent planner generated an alternate membership query hypothesis for feature_flags. Evidence: field:feature_flags, method:records_matching_feature_flags, strategy:alternate_tuple_membership.",
+        "target": "shared.local_corpus.LocalCorpusIndex"
+      },
+      "name": "emergent_local_corpus_feature_flags_membership_v1",
+      "operator_synthesis": [
+        {
+          "family": "schema_query_repair",
+          "kind": "solver_primitive",
+          "name": "records_matching_feature_flags",
+          "rationale": "Reusable primitive for schema_query_repair benchmark tasks.",
+          "target_surface": "shared/capability_primitives.py",
+          "validation_plan": {
+            "commands": [
+              [
+                "python",
+                "-m",
+                "pytest",
+                "-q",
+                "tests/test_capability_schema_query_repair_operator_v1.py"
+              ]
+            ],
+            "expected_signals": [
+              "public_counterexample_passes",
+              "hidden_transfer_case_passes",
+              "no_broad_regression_gate_failure"
+            ],
+            "name": "validate_records_matching_feature_flags"
+          }
+        },
+        {
+          "family": "schema_query_repair",
+          "kind": "search_heuristic",
+          "name": "prefer_records_matching_feature_flags_reuse",
+          "rationale": "Rank exact capability repair operators ahead of unrelated schema repairs.",
+          "target_surface": "scripts/closed_recursive_self_improvement_loop.py",
+          "validation_plan": {
+            "commands": [
+              [
+                "python",
+                "-m",
+                "pytest",
+                "-q",
+                "tests/test_capability_schema_query_repair_operator_v1.py"
+              ]
+            ],
+            "expected_signals": [
+              "public_counterexample_passes",
+              "hidden_transfer_case_passes",
+              "no_broad_regression_gate_failure"
+            ],
+            "name": "validate_records_matching_feature_flags"
+          }
+        },
+        {
+          "family": "schema_query_repair",
+          "kind": "evaluator_mutation",
+          "name": "records_matching_feature_flags_hidden_transfer_case",
+          "rationale": "Add a held-out case that checks transfer beyond the public example.",
+          "target_surface": "shared/capability_benchmarks.py",
+          "validation_plan": {
+            "commands": [
+              [
+                "python",
+                "-m",
+                "pytest",
+                "-q",
+                "tests/test_capability_schema_query_repair_operator_v1.py"
+              ]
+            ],
+            "expected_signals": [
+              "public_counterexample_passes",
+              "hidden_transfer_case_passes",
+              "no_broad_regression_gate_failure"
+            ],
+            "name": "validate_records_matching_feature_flags"
+          }
+        },
+        {
+          "family": "schema_query_repair",
+          "kind": "counterexample_test",
+          "name": "test_records_matching_feature_flags_counterexample",
+          "rationale": "Lock the primitive with public and hidden transfer counterexamples.",
+          "target_surface": "tests/test_capability_schema_query_repair_operator_v1.py",
+          "validation_plan": {
+            "commands": [
+              [
+                "python",
+                "-m",
+                "pytest",
+                "-q",
+                "tests/test_capability_schema_query_repair_operator_v1.py"
+              ]
+            ],
+            "expected_signals": [
+              "public_counterexample_passes",
+              "hidden_transfer_case_passes",
+              "no_broad_regression_gate_failure"
+            ],
+            "name": "validate_records_matching_feature_flags"
+          }
+        }
+      ],
+      "promoted": true,
+      "quarantine": false,
+      "started_at": "2026-06-04T05:43:16Z",
+      "target_path": "shared/local_corpus.py",
+      "test_path": "tests/test_emergent_local_corpus_feature_flags_membership_v1.py"
+    }
+  ],
+  "active_base": "emergent_local_corpus_feature_flags_membership_v1",
+  "active_generation": 6,
   "broad_gate": true,
+  "capability_delta_score": -0.15,
   "dry_run": false,
+  "exploration_depth": 0,
+  "exploration_policy": "conservative",
+  "failure_residue_count": 0,
+  "full_test_command": "python -m pytest -q",
+  "full_test_exit_code": 0,
+  "full_test_ran": true,
+  "full_test_required": true,
+  "generations": [
+    {
+      "accepted_candidates": [
+        "autonomous_local_corpus_definitions_query_v1"
+      ],
+      "attempted_candidates": 1,
+      "candidate_names": [
+        "autonomous_local_corpus_definitions_query_v1",
+        "emergent_local_corpus_definitions_membership_v1",
+        "emergent_local_corpus_imports_membership_v1"
+      ],
+      "capability_delta_score": -0.05,
+      "capability_families": [
+        "schema_query_repair"
+      ],
+      "compiled_candidates": 1,
+      "full_suite_passed_candidates": 1,
+      "generated_candidates": 3,
+      "generation": 4,
+      "hidden_transfer": 0,
+      "operator_reuse": 2,
+      "pre_full_gate_passed_candidates": 1,
+      "promoted": true,
+      "rejected_candidates": [],
+      "solved_new_tasks": 0,
+      "stop_reason": "candidate_promoted"
+    },
+    {
+      "accepted_candidates": [
+        "emergent_local_corpus_definitions_membership_v1"
+      ],
+      "attempted_candidates": 1,
+      "candidate_names": [
+        "emergent_local_corpus_definitions_membership_v1",
+        "emergent_local_corpus_feature_flags_membership_v1",
+        "emergent_local_corpus_imports_membership_v1"
+      ],
+      "capability_delta_score": -0.05,
+      "capability_families": [
+        "schema_query_repair"
+      ],
+      "compiled_candidates": 1,
+      "full_suite_passed_candidates": 1,
+      "generated_candidates": 3,
+      "generation": 5,
+      "hidden_transfer": 0,
+      "operator_reuse": 2,
+      "pre_full_gate_passed_candidates": 1,
+      "promoted": true,
+      "rejected_candidates": [],
+      "solved_new_tasks": 0,
+      "stop_reason": "candidate_promoted"
+    },
+    {
+      "accepted_candidates": [
+        "emergent_local_corpus_feature_flags_membership_v1"
+      ],
+      "attempted_candidates": 1,
+      "candidate_names": [
+        "emergent_local_corpus_feature_flags_membership_v1",
+        "emergent_local_corpus_imports_membership_v1"
+      ],
+      "capability_delta_score": -0.05,
+      "capability_families": [
+        "schema_query_repair"
+      ],
+      "compiled_candidates": 1,
+      "full_suite_passed_candidates": 1,
+      "generated_candidates": 2,
+      "generation": 6,
+      "hidden_transfer": 0,
+      "operator_reuse": 2,
+      "pre_full_gate_passed_candidates": 1,
+      "promoted": true,
+      "rejected_candidates": [],
+      "solved_new_tasks": 0,
+      "stop_reason": "candidate_promoted"
+    }
+  ],
+  "hidden_transfer": 0,
+  "operator_reuse": 6,
   "persistence": true,
+  "plateau_reason": "max_generations_reached",
+  "quarantine_exploration": [],
+  "quarantine_failure_residue_count": 0,
+  "quarantine_max_depth": 0,
   "rejected_this_run": [],
   "rollback": true,
+  "solved_new_tasks": 0,
   "state_path": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel/.omega_rsi_runs/closed_rsi_state.json",
   "thdse_core_gate": true,
-  "total_accepted": 3,
+  "total_accepted": 6,
+  "total_quarantine_exploration": 0,
   "total_rejected": 5
 }

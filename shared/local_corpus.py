@@ -125,6 +125,27 @@ class LocalCorpusIndex:
             raise ValueError("module_name must be a non-empty string")
         return tuple(record for record in self.records if module_name in record.imports)
 
+    def records_with_definition(self, definition: str) -> Tuple[LocalPythonFileRecord, ...]:
+        """Return records whose ``definitions`` contain ``definition``."""
+
+        if not isinstance(definition, str) or not definition:
+            raise ValueError("definition must be a non-empty string")
+        return tuple(record for record in self.records if definition in record.definitions)
+
+    def records_matching_definitions(self, definition: str) -> Tuple[LocalPythonFileRecord, ...]:
+        """Return records whose ``definitions`` contain ``definition``."""
+
+        if not isinstance(definition, str) or not definition:
+            raise ValueError("definition must be a non-empty string")
+        return tuple(record for record in self.records if definition in record.definitions)
+
+    def records_matching_feature_flags(self, feature: str) -> Tuple[LocalPythonFileRecord, ...]:
+        """Return records whose ``feature_flags`` contain ``feature``."""
+
+        if not isinstance(feature, str) or not feature:
+            raise ValueError("feature must be a non-empty string")
+        return tuple(record for record in self.records if feature in record.feature_flags)
+
     def write_json(self, path: Path) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(self.to_dict(), indent=2, ensure_ascii=False), encoding="utf-8")
