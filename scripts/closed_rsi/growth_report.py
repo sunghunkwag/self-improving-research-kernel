@@ -63,7 +63,29 @@ def build_growth_report(summary: Mapping[str, object], state: Mapping[str, objec
         "solved_new_tasks": sum(int(item.get("solved_new_tasks", 0) or 0) for item in generations),
         "hidden_transfer": sum(int(item.get("hidden_transfer", 0) or 0) for item in generations),
         "operator_reuse": sum(int(item.get("operator_reuse", 0) or 0) for item in generations),
+        "proxy_promotion_events": sum(int(item.get("proxy_promotion_events", 0) or 0) for item in generations),
+        "proxy_hidden_transfer": sum(int(item.get("proxy_hidden_transfer", 0) or 0) for item in generations),
     }
+    proxy_objective_history = []
+    for generation in generations:
+        selected_proxy = generation.get("selected_proxy", {})
+        if not isinstance(selected_proxy, Mapping):
+            selected_proxy = {}
+        invented = [
+            dict(item)
+            for item in generation.get("invented_proxies", [])
+            if isinstance(item, Mapping)
+        ]
+        proxy_objective_history.append(
+            {
+                "generation": generation.get("generation"),
+                "selected_proxy": dict(selected_proxy),
+                "invented_proxies": invented,
+                "proxy_promotion_events": int(generation.get("proxy_promotion_events", 0) or 0),
+                "proxy_hidden_transfer": int(generation.get("proxy_hidden_transfer", 0) or 0),
+                "ground_truth_judgment": generation.get("proxy_ground_truth_judgment", {}),
+            }
+        )
     plateau_reason = str(summary.get("plateau_reason", "") or "unknown")
     if generations:
         last = generations[-1]
@@ -81,6 +103,9 @@ def build_growth_report(summary: Mapping[str, object], state: Mapping[str, objec
         "plateau_detail": plateau_detail,
         "generations": generations,
         "totals": totals,
+        "proxy_objective_history": proxy_objective_history,
+        "proxy_promotion_events": int(summary.get("proxy_promotion_events", totals["proxy_promotion_events"]) or 0),
+        "retained_proxy": summary.get("retained_proxy", state.get("retained_proxy", {})),
         "capability_families_touched": families,
         "accepted_count": len(accepted_records),
         "rejected_count": len([record for record in records if record.get("accepted") is False]),
@@ -99,6 +124,7 @@ def render_growth_markdown(report: Mapping[str, object]) -> str:
 
     totals = report.get("totals", {})
     generations = report.get("generations", [])
+    proxy_history = report.get("proxy_objective_history", [])
     lines = [
         "# Closed RSI Growth Report",
         "",
@@ -114,6 +140,7 @@ def render_growth_markdown(report: Mapping[str, object]) -> str:
         f"- Final full test exit code: {report.get('full_test_exit_code')}",
         f"- Plateau reason: `{report.get('plateau_reason')}`",
         f"- Plateau detail: `{report.get('plateau_detail')}`",
+        f"- Proxy promotion events: {report.get('proxy_promotion_events', 0)}",
         "",
         "## Candidate Accounting",
         "",
@@ -126,11 +153,44 @@ def render_growth_markdown(report: Mapping[str, object]) -> str:
             f"{totals.get('hidden_transfer', 0)} | {totals.get('operator_reuse', 0)} |"
         ),
         "",
-        "## Per Generation",
+        "## Proxy Objective Accounting",
         "",
-        "| Generation | Generated | Attempted | Compiled | Pre-full Passed | Full-suite Passed | Promoted | Stop Reason | Capabilities |",
-        "|---:|---:|---:|---:|---:|---:|---|---|---|",
+        "| Generation | Proxy Promotions | Proxy Hidden Transfer | Selected Proxy | Invented Proxy Descriptions |",
+        "|---:|---:|---:|---|---|",
     ]
+    if proxy_history:
+        for item in proxy_history:
+            selected_proxy = item.get("selected_proxy", {})
+            if not isinstance(selected_proxy, Mapping):
+                selected_proxy = {}
+            invented = item.get("invented_proxies", [])
+            descriptions = []
+            for proxy in (invented if isinstance(invented, list) else []):
+                if not isinstance(proxy, Mapping):
+                    continue
+                description = str(proxy.get("description", "") or "").replace("|", "/")
+                expression = str(proxy.get("expression", "") or "").replace("|", "/")
+                descriptions.append(f"{description} expression={expression}")
+            lines.append(
+                f"| {item.get('generation')} | {item.get('proxy_promotion_events', 0)} | "
+                f"{item.get('proxy_hidden_transfer', 0)} | "
+                f"`{str(selected_proxy.get('proxy_id', '') or '')}` | "
+                f"{'<br>'.join(descriptions) if descriptions else 'none recorded'} |"
+            )
+    else:
+        lines.append("| 0 | 0 | 0 | `` | none recorded |")
+    lines.extend(
+        [
+            "",
+            "Proxy objectives are retained only when delayed ground-truth judgment improves on two unseen seed sets. "
+            "A zero count reports a plateau, not a fabricated breakthrough.",
+            "",
+            "## Per Generation",
+            "",
+            "| Generation | Generated | Attempted | Compiled | Pre-full Passed | Full-suite Passed | Promoted | Stop Reason | Capabilities |",
+            "|---:|---:|---:|---:|---:|---:|---|---|---|",
+        ]
+    )
     if generations:
         for generation in generations:
             capabilities = ", ".join(generation.get("capability_families", []) or [])

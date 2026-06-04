@@ -4,10 +4,12 @@ from pathlib import Path
 
 from scripts.closed_rsi.growth_report import build_growth_report, render_growth_markdown
 from scripts.closed_recursive_self_improvement_loop import (
+    BehaviorArchive,
     CandidatePatch,
     ClosedRecursiveSelfImprovementLoop,
     Goal,
     LOCAL_CORPUS_QUERY_SPECS,
+    ProxyObjective,
     add_autonomous_record_query,
     add_records_importing,
     add_records_with_feature,
@@ -18,9 +20,15 @@ from scripts.closed_recursive_self_improvement_loop import (
     discover_ast_mutation_plans,
     discover_local_corpus_query_blueprints,
     operator_specs_for,
+    candidate_immutable_boundary_findings,
+    invent_proxy_objectives,
+    judge_proxy_promotion,
+    proxy_immutable_boundary_findings,
     repair_external_merge_general,
     score_query_blueprints,
+    score_proxy_expression,
     self_proposed_capability_candidates,
+    validate_proxy_expression,
 )
 
 
@@ -179,6 +187,128 @@ def test_history_aware_ranking_deprioritizes_rejected_candidates(tmp_path):
         "autonomous_local_corpus_imports_query_v1",
         "emergent_local_corpus_feature_flags_membership_v1",
     ]
+
+
+def test_open_ended_proxy_guard_rejects_immutable_ground_truth_access(tmp_path):
+    proxy = ProxyObjective(
+        proxy_id="proxy_cheats_on_ground_truth",
+        generation=1,
+        expression="novelty + hidden_transfer",
+        description="attempts to read the ground-truth metric",
+        source="score = novelty + hidden_transfer",
+    )
+
+    findings = validate_proxy_expression(proxy)
+
+    assert findings
+    assert any(finding.pattern == "hidden_transfer" for finding in findings)
+
+    repo = tmp_path / "repo"
+    target = repo / "shared" / "local_corpus.py"
+    test_path = repo / "tests" / "test_forbidden_candidate.py"
+    candidate = CandidatePatch(
+        name="candidate_imports_evaluator",
+        generation=1,
+        goal=Goal(
+            name="peek",
+            target="shared.local_corpus",
+            metric="direct evaluator import",
+            rationale="This candidate should be rejected before any gate can run.",
+        ),
+        target_path=target,
+        test_path=test_path,
+        transform=lambda source: source,
+        test_source="from scripts.closed_rsi.evaluators.capability import candidate_capability_delta\n",
+        generator_improvement={"surface": "test", "mechanism": "test", "evidence": "test"},
+    )
+
+    candidate_findings = candidate_immutable_boundary_findings(candidate, repo_root=repo)
+
+    assert candidate_findings
+    assert any("evaluator" in finding.reason for finding in candidate_findings)
+
+
+def test_open_ended_proxy_invention_uses_archive_and_self_play_without_ground_truth():
+    proxy_findings = proxy_immutable_boundary_findings(
+        proxy_id="clean_proxy",
+        expression="novelty + self_play_wins - complexity_penalty",
+        description="clean proxy over archive and self-play pressure",
+    )
+    archive = BehaviorArchive.from_state(
+        {
+            "accepted": [{"name": "prior", "generation": 1, "goal": {"name": "prior"}}],
+            "rejected": [],
+            "quarantine_exploration": [],
+        }
+    )
+    proxies = invent_proxy_objectives(
+        generation=2,
+        state={"accepted": [], "rejected": [], "quarantine_exploration": []},
+        archive=archive,
+        tasks=(),
+        seed="proxy-invention-test",
+    )
+
+    assert proxy_findings == ()
+    assert proxies
+    assert all(validate_proxy_expression(proxy) == () for proxy in proxies)
+    assert "hidden_transfer" not in " ".join(proxy.expression for proxy in proxies)
+
+
+def test_proxy_promotion_requires_two_unseen_seeds_both_improve():
+    decision = judge_proxy_promotion(
+        new_proxy={"proxy_id": "new_proxy"},
+        previous_proxy={"proxy_id": "old_proxy"},
+        new_seed_results={
+            "proxy-unseen-alpha": 2,
+            "proxy-unseen-beta": 1,
+        },
+        previous_seed_results={
+            "proxy-unseen-alpha": 1,
+            "proxy-unseen-beta": 0,
+        },
+    )
+
+    assert decision["promoted"] is True
+    assert decision["proxy_promotion_events"] == 1
+    assert decision["reason"] == "two_unseen_seeds_improved"
+
+
+def test_reward_hacking_proxy_is_rejected_by_delayed_ground_truth():
+    proxy = ProxyObjective(
+        proxy_id="proxy_rewards_self_report",
+        generation=3,
+        expression="1000 * self_reported_proxy_score + novelty",
+        description="degenerate proxy that can be won on its own terms",
+        source="score = 1000 * self_reported_proxy_score + novelty",
+    )
+    proxy_score = score_proxy_expression(
+        proxy,
+        {
+            "self_reported_proxy_score": 1.0,
+            "novelty": 1.0,
+            "self_play_wins": 1.0,
+            "weakness_exposure": 1.0,
+            "archive_sparsity": 1.0,
+            "population_fit": 1.0,
+            "complexity_penalty": 0.0,
+            "rejection_pressure": 0.0,
+        },
+    )
+    decision = judge_proxy_promotion(
+        new_proxy=proxy.to_dict(),
+        previous_proxy={"proxy_id": "baseline_proxy"},
+        new_seed_results={
+            "proxy-unseen-alpha": 0,
+            "proxy-unseen-beta": 0,
+        },
+        previous_seed_results={},
+    )
+
+    assert proxy_score > 1000
+    assert decision["promoted"] is False
+    assert decision["proxy_promotion_events"] == 0
+    assert decision["reason"] == "ground_truth_did_not_improve_on_both_seeds"
 
 
 def test_recursive_schema_batch_candidate_joins_seed_varied_transfer_ranking(tmp_path):
@@ -534,6 +664,16 @@ def test_growth_report_renders_generation_accounting_and_plateau():
                 "solved_new_tasks": 1,
                 "hidden_transfer": 1,
                 "operator_reuse": 2,
+                "invented_proxies": [
+                    {
+                        "proxy_id": "proxy_gen_1",
+                        "expression": "novelty + self_play_wins",
+                        "description": "synthetic proxy objective for report coverage",
+                    }
+                ],
+                "selected_proxy": {"proxy_id": "proxy_gen_1"},
+                "proxy_promotion_events": 1,
+                "proxy_hidden_transfer": 2,
                 "stop_reason": "candidate_promoted",
             },
             {
@@ -549,6 +689,16 @@ def test_growth_report_renders_generation_accounting_and_plateau():
                 "solved_new_tasks": 0,
                 "hidden_transfer": 0,
                 "operator_reuse": 0,
+                "invented_proxies": [
+                    {
+                        "proxy_id": "proxy_gen_2",
+                        "expression": "novelty - complexity_penalty",
+                        "description": "plateau proxy objective for report coverage",
+                    }
+                ],
+                "selected_proxy": {"proxy_id": "proxy_gen_2"},
+                "proxy_promotion_events": 0,
+                "proxy_hidden_transfer": 0,
                 "stop_reason": "candidate_budget_exhausted_without_promotion",
             },
         ],
@@ -565,7 +715,11 @@ def test_growth_report_renders_generation_accounting_and_plateau():
     assert report["totals"]["generated_candidates"] == 7
     assert report["totals"]["compiled_candidates"] == 4
     assert report["totals"]["full_suite_passed_candidates"] == 1
+    assert report["totals"]["proxy_promotion_events"] == 1
+    assert report["proxy_promotion_events"] == 1
     assert report["plateau_reason"] == "candidate_budget_exhausted_without_promotion"
+    assert "Proxy Objective Accounting" in markdown
+    assert "proxy_gen_1" in markdown
     assert "candidate_budget_exhausted_without_promotion" in markdown
     assert "not evidence of unlimited growth" in markdown
 
@@ -582,6 +736,8 @@ def test_loop_summary_records_no_candidate_plateau_without_fabricated_growth(tmp
     assert summary["generations"][0]["generated_candidates"] == 0
     assert summary["generations"][0]["attempted_candidates"] == 0
     assert summary["generations"][0]["full_suite_passed_candidates"] == 0
+    assert summary["generations"][0]["invented_proxies"]
+    assert summary["generations"][0]["proxy_promotion_events"] == 0
 
 
 def _fingerprint_files(root: Path):

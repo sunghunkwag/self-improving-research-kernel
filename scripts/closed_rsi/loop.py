@@ -48,6 +48,10 @@ from scripts.closed_rsi.evaluators.capability import (
 from scripts.closed_rsi.gates.results import FULL_TEST_COMMAND, GateResult, full_test_exit_code
 from scripts.closed_rsi.gates.rollback import copy_repo_to_quarantine
 from scripts.closed_rsi.generators.ast_synthesis import ast_synthesis_candidates
+from scripts.closed_rsi.generators.behavior_archive import (
+    BehaviorArchive,
+    append_behavior_signatures_to_state,
+)
 from scripts.closed_rsi.generators.capability import (
     capability_operator_candidates,
     failure_residue_history_from_state,
@@ -55,6 +59,10 @@ from scripts.closed_rsi.generators.capability import (
 )
 from scripts.closed_rsi.generators.common import names_from_state
 from scripts.closed_rsi.generators.external_code import external_code_repair_candidates
+from scripts.closed_rsi.generators.immutable_guard import (
+    candidate_immutable_boundary_findings,
+    findings_to_payload,
+)
 from scripts.closed_rsi.generators.local_corpus import (
     autonomous_local_corpus_candidates,
     query_blueprint_for_field,
@@ -66,6 +74,16 @@ from scripts.closed_rsi.generators.policy_registry import (
     POLICY_REGISTRY_TEST,
     add_policy_registry_hook,
     load_policy_registry,
+)
+from scripts.closed_rsi.generators.proxy_objectives import (
+    invent_proxy_objectives,
+    judge_proxy_promotion,
+    proxy_unseen_seed_labels,
+    rank_candidates_under_proxy,
+)
+from scripts.closed_rsi.generators.self_play import (
+    evaluate_population_self_play,
+    propose_self_play_tasks,
 )
 from scripts.closed_rsi.records import (
     CandidatePatch,
@@ -136,6 +154,8 @@ class ClosedRecursiveSelfImprovementLoop:
         state.setdefault("accepted", [])
         state.setdefault("rejected", [])
         state.setdefault("quarantine_exploration", [])
+        state.setdefault("behavior_archive", [])
+        state.setdefault("proxy_promotion_events", [])
         state.setdefault("active_generation", 0)
         state.setdefault("active_base", "initial")
         return state
@@ -283,6 +303,74 @@ class ClosedRecursiveSelfImprovementLoop:
             )
 
         return sorted(candidates, key=candidate_key)
+
+    def rank_candidates_with_open_ended_proxy(
+        self,
+        candidates: Sequence[CandidatePatch],
+        state: dict,
+        generation: int,
+    ) -> Tuple[List[CandidatePatch], dict, tuple, object]:
+        """Rank candidates under a newly invented proxy objective."""
+
+        archive = BehaviorArchive.from_state(state)
+        tasks = propose_self_play_tasks(
+            candidates,
+            state=state,
+            archive=archive,
+            generation=generation,
+            seed=f"{self.exploration_seed}:self_play",
+        )
+        proxies = invent_proxy_objectives(
+            generation=generation,
+            state=state,
+            archive=archive,
+            tasks=tasks,
+            seed=f"{self.exploration_seed}:proxy_objective",
+        )
+        if not proxies:
+            metadata = {
+                "behavior_archive_size": len(archive.signatures),
+                "self_play_tasks": [task.to_dict() for task in tasks],
+                "invented_proxies": [],
+                "selected_proxy": {},
+                "self_play_results": {},
+                "proxy_scores": [],
+                "proxy_promotion_events": 0,
+                "proxy_hidden_transfer": 0,
+                "proxy_ground_truth_judgment": {},
+            }
+            return list(candidates), metadata, tasks, None
+        selected_proxy = proxies[0]
+        self_play_results = evaluate_population_self_play(
+            candidates,
+            tasks,
+            state=state,
+            seed=f"{self.exploration_seed}:self_play",
+        )
+        ranked, score_rows = rank_candidates_under_proxy(
+            candidates,
+            proxy=selected_proxy,
+            archive=archive,
+            tasks=tasks,
+            self_play_results=self_play_results,
+            state=state,
+            repo_root=self.repo_root,
+        )
+        metadata = {
+            "behavior_archive_size": len(archive.signatures),
+            "self_play_tasks": [task.to_dict() for task in tasks],
+            "invented_proxies": [proxy.to_dict() for proxy in proxies],
+            "selected_proxy": selected_proxy.to_dict(),
+            "self_play_results": {
+                name: result.to_dict()
+                for name, result in self_play_results.items()
+            },
+            "proxy_scores": list(score_rows),
+            "proxy_promotion_events": 0,
+            "proxy_hidden_transfer": 0,
+            "proxy_ground_truth_judgment": {},
+        }
+        return list(ranked), metadata, tasks, selected_proxy
 
     def run_command(self, label: str, args: Sequence[str], cwd: Path) -> GateResult:
         start = time.monotonic()
@@ -565,6 +653,22 @@ class ClosedRecursiveSelfImprovementLoop:
                 )
         return None
 
+    def immutable_boundary_gate(self, candidate: CandidatePatch) -> Optional[GateResult]:
+        """Reject proxy-selected candidates that reach immutable evaluation surfaces."""
+
+        findings = candidate_immutable_boundary_findings(candidate, repo_root=self.repo_root)
+        if not findings:
+            return None
+        return GateResult(
+            label=f"{candidate.name}_immutable_boundary",
+            args=["internal", "immutable_boundary_guard"],
+            cwd=str(self.repo_root),
+            exit_code=1,
+            elapsed_s=0.0,
+            stdout_tail="",
+            stderr_tail=json.dumps(findings_to_payload(findings), sort_keys=True),
+        )
+
     def capability_evaluations(self, candidate: CandidatePatch) -> Tuple[CapabilityEvaluation, ...]:
         """Run dynamic capability evaluator cases for a candidate primitive."""
 
@@ -832,6 +936,39 @@ print(json.dumps(payload, sort_keys=True))
 
     def apply_candidate(self, candidate: CandidatePatch) -> CandidateRecord:
         started = utc_now()
+        immutable_gate = self.immutable_boundary_gate(candidate)
+        if immutable_gate is not None:
+            gates = [immutable_gate]
+            error = "RuntimeError: immutable boundary validation failed"
+            capability_delta = candidate_capability_delta(candidate, accepted=False, gates=gates)
+            failure_residue = candidate_failure_residue(candidate, accepted=False, gates=gates, error=error)
+            try:
+                target_path = str(candidate.target_path.relative_to(self.repo_root))
+            except ValueError:
+                target_path = str(candidate.target_path)
+            try:
+                test_path = str(candidate.test_path.relative_to(self.repo_root))
+            except ValueError:
+                test_path = str(candidate.test_path)
+            return CandidateRecord(
+                name=candidate.name,
+                generation=candidate.generation,
+                goal=asdict(candidate.goal),
+                target_path=target_path,
+                test_path=test_path,
+                extra_paths=sorted(candidate.extra_files),
+                accepted=False,
+                started_at=started,
+                finished_at=utc_now(),
+                gates=[asdict(gate) for gate in gates],
+                error=error,
+                capability_delta=capability_delta,
+                failure_residue=failure_residue,
+                operator_synthesis=[dict(spec) for spec in candidate.operator_specs],
+                generator_improvement=dict(candidate.generator_improvement),
+                promoted=False,
+                full_test_exit_code=full_test_exit_code(gates),
+            )
         original_target = candidate.target_path.read_text(encoding="utf-8")
         original_test = candidate.test_path.read_text(encoding="utf-8") if candidate.test_path.exists() else None
         extra_paths = {
@@ -951,6 +1088,33 @@ print(json.dumps(payload, sort_keys=True))
             full_test_exit_code=full_test_exit_code(gates),
         )
 
+    def delayed_proxy_ground_truth_results(
+        self,
+        candidate: CandidatePatch,
+        seed_labels: Sequence[str],
+    ) -> Dict[str, int]:
+        """Score a favored candidate on two delayed, proxy-unseen ground-truth seeds."""
+
+        original_seed = self.capability_seed
+        results: Dict[str, int] = {}
+        try:
+            for seed in seed_labels:
+                self.capability_seed = str(seed)
+                evaluations = self.capability_evaluations(candidate)
+                if not evaluations:
+                    results[str(seed)] = 0
+                    continue
+                delta = candidate_capability_delta(
+                    candidate,
+                    accepted=True,
+                    gates=[],
+                    evaluations=evaluations,
+                )
+                results[str(seed)] = int(delta.get("hidden_transfer", 0) or 0)
+        finally:
+            self.capability_seed = original_seed
+        return results
+
     def exploration_enabled(self) -> bool:
         return self.exploration_policy in {"recursive_quarantine", "high_entropy_quarantine"} and self.exploration_depth > 0
 
@@ -1067,11 +1231,17 @@ print(json.dumps(payload, sort_keys=True))
                 plateau_reason = "wall_seconds_exhausted"
                 break
             generation = int(state.get("active_generation", 0)) + 1
-            candidates = self.rank_candidates(self.invent_candidates(generation, state), state)
+            base_candidates = self.rank_candidates(self.invent_candidates(generation, state), state)
+            candidates, proxy_metadata, self_play_tasks, selected_proxy = self.rank_candidates_with_open_ended_proxy(
+                base_candidates,
+                state,
+                generation,
+            )
             generation_summary = {
                 "generation": generation,
                 "generated_candidates": len(candidates),
                 "candidate_names": [candidate.name for candidate in candidates],
+                **proxy_metadata,
                 "attempted_candidates": 0,
                 "compiled_candidates": 0,
                 "pre_full_gate_passed_candidates": 0,
@@ -1096,6 +1266,9 @@ print(json.dumps(payload, sort_keys=True))
             for candidate in candidates[:max_candidates]:
                 record = self.apply_candidate(candidate)
                 payload = asdict(record)
+                generation_summary.setdefault("behavior_signatures", []).extend(
+                    append_behavior_signatures_to_state(state, candidate, self_play_tasks, generation=generation)
+                )
                 generation_summary["attempted_candidates"] += 1
                 if any(
                     str(gate.get("label", "")).endswith("_compile")
@@ -1128,6 +1301,33 @@ print(json.dumps(payload, sort_keys=True))
                 generation_summary["hidden_transfer"] += int(delta.get("hidden_transfer", 0) or 0)
                 generation_summary["operator_reuse"] += int(delta.get("operator_reuse", 0) or 0)
                 if record.accepted:
+                    if selected_proxy is not None:
+                        seed_labels = proxy_unseen_seed_labels(selected_proxy, candidate.name)
+                        new_seed_results = self.delayed_proxy_ground_truth_results(candidate, seed_labels)
+                        previous_proxy = state.get("retained_proxy", {})
+                        previous_seed_results = {}
+                        if isinstance(previous_proxy, dict):
+                            previous_seed_results = previous_proxy.get("ground_truth_seed_results", {})
+                        judgment = judge_proxy_promotion(
+                            new_proxy=selected_proxy.to_dict(),
+                            previous_proxy=previous_proxy if isinstance(previous_proxy, dict) else {},
+                            new_seed_results=new_seed_results,
+                            previous_seed_results=previous_seed_results if isinstance(previous_seed_results, dict) else {},
+                        )
+                        generation_summary["proxy_ground_truth_judgment"] = judgment
+                        generation_summary["proxy_promotion_events"] = int(
+                            judgment.get("proxy_promotion_events", 0) or 0
+                        )
+                        generation_summary["proxy_hidden_transfer"] = int(
+                            judgment.get("new_hidden_transfer", 0) or 0
+                        )
+                        if judgment.get("promoted") is True:
+                            retained_proxy = selected_proxy.to_dict()
+                            retained_proxy["ground_truth_seed_results"] = dict(new_seed_results)
+                            retained_proxy["promoted_generation"] = generation
+                            retained_proxy["favored_candidate"] = candidate.name
+                            state["retained_proxy"] = retained_proxy
+                            state.setdefault("proxy_promotion_events", []).append(judgment)
                     state["active_generation"] = generation
                     state["active_base"] = candidate.name
                     state["accepted"].append(payload)
@@ -1189,6 +1389,11 @@ print(json.dumps(payload, sort_keys=True))
             "quarantine_exploration": quarantine_exploration,
             "generations": generation_summaries,
             "plateau_reason": plateau_reason,
+            "proxy_promotion_events": sum(
+                int(item.get("proxy_promotion_events", 0) or 0)
+                for item in generation_summaries
+            ),
+            "retained_proxy": state.get("retained_proxy", {}),
             "active_generation": state.get("active_generation", 0),
             "active_base": state.get("active_base", "initial"),
             "total_accepted": len(state.get("accepted", [])),
