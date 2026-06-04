@@ -1,0 +1,45 @@
+name: RSI Bootstrap Proof
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rsi-bootstrap-proof-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  bootstrap-proof:
+    name: cold/warm bootstrapped abstraction proof
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    env:
+      PYTHONUNBUFFERED: "1"
+      PYTHONPATH: ${{ github.workspace }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Compile bootstrap scripts
+        run: python -m py_compile scripts/rsi_bootstrap.py scripts/rsi_bootstrap_proof.py
+
+      - name: Run falsifiable cold/warm bootstrap proof
+        run: |
+          python scripts/rsi_bootstrap_proof.py \
+            --budget 2500 \
+            --seeds 6 \
+            --cold-seeds 12 \
+            --require-confirmed \
+            --json-output .omega_rsi_runs/rsi_bootstrap_proof.json
