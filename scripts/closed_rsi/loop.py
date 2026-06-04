@@ -32,7 +32,6 @@ from pathlib import Path
 from typing import Dict, List, Optional, Sequence, Tuple
 
 from shared.capability_benchmarks import (
-    CAPABILITY_FAMILIES,
     CapabilityEvaluation,
     capability_cases_for_seed,
     detect_anti_cheat_findings,
@@ -49,7 +48,11 @@ from scripts.closed_rsi.evaluators.capability import (
 from scripts.closed_rsi.gates.results import FULL_TEST_COMMAND, GateResult, full_test_exit_code
 from scripts.closed_rsi.gates.rollback import copy_repo_to_quarantine
 from scripts.closed_rsi.generators.ast_synthesis import ast_synthesis_candidates
-from scripts.closed_rsi.generators.capability import capability_operator_candidates
+from scripts.closed_rsi.generators.capability import (
+    capability_operator_candidates,
+    failure_residue_history_from_state,
+    self_proposed_capability_candidates,
+)
 from scripts.closed_rsi.generators.common import names_from_state
 from scripts.closed_rsi.generators.external_code import external_code_repair_candidates
 from scripts.closed_rsi.generators.local_corpus import (
@@ -142,6 +145,20 @@ class ClosedRecursiveSelfImprovementLoop:
             return
         write_json(self.state_path, state)
 
+    def failure_residue_history(self, state: Optional[dict] = None) -> Tuple[dict, ...]:
+        """Return persisted residue that can drive self-proposed capability families."""
+
+        active_state = state if isinstance(state, dict) else self.load_state()
+        return tuple(dict(item) for item in failure_residue_history_from_state(active_state))
+
+    def capability_case_bank(self, state: Optional[dict] = None):
+        """Return static, dynamic, and residue-proposed capability cases."""
+
+        return capability_cases_for_seed(
+            self.capability_seed,
+            failure_residue_history=self.failure_residue_history(state),
+        )
+
     def invent_candidates(self, generation: int, state: Optional[dict] = None) -> List[CandidatePatch]:
         """Invent candidates from missing source capabilities."""
 
@@ -157,6 +174,14 @@ class ClosedRecursiveSelfImprovementLoop:
         )
         candidates.extend(ast_synthesis_candidates(self.repo_root, generation))
         candidates.extend(capability_operator_candidates(self.repo_root, generation))
+        candidates.extend(
+            self_proposed_capability_candidates(
+                self.repo_root,
+                generation,
+                state=state,
+                seed=self.capability_seed,
+            )
+        )
         if self.exploration_policy == "recursive_quarantine":
             candidates.extend(schema_batch_query_candidates(self.repo_root, generation, state=state))
         candidates.extend(autonomous_local_corpus_candidates(self.repo_root, generation, state=state))
@@ -398,7 +423,7 @@ class ClosedRecursiveSelfImprovementLoop:
         start = time.monotonic()
         findings = detect_anti_cheat_findings(
             changed_sources,
-            cases=capability_cases_for_seed(self.capability_seed),
+            cases=self.capability_case_bank(),
         )
         if not findings:
             return None
@@ -543,11 +568,9 @@ class ClosedRecursiveSelfImprovementLoop:
     def capability_evaluations(self, candidate: CandidatePatch) -> Tuple[CapabilityEvaluation, ...]:
         """Run dynamic capability evaluator cases for a candidate primitive."""
 
-        if candidate.capability_family not in CAPABILITY_FAMILIES:
-            return ()
         cases = tuple(
             case
-            for case in capability_cases_for_seed(self.capability_seed)
+            for case in self.capability_case_bank()
             if case.family == candidate.capability_family
         )
         if not cases:
@@ -558,7 +581,7 @@ class ClosedRecursiveSelfImprovementLoop:
     def capability_evaluator_gate(self, candidate: CandidatePatch) -> Optional[GateResult]:
         """Return an executable capability evaluator gate for capability candidates."""
 
-        if candidate.capability_family not in CAPABILITY_FAMILIES:
+        if not any(case.family == candidate.capability_family for case in self.capability_case_bank()):
             return None
         start = time.monotonic()
         try:

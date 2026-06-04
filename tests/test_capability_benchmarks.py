@@ -1,4 +1,5 @@
 from shared.capability_benchmarks import (
+    CAPABILITY_FAMILIES,
     DEFAULT_CAPABILITY_CASES,
     capability_cases_for_seed,
     capability_delta_from_evaluations,
@@ -6,6 +7,8 @@ from shared.capability_benchmarks import (
     dynamic_hidden_cases,
     evaluate_capability_cases,
     extract_failure_residue,
+    propose_capability_dimensions_from_residue,
+    self_proposed_dynamic_hidden_cases,
     synthesize_operator_specs,
 )
 from shared.capability_primitives import (
@@ -70,6 +73,57 @@ def test_dynamic_hidden_cases_are_seed_deterministic_and_variable():
         "planning_state_transition",
     }
     assert all(case.split == "hidden" for case in first)
+
+
+def test_self_proposed_capability_dimensions_derive_from_failure_residue():
+    residues = (
+        {
+            "candidate_name": "visible_header_repair",
+            "failed_candidate_reason": "focused passed but broad gate failed",
+            "missing_operator": "merge_setting_generalizer",
+            "missing_abstraction": "regression-aware validation abstraction",
+            "failed_evaluator": "visible_header_repair_full_pytest",
+            "overfit_signal": "focused_passed_broad_failed",
+            "failed_gate": "visible_header_repair_full_pytest",
+            "next_hypothesis": "generalize the repair beyond focused tests",
+        },
+        {
+            "candidate_name": "visible_header_repair_casefold",
+            "failed_candidate_reason": "focused passed but hidden evaluator failed",
+            "missing_operator": "merge_setting_generalizer",
+            "missing_abstraction": "regression-aware validation abstraction",
+            "failed_evaluator": "visible_header_repair_hidden_evaluator",
+            "overfit_signal": "focused_passed_broad_failed",
+            "failed_gate": "visible_header_repair_hidden_evaluator",
+            "next_hypothesis": "derive a more general invariant from the counterexample",
+        },
+    )
+
+    dimensions = propose_capability_dimensions_from_residue(residues, seed="residue-seed-a")
+    assert len(dimensions) == 1
+    dimension = dimensions[0]
+    assert dimension.family.startswith("residue_")
+    assert dimension.family not in CAPABILITY_FAMILIES
+    assert dimension.operator.startswith("classify_")
+    assert dimension.residue_count == 2
+
+    first = self_proposed_dynamic_hidden_cases("residue-seed-a", residues)
+    second = self_proposed_dynamic_hidden_cases("residue-seed-a", residues)
+    third = self_proposed_dynamic_hidden_cases("residue-seed-b", residues)
+
+    assert first == second
+    assert first != third
+    assert {case.family for case in first} == {dimension.family}
+    assert all(case.split == "hidden" for case in first)
+    assert all("self_proposed" in case.tags for case in first)
+    assert dimension.family in {
+        case.family
+        for case in capability_cases_for_seed(
+            "residue-seed-a",
+            include_static=False,
+            failure_residue_history=residues,
+        )
+    }
 
 
 def test_capability_delta_uses_actual_evaluator_results():
