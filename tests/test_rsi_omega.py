@@ -23,6 +23,13 @@ def test_omega_anti_unification_grows_reusable_accumulator_operator():
     assert list(meta.abstractions)[0] in rsi_omega.to_s(hard_body)
 
 
+def test_omega_rejects_non_decreasing_recursive_candidates_before_interpretation():
+    unsafe = rsi_omega.BSRecCall(rsi_omega.BSVar("n"))
+
+    assert not rsi_omega.has_safe_recursion(unsafe)
+    assert rsi_omega.eval_body(unsafe, 5) is None
+
+
 def test_omega_proof_reports_bounded_small_budget_result_honestly():
     result = run_proof(budget=1, seeds=1, cold_seeds=1)
 

@@ -125,6 +125,8 @@ N_TEST = list(range(30, 46))
 
 
 def eval_body(body: object, n: int) -> Optional[int]:
+    if not has_safe_recursion(body):
+        return None
     try:
         out = INTERP.run_recursive(body, n, BASE_K, BASE_V)
         return out if isinstance(out, int) else None
@@ -154,6 +156,31 @@ def children(expr: object) -> List[object]:
     if isinstance(expr, BSCustomOp):
         return list(expr.args)
     return []
+
+
+def _is_n_minus_one(expr: object) -> bool:
+    return (
+        isinstance(expr, BSBinOp)
+        and expr.op == "-"
+        and isinstance(expr.left, BSVar)
+        and expr.left.name == "n"
+        and isinstance(expr.right, BSVal)
+        and expr.right.val == 1
+    )
+
+
+def has_safe_recursion(expr: object, seen: Optional[set[int]] = None) -> bool:
+    if seen is None:
+        seen = set()
+    marker = id(expr)
+    if marker in seen:
+        return True
+    seen.add(marker)
+    if isinstance(expr, BSRecCall):
+        return _is_n_minus_one(expr.arg)
+    if isinstance(expr, BSCustomOp):
+        return has_safe_recursion(expr.definition, seen) and all(has_safe_recursion(arg, seen) for arg in expr.args)
+    return all(has_safe_recursion(child, seen) for child in children(expr))
 
 
 def rebuild(expr: object, new_children: Sequence[object]) -> object:
