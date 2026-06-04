@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   omega-proof:
-    name: Systemtest BSExpr grammar-growth audit
+    name: Systemtest BSExpr grammar-growth proof
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -38,12 +38,13 @@ jobs:
       - name: Compile omega proof scripts
         run: python -m py_compile scripts/rsi_omega_systemtest.py scripts/rsi_omega.py scripts/rsi_omega_proof.py
 
-      - name: Run Systemtest BSExpr cold/warm omega audit
+      - name: Run Systemtest BSExpr cold/warm omega proof
         run: |
           python scripts/rsi_omega_proof.py \
             --budget 50 \
             --seeds 8 \
             --cold-seeds 12 \
+            --require-confirmed \
             --json-output .omega_rsi_runs/rsi_omega_proof.json
 
       - name: Audit omega result schema
@@ -56,6 +57,8 @@ jobs:
           for key in ("confirmed", "cold_solved", "warm_solved", "learned_operator_count", "warm_source", "output"):
               assert key in result, key
           assert isinstance(result["confirmed"], bool)
+          assert result["confirmed"] is True
+          assert result["cold_solved"] == 0
           assert result["learned_operator_count"] >= 1
           assert result["warm_solved"] is True
           print(

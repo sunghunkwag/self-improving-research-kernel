@@ -23,6 +23,28 @@ def test_omega_anti_unification_grows_reusable_accumulator_operator():
     assert list(meta.abstractions)[0] in rsi_omega.to_s(hard_body)
 
 
+def test_omega_hard_task_is_load_bearing_under_size_bound():
+    meta = rsi_omega.MetaState()
+    solved = [
+        {"task": "tri", "body": rsi_omega.KNOWN["tri"], "solved": True},
+        {"task": "sqsum", "body": rsi_omega.KNOWN["sqsum"], "solved": True},
+    ]
+    rsi_omega.learn_abstractions(meta, solved, "tier1")
+
+    compressed = rsi_omega.constructed_warm_body(meta)
+
+    assert rsi_omega.size(rsi_omega.KNOWN[rsi_omega.HARD_TASK]) > rsi_omega.MAX_SIZE
+    assert rsi_omega.size(compressed) <= rsi_omega.MAX_SIZE
+    assert rsi_omega.error(compressed, rsi_omega.N_TEST, rsi_omega.TARGETS[rsi_omega.HARD_TASK]) == 0.0
+
+
+def test_omega_bounded_cold_control_does_not_solve_hard_task():
+    result = rsi_omega.solve(rsi_omega.HARD_TASK, rsi_omega.MetaState(), seed=0, budget=50)
+
+    assert not result["solved"]
+    assert result["test"] > 0.0
+
+
 def test_omega_rejects_non_decreasing_recursive_candidates_before_interpretation():
     unsafe = rsi_omega.BSRecCall(rsi_omega.BSVar("n"))
 
@@ -36,5 +58,6 @@ def test_omega_proof_reports_bounded_small_budget_result_honestly():
     assert result["budget"] == 1
     assert "VERDICT" in result["output"]
     assert "bounded Systemtest BSExpr DSL" in result["output"]
+    assert result["confirmed"] is True
+    assert result["cold_solved"] == 0
     assert result["warm_source"] in {"search", "constructed_operator_reuse"}
-    assert isinstance(result["confirmed"], bool)

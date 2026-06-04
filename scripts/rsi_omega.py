@@ -111,7 +111,7 @@ def _lin3(n: int) -> int:
 
 
 def _hard(n: int) -> int:
-    return sum(i * i + 5 * i for i in range(1, n + 1))
+    return sum((i**8 + i**3 + 1) * i for i in range(1, n + 1))
 
 
 TARGETS = {"tri": _tri, "sqsum": _sqsum, "lin2": _lin2, "lin3": _lin3, "hard": _hard}
@@ -230,6 +230,15 @@ def _rec_nm1() -> object:
     return BSRecCall(BSBinOp("-", BSVar("n"), BSVal(1)))
 
 
+def _hard_payload() -> object:
+    n2 = BSBinOp("*", BSVar("n"), BSVar("n"))
+    n3 = BSBinOp("*", n2, BSVar("n"))
+    n4 = BSBinOp("*", n2, n2)
+    n5 = BSBinOp("*", n4, BSVar("n"))
+    arg = BSBinOp("+", BSBinOp("*", n3, BSBinOp("+", n5, BSVal(1))), BSVal(1))
+    return BSBinOp("*", arg, BSVar("n"))
+
+
 def gen(rng: random.Random, depth: int, meta: MetaState) -> object:
     learned = list(meta.abstractions.items())
     if depth <= 0:
@@ -287,7 +296,8 @@ def solve(task: str, meta: MetaState, seed: int, budget: int, pop_size: int = 40
         pop.append((body, error(body, N_TRAIN, fn)))
     while len(pop) < pop_size:
         body = gen(rng, 4, meta)
-        pop.append((body, error(body, N_TRAIN, fn)))
+        if size(body) <= MAX_SIZE:
+            pop.append((body, error(body, N_TRAIN, fn)))
     champ_body = min(pop, key=lambda item: (item[1], size(item[0])))[0]
     champ_hold = error(champ_body, N_HOLD, fn)
     champ_size = size(champ_body)
@@ -369,11 +379,7 @@ KNOWN = {
     "sqsum": BSBinOp("+", BSBinOp("*", BSVar("n"), BSVar("n")), _rec_nm1()),
     "lin2": BSBinOp("+", BSBinOp("*", BSVal(2), BSVar("n")), _rec_nm1()),
     "lin3": BSBinOp("+", BSBinOp("*", BSVal(3), BSVar("n")), _rec_nm1()),
-    "hard": BSBinOp(
-        "+",
-        BSBinOp("+", BSBinOp("*", BSVar("n"), BSVar("n")), BSBinOp("*", BSVal(5), BSVar("n"))),
-        _rec_nm1(),
-    ),
+    "hard": BSBinOp("+", _hard_payload(), _rec_nm1()),
 }
 
 
@@ -397,7 +403,7 @@ def constructed_warm_body(meta: MetaState) -> object:
     return BSCustomOp(
         name,
         definition,
-        [BSBinOp("+", BSBinOp("*", BSVar("n"), BSVar("n")), BSBinOp("*", BSVal(5), BSVar("n")))],
+        [_hard_payload()],
     )
 
 
