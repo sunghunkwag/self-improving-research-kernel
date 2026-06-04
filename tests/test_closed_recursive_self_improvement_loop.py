@@ -10,9 +10,11 @@ from scripts.closed_recursive_self_improvement_loop import (
     add_autonomous_record_query,
     add_records_importing,
     add_records_with_feature,
+    apply_ast_mutation,
     ast_synthesis_candidates,
     ast_synthesis_summary,
     candidates_from_specs,
+    discover_ast_mutation_plans,
     discover_local_corpus_query_blueprints,
     operator_specs_for,
     repair_external_merge_general,
@@ -609,6 +611,43 @@ def _write_held_out_ast_external_repo(repo: Path) -> None:
     )
 
 
+STRUCTURAL_AST_MUTATION_SOURCE = '''
+def tune_limit(items, threshold, enabled=True):
+    left = 1
+    right = 2
+    score = len(items) + threshold
+    if enabled and score > 3:
+        return score
+    return 0
+'''
+
+
+def test_ast_synthesis_discovers_structural_mutation_family_without_target_answers():
+    summary = ast_synthesis_summary(STRUCTURAL_AST_MUTATION_SOURCE)
+    expected_kinds = {
+        "insert_nullable_guard",
+        "mutate_binary_operator",
+        "mutate_bool_operator",
+        "mutate_compare_operator",
+        "mutate_constant",
+        "negate_condition",
+        "swap_adjacent_statements",
+    }
+
+    assert expected_kinds <= set(summary["mutation_kinds"])
+    assert summary["produced_candidates"] == summary["compiled_candidates"]
+    assert summary["failed_compile_candidates"] == 0
+    assert expected_kinds <= set(summary["compiled_by_kind"])
+
+    plans = discover_ast_mutation_plans(STRUCTURAL_AST_MUTATION_SOURCE)
+    assert len(plans) == summary["produced_candidates"]
+    for kind in expected_kinds:
+        plan = next(item for item in plans if item.mutation_kind == kind)
+        rewritten = apply_ast_mutation(STRUCTURAL_AST_MUTATION_SOURCE, plan)
+        assert rewritten != STRUCTURAL_AST_MUTATION_SOURCE
+        compile(rewritten, f"<{kind}>", "exec")
+
+
 def test_ast_synthesis_repairs_held_out_update_return_shape_on_two_unseen_seeds(tmp_path):
     failed_named_repair = False
     try:
@@ -618,9 +657,10 @@ def test_ast_synthesis_repairs_held_out_update_return_shape_on_two_unseen_seeds(
     assert failed_named_repair, "named merge-setting repair should not match the held-out body"
 
     summary = ast_synthesis_summary(HELD_OUT_AST_EXTERNAL_REPAIR_SOURCE)
-    assert summary["produced_candidates"] == 1
-    assert summary["compiled_candidates"] == 1
-    assert summary["mutation_kinds"] == ["insert_guarded_none_value_deletion"]
+    assert summary["generated_by_kind"]["insert_guarded_none_value_deletion"] == 1
+    assert summary["compiled_by_kind"]["insert_guarded_none_value_deletion"] == 1
+    assert summary["produced_candidates"] > 1
+    assert summary["compiled_candidates"] == summary["produced_candidates"]
 
     for index, seed in enumerate(("ast-held-out-seed-alpha", "ast-held-out-seed-beta")):
         repo = tmp_path / f"repo_{index}"
@@ -634,8 +674,13 @@ def test_ast_synthesis_repairs_held_out_update_return_shape_on_two_unseen_seeds(
         )
         candidates = ast_synthesis_candidates(repo, generation=1)
         ranked = loop.rank_candidates(loop.invent_candidates(generation=1), loop.load_state())
-        assert len(candidates) == 1
-        assert [candidate.name for candidate in ranked] == [candidates[0].name]
+        assert {
+            "insert_guarded_none_value_deletion",
+            "mutate_compare_operator",
+            "negate_condition",
+        } <= {item.generator_improvement["evidence"].split(":")[1].split()[0] for item in candidates}
+        assert len(candidates) > 1
+        assert ranked[0].name == "external_code_repair_ast_merge_setting_combined_none_deletion_v1"
         candidate = ranked[0]
 
         record = loop.apply_candidate(candidate)
