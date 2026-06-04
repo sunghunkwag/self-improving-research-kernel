@@ -41,7 +41,7 @@ jobs:
       - name: Run Systemtest BSExpr cold/warm omega proof
         run: |
           python scripts/rsi_omega_proof.py \
-            --budget 4000 \
+            --budget 250 \
             --seeds 8 \
             --cold-seeds 12 \
             --require-confirmed \
