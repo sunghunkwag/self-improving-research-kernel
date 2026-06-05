@@ -1,5 +1,5 @@
 # Self-Improving Research Kernel
-
+ [![RSI Omega Proof](https://github.com/sunghunkwag/self-improving-research-kernel/actions/workflows/rsi-omega-proof.yml/badge.svg?branch=main)](https://github.com/sunghunkwag/self-improving-research-kernel/actions/workflows/rsi-omega-proof.yml) [![RSI Bootstrap Proof](https://github.com/sunghunkwag/self-improving-research-kernel/actions/workflows/rsi-bootstrap-proof.yml/badge.svg?branch=main)](https://github.com/sunghunkwag/self-improving-research-kernel/actions/workflows/rsi-bootstrap-proof.yml)
 [![Full Pytest](https://github.com/sunghunkwag/self-improving-research-kernel/actions/workflows/full-pytest.yml/badge.svg?branch=main)](https://github.com/sunghunkwag/self-improving-research-kernel/actions/workflows/full-pytest.yml)
 
 An experimental, **bounded** kernel for recursive self-improvement. It proposes patches to its own codebase, applies them, and keeps a patch **only if the full `pytest` suite passes** in CI. Everything else is rolled back and logged. Every change stays bounded, deterministic, reviewable, and gate-verified.
