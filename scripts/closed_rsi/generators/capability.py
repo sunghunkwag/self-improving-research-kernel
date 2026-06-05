@@ -178,7 +178,7 @@ def self_proposed_capability_candidates(
                     (
                         f"{dimension.family}:{dimension.operator} from residue signature "
                         f"{dimension.source_signature} using seed {seed}; "
-                        f"difficulty={dimension.difficulty}; hidden_cases={dimension.hidden_case_count}"
+                        f"difficulty={dimension.difficulty}; transfer_case_count={dimension.hidden_case_count}"
                     ),
                 ),
             )
