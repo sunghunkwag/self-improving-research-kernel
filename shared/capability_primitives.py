@@ -81,3 +81,22 @@ def apply_grid_action(state, action):
     next_state["y"] = int(next_state.get("y", 0)) + dy
     return next_state
 
+
+def classify_residue_feedback_policy_surface_generator_feedback_polic_runtimeerror_pressure(payload):
+    """Summarize seed-varied FailureResidue pressure payloads."""
+
+    signals = tuple(str(signal) for signal in payload.get("signals", ()) if str(signal))
+    counts = {}
+    for signal in signals:
+        counts[signal] = counts.get(signal, 0) + 1
+    dominant = ""
+    if counts:
+        dominant = sorted(counts.items(), key=lambda item: (-item[1], item[0]))[0][0]
+    return {
+        "family": str(payload.get("family", "")),
+        "dominant_signal": dominant,
+        "pressure": int(payload.get("residue_count", 0) or 0) + int(payload.get("seed_pressure", 0) or 0),
+        "needs_hidden_transfer": bool(payload.get("hidden", False)),
+        "difficulty": int(payload.get("difficulty", 1) or 1),
+        "evidence_width": len(set(signals)),
+    }
