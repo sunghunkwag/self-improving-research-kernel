@@ -52,8 +52,20 @@ def default_policy_capabilities() -> Tuple[PolicyCapability, ...]:
         PolicyCapability(
             name="operator_synthesis_surface",
             category="generator",
-            evidence="capability repair candidates generate solver primitives, search heuristics, evaluator mutations, and counterexample tests",
-            risk_control="each synthesized operator carries an executable validation plan before promotion",
+            evidence="capability repair candidates assemble solver primitives from bounded program atoms instead of stored answer bodies",
+            risk_control="each synthesized operator still carries an executable validation plan before promotion",
+        ),
+        PolicyCapability(
+            name="feedback_driven_generator_policy",
+            category="generator",
+            evidence="accepted generator_improvement records feed the next generation synthesis budget, archive bridge, and curriculum difficulty",
+            risk_control="feedback changes candidate production but cannot bypass compile, focused, full-pytest, rollback, anti-cheat, or boundary gates",
+        ),
+        PolicyCapability(
+            name="self_generated_curriculum_growth",
+            category="generator",
+            evidence="failure residue plus mastered hidden-transfer count raises self-authored hidden-case difficulty",
+            risk_control="degenerate self-authored tasks without hidden or non-noop cases are rejected by an internal gate",
         ),
         PolicyCapability(
             name="capability_delta_scoring",

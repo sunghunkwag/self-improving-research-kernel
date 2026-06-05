@@ -43,6 +43,11 @@ from scripts.closed_rsi.generators.capability import (
     self_proposed_capability_candidates,
 )
 from scripts.closed_rsi.generators.common import insert_before, names_from_state, replace_once
+from scripts.closed_rsi.generators.operator_synthesis import (
+    SynthesizedOperator,
+    operator_synthesis_summary,
+    synthesize_capability_operator_variants,
+)
 from scripts.closed_rsi.generators.external_code import (
     external_code_repair_candidates,
     repair_external_merge_empty_only,
@@ -51,10 +56,21 @@ from scripts.closed_rsi.generators.external_code import (
     repair_external_merge_visible_header_set,
     repair_external_merge_visible_only,
 )
+from scripts.closed_rsi.generators.feedback_policy import (
+    FEEDBACK_POLICY_PROMOTED,
+    GeneratorFeedbackEvent,
+    GeneratorPolicy,
+    accepted_generator_feedback,
+    candidate_stream_signature,
+    feedback_policy_candidates,
+    generator_policy_from_state,
+    promote_feedback_policy_source,
+)
 from scripts.closed_rsi.generators.immutable_guard import (
     BoundaryFinding,
     candidate_immutable_boundary_findings,
     findings_to_payload,
+    immutable_boundary_policy_summary,
     proxy_immutable_boundary_findings,
 )
 from scripts.closed_rsi.generators.local_corpus import (
@@ -79,6 +95,11 @@ from scripts.closed_rsi.generators.policy_registry import (
     POLICY_REGISTRY_TEST,
     add_policy_registry_hook,
     load_policy_registry,
+)
+from scripts.closed_rsi.generators.open_archive import (
+    OPEN_ARCHIVE_BRIDGE_NAME,
+    add_open_archive_policy_capability,
+    open_archive_candidates,
 )
 from scripts.closed_rsi.generators.proxy_objectives import (
     ProxyObjective,

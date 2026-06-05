@@ -45,6 +45,12 @@ IMMUTABLE_PATH_PATTERNS: Tuple[Tuple[str, str], ...] = (
     ("evaluation_seed", "evaluation seed access"),
 )
 
+MUTABLE_GENERATOR_PATHS: Tuple[str, ...] = (
+    "scripts/closed_rsi/generators",
+    "scripts/rsi_policy_registry.py",
+    "scripts/closed_recursive_self_improvement_loop.py",
+)
+
 PROXY_ONLY_PATTERNS: Tuple[Tuple[str, str], ...] = (
     ("hidden_transfer", "ground-truth metric access"),
     ("capabilitydelta", "ground-truth delta object access"),
@@ -59,6 +65,23 @@ PROXY_ONLY_PATTERNS: Tuple[Tuple[str, str], ...] = (
     ("eval(", "dynamic evaluation access"),
     ("exec(", "dynamic execution access"),
 )
+
+
+def immutable_boundary_policy_summary() -> dict:
+    """Return explicit mutable and immutable candidate surfaces."""
+
+    return {
+        "mutable_generator_surfaces": MUTABLE_GENERATOR_PATHS,
+        "immutable_patterns": [
+            {"pattern": pattern, "reason": reason}
+            for pattern, reason in IMMUTABLE_PATH_PATTERNS
+        ],
+        "rationale": (
+            "Generator and search-policy code may be patched by candidates; "
+            "evaluator, anti-cheat, gate, metadata, and reference surfaces stay immutable "
+            "so the loop cannot edit its own judge."
+        ),
+    }
 
 
 def _normalize(text: object) -> str:

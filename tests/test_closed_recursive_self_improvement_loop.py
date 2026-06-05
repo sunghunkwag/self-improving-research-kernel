@@ -16,18 +16,24 @@ from scripts.closed_recursive_self_improvement_loop import (
     apply_ast_mutation,
     ast_synthesis_candidates,
     ast_synthesis_summary,
+    CAPABILITY_OPERATOR_BLUEPRINTS,
     candidates_from_specs,
+    candidate_stream_signature,
     discover_ast_mutation_plans,
     discover_local_corpus_query_blueprints,
+    generator_policy_from_state,
+    immutable_boundary_policy_summary,
     operator_specs_for,
     candidate_immutable_boundary_findings,
     invent_proxy_objectives,
     judge_proxy_promotion,
+    operator_synthesis_summary,
     proxy_immutable_boundary_findings,
     repair_external_merge_general,
     score_query_blueprints,
     score_proxy_expression,
     self_proposed_capability_candidates,
+    synthesize_capability_operator_variants,
     validate_proxy_expression,
 )
 
@@ -438,6 +444,101 @@ def test_capability_operator_candidates_include_delta_metadata(tmp_path):
         "counterexample_test",
     }
     assert first.generator_improvement["surface"] == "operator synthesis"
+
+
+def test_capability_operator_blueprints_do_not_store_solution_bodies():
+    summary = operator_synthesis_summary(max_variants=2)
+
+    assert summary["tasks_store_reference_bodies"] is False
+    assert summary["solution_source"] == "compositional_synthesis_recipes"
+    assert all(not hasattr(blueprint, "implementation_source") for blueprint in CAPABILITY_OPERATOR_BLUEPRINTS)
+    for blueprint in CAPABILITY_OPERATOR_BLUEPRINTS:
+        variants = synthesize_capability_operator_variants(blueprint, max_variants=2)
+        assert variants
+        assert all(f"def {blueprint.function_name}(" in variant.source for variant in variants)
+
+
+def test_immutable_boundary_keeps_generators_mutable_and_evaluators_immutable(tmp_path):
+    repo = tmp_path / "repo"
+    generator_target = repo / "scripts" / "closed_rsi" / "generators" / "capability.py"
+    evaluator_target = repo / "scripts" / "closed_rsi" / "evaluators" / "capability.py"
+    test_path = repo / "tests" / "test_boundary.py"
+
+    generator_candidate = CandidatePatch(
+        name="generator_patch",
+        generation=1,
+        goal=Goal(
+            name="patch_generator",
+            target="scripts.closed_rsi.generators.capability",
+            metric="generator surface remains mutable",
+            rationale="Generator code is allowed to evolve through normal validation.",
+        ),
+        target_path=generator_target,
+        test_path=test_path,
+        transform=lambda source: source,
+        test_source="def test_boundary():\n    assert 1 == 1\n",
+    )
+    evaluator_candidate = CandidatePatch(
+        name="evaluator_patch",
+        generation=1,
+        goal=Goal(
+            name="patch_evaluator",
+            target="scripts.closed_rsi.evaluators.capability",
+            metric="evaluator surface remains immutable",
+            rationale="Evaluator code is the judge and must not be candidate-controlled.",
+        ),
+        target_path=evaluator_target,
+        test_path=test_path,
+        transform=lambda source: source,
+        test_source="def test_boundary():\n    assert 1 == 1\n",
+    )
+    policy = immutable_boundary_policy_summary()
+
+    assert "scripts/closed_rsi/generators" in policy["mutable_generator_surfaces"]
+    assert candidate_immutable_boundary_findings(generator_candidate, repo_root=repo) == ()
+    assert candidate_immutable_boundary_findings(evaluator_candidate, repo_root=repo)
+
+
+def test_generator_feedback_policy_changes_next_candidate_stream(tmp_path):
+    repo = tmp_path / "repo"
+    target = repo / "scripts" / "closed_rsi" / "generators" / "feedback_policy.py"
+    target.parent.mkdir(parents=True)
+    target.write_text(
+        (Path.cwd() / "scripts" / "closed_rsi" / "generators" / "feedback_policy.py").read_text(encoding="utf-8"),
+        encoding="utf-8",
+    )
+
+    empty_state = {"accepted": [], "rejected": [], "quarantine_exploration": []}
+    feedback_state = {
+        "accepted": [
+            {
+                "name": "capability_operator_algorithm_synthesis_rle_v1",
+                "generation": 1,
+                "generator_improvement": {
+                    "surface": "operator synthesis",
+                    "mechanism": "compositional synthesis",
+                    "evidence": "run_length_encode:stateful_scan_v1",
+                },
+                "capability_delta": {"hidden_transfer": 1},
+            }
+        ],
+        "rejected": [],
+        "quarantine_exploration": [],
+    }
+    loop = ClosedRecursiveSelfImprovementLoop(repo, state_dir=tmp_path / "state")
+    empty_candidates = loop.invent_candidates(generation=1, state=empty_state)
+    feedback_candidates = loop.invent_candidates(generation=2, state=feedback_state)
+    empty_policy = generator_policy_from_state(empty_state)
+    feedback_policy = generator_policy_from_state(feedback_state)
+
+    assert "generator_feedback_policy_v1" not in {candidate.name for candidate in empty_candidates}
+    assert "generator_feedback_policy_v1" in {candidate.name for candidate in feedback_candidates}
+    assert feedback_policy.synthesis_budget > empty_policy.synthesis_budget
+    assert feedback_policy.curriculum_difficulty > empty_policy.curriculum_difficulty
+    assert candidate_stream_signature(empty_candidates, empty_policy) != candidate_stream_signature(
+        feedback_candidates,
+        feedback_policy,
+    )
 
 
 CAPABILITY_PRIMITIVES_PRESENT_STUB = '''"""fixture primitives already present for static families."""

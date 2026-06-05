@@ -3,6 +3,8 @@ from shared.capability_benchmarks import (
     DEFAULT_CAPABILITY_CASES,
     capability_cases_for_seed,
     capability_delta_from_evaluations,
+    CapabilityCase,
+    detect_degenerate_self_authored_task,
     detect_anti_cheat_findings,
     dynamic_hidden_cases,
     evaluate_capability_cases,
@@ -106,6 +108,8 @@ def test_self_proposed_capability_dimensions_derive_from_failure_residue():
     assert dimension.family not in CAPABILITY_FAMILIES
     assert dimension.operator.startswith("classify_")
     assert dimension.residue_count == 2
+    assert dimension.difficulty == 2
+    assert dimension.hidden_case_count == 2
 
     first = self_proposed_dynamic_hidden_cases("residue-seed-a", residues)
     second = self_proposed_dynamic_hidden_cases("residue-seed-a", residues)
@@ -116,6 +120,8 @@ def test_self_proposed_capability_dimensions_derive_from_failure_residue():
     assert {case.family for case in first} == {dimension.family}
     assert all(case.split == "hidden" for case in first)
     assert all("self_proposed" in case.tags for case in first)
+    assert len(first) == dimension.hidden_case_count
+    assert all(case.expected["difficulty"] == dimension.difficulty for case in first)
     assert dimension.family in {
         case.family
         for case in capability_cases_for_seed(
@@ -124,6 +130,54 @@ def test_self_proposed_capability_dimensions_derive_from_failure_residue():
             failure_residue_history=residues,
         )
     }
+
+    harder = self_proposed_dynamic_hidden_cases(
+        "residue-seed-a",
+        residues,
+        mastered_capability_count=2,
+    )
+    assert len(harder) > len(first)
+    assert max(case.expected["difficulty"] for case in harder) > dimension.difficulty
+
+
+def test_self_authored_task_degeneracy_gate_requires_hidden_non_noop_cases():
+    valid_residues = (
+        {
+            "candidate_name": "visible_header_repair",
+            "failed_candidate_reason": "focused passed but broad gate failed",
+            "missing_operator": "merge_setting_generalizer",
+            "missing_abstraction": "regression-aware validation abstraction",
+            "failed_evaluator": "visible_header_repair_full_pytest",
+            "overfit_signal": "focused_passed_broad_failed",
+            "failed_gate": "visible_header_repair_full_pytest",
+            "next_hypothesis": "generalize the repair beyond focused tests",
+        },
+    )
+    no_hidden = (
+        CapabilityCase(
+            name="public_only",
+            family="residue_public",
+            operator="identity",
+            inputs=({"x": 1},),
+            expected={"ok": True},
+            split="public",
+        ),
+    )
+    noop = (
+        CapabilityCase(
+            name="noop_hidden",
+            family="residue_noop",
+            operator="identity",
+            inputs=({"x": 1},),
+            expected={"x": 1},
+            split="hidden",
+        ),
+    )
+    valid = self_proposed_dynamic_hidden_cases("residue-valid", valid_residues)
+
+    assert "no_hidden_transfer" in {finding.kind for finding in detect_degenerate_self_authored_task(no_hidden)}
+    assert "noop_solvable" in {finding.kind for finding in detect_degenerate_self_authored_task(noop)}
+    assert detect_degenerate_self_authored_task(valid) == ()
 
 
 def test_capability_delta_uses_actual_evaluator_results():

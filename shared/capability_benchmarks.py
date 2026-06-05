@@ -85,6 +85,8 @@ class SelfProposedCapabilityDimension:
     residue_count: int
     trigger_terms: Tuple[str, ...]
     rationale: str
+    difficulty: int = 1
+    hidden_case_count: int = 1
 
     def to_dict(self) -> Dict[str, object]:
         return asdict(self)
@@ -96,6 +98,17 @@ class AntiCheatFinding:
 
     kind: str
     path: str
+    detail: str
+
+    def to_dict(self) -> Dict[str, object]:
+        return asdict(self)
+
+
+@dataclass(frozen=True)
+class SelfAuthoredTaskFinding:
+    """One reason a self-authored curriculum task is degenerate."""
+
+    kind: str
     detail: str
 
     def to_dict(self) -> Dict[str, object]:
@@ -358,6 +371,7 @@ def propose_capability_dimensions_from_residue(
     *,
     seed: str = "self_proposed_capability_dimension_v1",
     max_dimensions: int = 3,
+    mastered_capability_count: int = 0,
 ) -> Tuple[SelfProposedCapabilityDimension, ...]:
     """Infer new capability dimensions from accumulated failure residue.
 
@@ -386,6 +400,7 @@ def propose_capability_dimensions_from_residue(
         signature = hashlib.sha256(
             f"{seed}:{group_key}:{tuple(sorted(_residue_text(item) for item in residues))}".encode("utf-8")
         ).hexdigest()[:16]
+        difficulty = max(1, min(6, 1 + int(mastered_capability_count) + min(2, len(residues) // 2)))
         dimensions.append(
             SelfProposedCapabilityDimension(
                 family=family,
@@ -397,6 +412,8 @@ def propose_capability_dimensions_from_residue(
                     "Derived from repeated FailureResidue signals rather than a fixed "
                     "benchmark family list."
                 ),
+                difficulty=difficulty,
+                hidden_case_count=max(1, difficulty),
             )
         )
         if len(dimensions) >= max_dimensions:
@@ -410,45 +427,58 @@ def _self_proposed_expected(payload: Mapping[str, object]) -> Dict[str, object]:
     dominant = ""
     if counts:
         dominant = sorted(counts.items(), key=lambda item: (-item[1], item[0]))[0][0]
+    difficulty = int(payload.get("difficulty", 1) or 1)
     return {
         "family": str(payload.get("family", "")),
         "dominant_signal": dominant,
         "pressure": int(payload.get("residue_count", 0) or 0) + int(payload.get("seed_pressure", 0) or 0),
         "needs_hidden_transfer": bool(payload.get("hidden", False)),
+        "difficulty": difficulty,
+        "evidence_width": len(set(signals)),
     }
 
 
 def self_proposed_dynamic_hidden_cases(
     seed: str,
     failure_residue_history: Sequence[object],
+    *,
+    mastered_capability_count: int = 0,
 ) -> Tuple[CapabilityCase, ...]:
     """Emit seed-derived hidden cases for residue-proposed capability families."""
 
     cases: List[CapabilityCase] = []
-    for dimension in propose_capability_dimensions_from_residue(failure_residue_history, seed=seed):
+    for dimension in propose_capability_dimensions_from_residue(
+        failure_residue_history,
+        seed=seed,
+        mastered_capability_count=mastered_capability_count,
+    ):
         digest_prefix = hashlib.sha256(f"{seed}:{dimension.source_signature}".encode("utf-8")).hexdigest()[:10]
-        seed_pressure = _seed_int(seed, f"{dimension.family}:pressure", 5, offset=1)
-        seed_term = f"seed_{_seed_int(seed, dimension.family, 997, offset=1)}"
-        signals = (*dimension.trigger_terms, seed_term, dimension.trigger_terms[0])
-        payload = {
-            "family": dimension.family,
-            "signals": signals,
-            "residue_count": dimension.residue_count,
-            "seed_pressure": seed_pressure,
-            "hidden": True,
-        }
-        cases.append(
-            CapabilityCase(
-                name=f"{dimension.family}_dynamic_hidden_{digest_prefix}",
-                family=dimension.family,
-                operator=dimension.operator,
-                inputs=(payload,),
-                expected=_self_proposed_expected(payload),
-                split="hidden",
-                tags=("dynamic", "seeded", "failure_residue", "self_proposed"),
-                cost=1.5,
+        for case_index in range(dimension.hidden_case_count):
+            seed_pressure = _seed_int(seed, f"{dimension.family}:pressure:{case_index}", 5, offset=1)
+            seed_term = f"seed_{_seed_int(seed, f'{dimension.family}:{case_index}', 997, offset=1)}"
+            trigger = dimension.trigger_terms[case_index % len(dimension.trigger_terms)]
+            signals = (*dimension.trigger_terms, seed_term, trigger)
+            payload = {
+                "family": dimension.family,
+                "signals": signals,
+                "residue_count": dimension.residue_count,
+                "seed_pressure": seed_pressure,
+                "hidden": True,
+                "difficulty": dimension.difficulty,
+                "case_index": case_index,
+            }
+            cases.append(
+                CapabilityCase(
+                    name=f"{dimension.family}_dynamic_hidden_{digest_prefix}_{case_index + 1}",
+                    family=dimension.family,
+                    operator=dimension.operator,
+                    inputs=(payload,),
+                    expected=_self_proposed_expected(payload),
+                    split="hidden",
+                    tags=("dynamic", "seeded", "failure_residue", "self_proposed", f"difficulty_{dimension.difficulty}"),
+                    cost=1.5 + (0.1 * max(0, dimension.difficulty - 1)),
+                )
             )
-        )
     return tuple(cases)
 
 
@@ -585,11 +615,16 @@ def capability_cases_for_seed(
     *,
     include_static: bool = True,
     failure_residue_history: Sequence[object] = (),
+    mastered_capability_count: int = 0,
 ) -> Tuple[CapabilityCase, ...]:
     """Return static benchmark cases plus deterministic dynamic hidden cases."""
 
     dynamic = dynamic_hidden_cases(seed)
-    self_proposed = self_proposed_dynamic_hidden_cases(seed, failure_residue_history)
+    self_proposed = self_proposed_dynamic_hidden_cases(
+        seed,
+        failure_residue_history,
+        mastered_capability_count=mastered_capability_count,
+    )
     if include_static:
         return (*DEFAULT_CAPABILITY_CASES, *dynamic, *self_proposed)
     return (*dynamic, *self_proposed)
@@ -603,6 +638,43 @@ def normalize_output(value: object) -> object:
     if isinstance(value, (list, tuple)):
         return tuple(normalize_output(item) for item in value)
     return value
+
+
+def detect_degenerate_self_authored_task(
+    cases: Sequence[CapabilityCase],
+) -> Tuple[SelfAuthoredTaskFinding, ...]:
+    """Reject self-authored tasks that lack hidden transfer or need only no-op behavior."""
+
+    findings: List[SelfAuthoredTaskFinding] = []
+    if not cases:
+        findings.append(
+            SelfAuthoredTaskFinding(
+                kind="no_cases",
+                detail="self-authored task generated no executable cases",
+            )
+        )
+        return tuple(findings)
+    hidden = [case for case in cases if case.split == "hidden"]
+    if not hidden:
+        findings.append(
+            SelfAuthoredTaskFinding(
+                kind="no_hidden_transfer",
+                detail="self-authored task has no hidden transfer cases",
+            )
+        )
+    no_op_cases = [
+        case.name
+        for case in cases
+        if case.inputs and normalize_output(case.inputs[0]) == normalize_output(case.expected)
+    ]
+    if no_op_cases and len(no_op_cases) == len(cases):
+        findings.append(
+            SelfAuthoredTaskFinding(
+                kind="noop_solvable",
+                detail="every self-authored case is solvable by returning the first input unchanged",
+            )
+        )
+    return tuple(findings)
 
 
 def evaluate_capability_cases(

@@ -34,6 +34,7 @@ from typing import Dict, List, Optional, Sequence, Tuple
 from shared.capability_benchmarks import (
     CapabilityEvaluation,
     capability_cases_for_seed,
+    detect_degenerate_self_authored_task,
     detect_anti_cheat_findings,
     evaluate_capability_cases,
 )
@@ -59,6 +60,12 @@ from scripts.closed_rsi.generators.capability import (
 )
 from scripts.closed_rsi.generators.common import names_from_state
 from scripts.closed_rsi.generators.external_code import external_code_repair_candidates
+from scripts.closed_rsi.generators.feedback_policy import (
+    accepted_generator_feedback,
+    candidate_stream_signature,
+    feedback_policy_candidates,
+    generator_policy_from_state,
+)
 from scripts.closed_rsi.generators.immutable_guard import (
     candidate_immutable_boundary_findings,
     findings_to_payload,
@@ -68,6 +75,7 @@ from scripts.closed_rsi.generators.local_corpus import (
     query_blueprint_for_field,
     schema_batch_query_candidates,
 )
+from scripts.closed_rsi.generators.open_archive import open_archive_candidates
 from scripts.closed_rsi.generators.policy_registry import (
     POLICY_REGISTRY_ACTIVE_MARKER,
     POLICY_REGISTRY_SOURCE,
@@ -156,6 +164,7 @@ class ClosedRecursiveSelfImprovementLoop:
         state.setdefault("quarantine_exploration", [])
         state.setdefault("behavior_archive", [])
         state.setdefault("proxy_promotion_events", [])
+        state.setdefault("generator_policy", {})
         state.setdefault("active_generation", 0)
         state.setdefault("active_base", "initial")
         return state
@@ -171,17 +180,26 @@ class ClosedRecursiveSelfImprovementLoop:
         active_state = state if isinstance(state, dict) else self.load_state()
         return tuple(dict(item) for item in failure_residue_history_from_state(active_state))
 
+    def generator_policy(self, state: Optional[dict] = None):
+        """Return the active generator policy derived from accepted feedback."""
+
+        active_state = state if isinstance(state, dict) else self.load_state()
+        return generator_policy_from_state(active_state)
+
     def capability_case_bank(self, state: Optional[dict] = None):
         """Return static, dynamic, and residue-proposed capability cases."""
 
+        policy = self.generator_policy(state)
         return capability_cases_for_seed(
             self.capability_seed,
             failure_residue_history=self.failure_residue_history(state),
+            mastered_capability_count=max(0, policy.curriculum_difficulty - 1),
         )
 
     def invent_candidates(self, generation: int, state: Optional[dict] = None) -> List[CandidatePatch]:
         """Invent candidates from missing source capabilities."""
 
+        active_policy = self.generator_policy(state)
         loop_script = self.repo_root / "scripts" / "closed_recursive_self_improvement_loop.py"
         loop_text = loop_script.read_text(encoding="utf-8") if loop_script.exists() else ""
         candidates = []
@@ -193,15 +211,24 @@ class ClosedRecursiveSelfImprovementLoop:
             )
         )
         candidates.extend(ast_synthesis_candidates(self.repo_root, generation))
-        candidates.extend(capability_operator_candidates(self.repo_root, generation))
+        candidates.extend(
+            capability_operator_candidates(
+                self.repo_root,
+                generation,
+                synthesis_budget=active_policy.synthesis_budget,
+            )
+        )
         candidates.extend(
             self_proposed_capability_candidates(
                 self.repo_root,
                 generation,
                 state=state,
                 seed=self.capability_seed,
+                mastered_capability_count=max(0, active_policy.curriculum_difficulty - 1),
             )
         )
+        candidates.extend(feedback_policy_candidates(self.repo_root, generation, policy=active_policy))
+        candidates.extend(open_archive_candidates(self.repo_root, generation, policy=active_policy))
         if self.exploration_policy == "recursive_quarantine":
             candidates.extend(schema_batch_query_candidates(self.repo_root, generation, state=state))
         candidates.extend(autonomous_local_corpus_candidates(self.repo_root, generation, state=state))
@@ -717,6 +744,34 @@ class ClosedRecursiveSelfImprovementLoop:
                 stderr_tail=f"{type(exc).__name__}: {exc}",
             )
 
+    def self_authored_task_gate(self, candidate: CandidatePatch) -> Optional[GateResult]:
+        """Reject residue-generated tasks with no hidden or non-trivial cases."""
+
+        if not candidate.capability_family.startswith("residue_"):
+            return None
+        cases = tuple(
+            case
+            for case in self.capability_case_bank()
+            if case.family == candidate.capability_family
+        )
+        findings = detect_degenerate_self_authored_task(cases)
+        if not findings:
+            return None
+        payload = {
+            "family": candidate.capability_family,
+            "findings": [finding.to_dict() for finding in findings],
+            "overfit_signal": "degenerate_self_authored_curriculum_task",
+        }
+        return GateResult(
+            label=f"{candidate.name}_self_authored_task",
+            args=["internal", "self_authored_task_gate"],
+            cwd=str(self.repo_root),
+            exit_code=1,
+            elapsed_s=0.0,
+            stdout_tail="",
+            stderr_tail=json.dumps(payload, sort_keys=True),
+        )
+
     def schema_transfer_evaluator_gate(self, candidate: CandidatePatch) -> Optional[GateResult]:
         """Run freshly seeded hidden schema-query probes after candidate patching."""
 
@@ -891,6 +946,9 @@ print(json.dumps(payload, sort_keys=True))
                     self.repo_root,
                 )
             )
+        self_authored_gate = self.self_authored_task_gate(candidate)
+        if self_authored_gate is not None:
+            gates.append(self_authored_gate)
         capability_gate = self.capability_evaluator_gate(candidate)
         if capability_gate is not None:
             gates.append(capability_gate)
@@ -1231,6 +1289,7 @@ print(json.dumps(payload, sort_keys=True))
                 plateau_reason = "wall_seconds_exhausted"
                 break
             generation = int(state.get("active_generation", 0)) + 1
+            active_policy = self.generator_policy(state)
             base_candidates = self.rank_candidates(self.invent_candidates(generation, state), state)
             candidates, proxy_metadata, self_play_tasks, selected_proxy = self.rank_candidates_with_open_ended_proxy(
                 base_candidates,
@@ -1241,6 +1300,12 @@ print(json.dumps(payload, sort_keys=True))
                 "generation": generation,
                 "generated_candidates": len(candidates),
                 "candidate_names": [candidate.name for candidate in candidates],
+                "candidate_stream_signature": candidate_stream_signature(candidates, active_policy),
+                "generator_policy": active_policy.to_dict(),
+                "generator_feedback_events": [
+                    event.to_dict()
+                    for event in accepted_generator_feedback(state)
+                ],
                 **proxy_metadata,
                 "attempted_candidates": 0,
                 "compiled_candidates": 0,
@@ -1331,6 +1396,7 @@ print(json.dumps(payload, sort_keys=True))
                     state["active_generation"] = generation
                     state["active_base"] = candidate.name
                     state["accepted"].append(payload)
+                    state["generator_policy"] = self.generator_policy(state).to_dict()
                     accepted_this_run.append(payload)
                     generation_summary["accepted_candidates"].append(candidate.name)
                     generation_summary["promoted"] = True
@@ -1394,6 +1460,7 @@ print(json.dumps(payload, sort_keys=True))
                 for item in generation_summaries
             ),
             "retained_proxy": state.get("retained_proxy", {}),
+            "generator_policy": self.generator_policy(state).to_dict(),
             "active_generation": state.get("active_generation", 0),
             "active_base": state.get("active_base", "initial"),
             "total_accepted": len(state.get("accepted", [])),
