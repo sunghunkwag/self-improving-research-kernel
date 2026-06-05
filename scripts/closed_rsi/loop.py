@@ -1384,7 +1384,7 @@ print(json.dumps(payload, sort_keys=True))
                             judgment.get("proxy_promotion_events", 0) or 0
                         )
                         generation_summary["proxy_hidden_transfer"] = int(
-                            judgment.get("new_hidden_transfer", 0) or 0
+                            judgment.get("new_seed_score", 0) or 0
                         )
                         if judgment.get("promoted") is True:
                             retained_proxy = selected_proxy.to_dict()

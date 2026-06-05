@@ -332,8 +332,8 @@ def judge_proxy_promotion(
             "proxy_promotion_events": 0,
             "reason": "fewer_than_two_unseen_seed_results",
             "seeds": selected_seeds,
-            "new_hidden_transfer": sum(clean_new.get(seed, 0) for seed in selected_seeds),
-            "previous_hidden_transfer": 0,
+            "new_seed_score": sum(clean_new.get(seed, 0) for seed in selected_seeds),
+            "previous_seed_score": 0,
         }
     if not no_previous_best and not set(selected_seeds).issubset(set(clean_previous)):
         return {
@@ -341,8 +341,8 @@ def judge_proxy_promotion(
             "proxy_promotion_events": 0,
             "reason": "previous_proxy_missing_matching_seed_results",
             "seeds": selected_seeds,
-            "new_hidden_transfer": sum(clean_new.get(seed, 0) for seed in selected_seeds),
-            "previous_hidden_transfer": sum(clean_previous.get(seed, 0) for seed in selected_seeds),
+            "new_seed_score": sum(clean_new.get(seed, 0) for seed in selected_seeds),
+            "previous_seed_score": sum(clean_previous.get(seed, 0) for seed in selected_seeds),
         }
     seed_decisions = []
     for seed in selected_seeds:
@@ -351,8 +351,8 @@ def judge_proxy_promotion(
         seed_decisions.append(
             {
                 "seed": seed,
-                "new_hidden_transfer": new_value,
-                "previous_hidden_transfer": previous_value,
+                "new_seed_score": new_value,
+                "previous_seed_score": previous_value,
                 "improved": new_value > previous_value,
             }
         )
@@ -365,6 +365,6 @@ def judge_proxy_promotion(
         "seed_decisions": seed_decisions,
         "new_proxy": dict(new_proxy),
         "previous_proxy": dict(previous),
-        "new_hidden_transfer": sum(item["new_hidden_transfer"] for item in seed_decisions),
-        "previous_hidden_transfer": sum(item["previous_hidden_transfer"] for item in seed_decisions),
+        "new_seed_score": sum(item["new_seed_score"] for item in seed_decisions),
+        "previous_seed_score": sum(item["previous_seed_score"] for item in seed_decisions),
     }

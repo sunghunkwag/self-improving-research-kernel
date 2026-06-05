@@ -2,14 +2,17 @@ import hashlib
 import json
 from pathlib import Path
 
+from shared.capability_benchmarks import CapabilityCase
 from scripts.closed_rsi.growth_report import build_growth_report, render_growth_markdown
 from scripts.closed_recursive_self_improvement_loop import (
+    CapabilityOperatorBlueprint,
     BehaviorArchive,
     CandidatePatch,
     ClosedRecursiveSelfImprovementLoop,
     Goal,
     LOCAL_CORPUS_QUERY_SPECS,
     ProxyObjective,
+    add_capability_operator,
     add_autonomous_record_query,
     add_records_importing,
     add_records_with_feature,
@@ -17,6 +20,7 @@ from scripts.closed_recursive_self_improvement_loop import (
     ast_synthesis_candidates,
     ast_synthesis_summary,
     CAPABILITY_OPERATOR_BLUEPRINTS,
+    build_capability_operator_test,
     candidates_from_specs,
     candidate_stream_signature,
     discover_ast_mutation_plans,
@@ -450,12 +454,155 @@ def test_capability_operator_blueprints_do_not_store_solution_bodies():
     summary = operator_synthesis_summary(max_variants=2)
 
     assert summary["tasks_store_reference_bodies"] is False
-    assert summary["solution_source"] == "compositional_synthesis_recipes"
+    assert summary["solution_source"] == "public_oracle_primitive_search"
+    assert summary["private_assertions_used_for_search"] is False
     assert all(not hasattr(blueprint, "implementation_source") for blueprint in CAPABILITY_OPERATOR_BLUEPRINTS)
     for blueprint in CAPABILITY_OPERATOR_BLUEPRINTS:
         variants = synthesize_capability_operator_variants(blueprint, max_variants=2)
         assert variants
         assert all(f"def {blueprint.function_name}(" in variant.source for variant in variants)
+        assert all(variant.trace for variant in variants)
+
+
+def test_generator_package_does_not_store_recoverable_operator_bodies():
+    generator_root = Path.cwd() / "scripts" / "closed_rsi" / "generators"
+    text = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in sorted(generator_root.glob("*.py"))
+        if path.name != "immutable_guard.py"
+    )
+    forbidden_body_fragments = (
+        "pairs.append((current, count))",
+        "return tuple(tuple(row[column] for row in reversed(rows)) for column in range(width))",
+        "elif action == \"north\"",
+        "elif action == \"east\"",
+        "next_state[\"x\"] = x",
+        "next_state[\"y\"] = y",
+    )
+
+    assert all(fragment not in text for fragment in forbidden_body_fragments)
+
+
+def test_held_out_operator_is_synthesized_by_primitive_search_and_passes_gates(tmp_path):
+    blueprint = CapabilityOperatorBlueprint(
+        family="held_out_sequence_delta",
+        function_name="pairwise_deltas",
+        signature="(values)",
+        candidate_name="capability_operator_held_out_sequence_delta_pairwise_v1",
+        behavior_tags=("sequence_window", "difference_projection", "tuple_output"),
+        public_assertion="assert pairwise_deltas((1, 4, 9, 16)) == (3, 5, 7)",
+        hidden_assertion="assert pairwise_deltas((-2, 0, 3, 9)) == (2, 3, 6)",
+    )
+    variants = synthesize_capability_operator_variants(blueprint, max_variants=8)
+    synthesized = variants[0]
+    namespace = {}
+    exec(compile(synthesized.source, "<held-out synthesis>", "exec"), namespace)
+
+    assert synthesized.strategy == "primitive_search_pairwise_difference"
+    assert "iterate adjacent public windows" in synthesized.trace
+    assert namespace["pairwise_deltas"]((-2, 0, 3, 9)) == (2, 3, 6)
+    assert namespace["pairwise_deltas"]((5, 5, 8, 13, 21)) == (0, 3, 5, 8)
+
+    repo = tmp_path / "repo"
+    shared = repo / "shared"
+    tests = repo / "tests"
+    shared.mkdir(parents=True)
+    tests.mkdir()
+    (shared / "__init__.py").write_text("", encoding="utf-8")
+    target = shared / "capability_primitives.py"
+    target.write_text('"""fixture primitives"""\n', encoding="utf-8")
+    reference_hash = hashlib.sha256(b"withheld pairwise reference hash only").hexdigest()
+    (repo / "capability_fixture_metadata.json").write_text(
+        json.dumps(
+            {
+                "operator": "pairwise_deltas",
+                "held_out_reference_sha256": reference_hash,
+            },
+            sort_keys=True,
+        ),
+        encoding="utf-8",
+    )
+    seed_cases = (
+        CapabilityCase(
+            name="held_out_pairwise_seed_alpha",
+            family=blueprint.family,
+            operator=blueprint.function_name,
+            inputs=((5, 5, 8, 13, 21),),
+            expected=(0, 3, 5, 8),
+            split="hidden",
+            tags=("seeded", "held_out"),
+        ),
+        CapabilityCase(
+            name="held_out_pairwise_seed_beta",
+            family=blueprint.family,
+            operator=blueprint.function_name,
+            inputs=((-7, -3, 4),),
+            expected=(4, 7),
+            split="hidden",
+            tags=("seeded", "held_out"),
+        ),
+    )
+    test_source = (
+        build_capability_operator_test(blueprint)
+        + "\n\n"
+        + "def test_pairwise_deltas_seeded_private_cases():\n"
+        + "    assert pairwise_deltas((5, 5, 8, 13, 21)) == (0, 3, 5, 8)\n"
+        + "    assert pairwise_deltas((-7, -3, 4)) == (4, 7)\n"
+    )
+    candidate = CandidatePatch(
+        name=blueprint.candidate_name,
+        generation=1,
+        goal=Goal(
+            name="repair_held_out_pairwise_delta_operator",
+            target="shared.capability_primitives",
+            metric="public, private, seeded, and reference-hash gates pass",
+            rationale="Held-out operator synthesized from public-oracle primitive search.",
+        ),
+        target_path=target,
+        test_path=tests / "test_capability_held_out_sequence_delta_operator_v1.py",
+        transform=lambda source: add_capability_operator(source, blueprint, synthesized),
+        test_source=test_source,
+        focused_tests=("tests/test_capability_held_out_sequence_delta_operator_v1.py",),
+        capability_family=blueprint.family,
+        operator_specs=operator_specs_for(blueprint.family, blueprint.function_name),
+        generator_improvement={
+            "surface": "operator synthesis",
+            "mechanism": "public-oracle primitive search",
+            "evidence": "strategy=primitive_search_pairwise_difference",
+        },
+    )
+
+    class HeldOutCaseLoop(ClosedRecursiveSelfImprovementLoop):
+        def capability_case_bank(self, state=None):
+            return (
+                CapabilityCase(
+                    name="held_out_pairwise_public",
+                    family=blueprint.family,
+                    operator=blueprint.function_name,
+                    inputs=((1, 4, 9, 16),),
+                    expected=(3, 5, 7),
+                    split="public",
+                ),
+                CapabilityCase(
+                    name="held_out_pairwise_private",
+                    family=blueprint.family,
+                    operator=blueprint.function_name,
+                    inputs=((-2, 0, 3, 9),),
+                    expected=(2, 3, 6),
+                    split="hidden",
+                ),
+                *seed_cases,
+            )
+
+    loop = HeldOutCaseLoop(repo, state_dir=tmp_path / "state", dry_run=False, timeout_s=120)
+    record = loop.apply_candidate(candidate)
+    repaired = target.read_text(encoding="utf-8")
+
+    assert record.accepted is True
+    assert hashlib.sha256(synthesized.source.encode("utf-8")).hexdigest() != reference_hash
+    assert "held_out_reference" not in {gate["label"] for gate in record.gates}
+    assert any(gate["label"].endswith("_capability_evaluator") and gate["exit_code"] == 0 for gate in record.gates)
+    assert "pairwise_deltas" in repaired
 
 
 def test_immutable_boundary_keeps_generators_mutable_and_evaluators_immutable(tmp_path):
@@ -516,10 +663,9 @@ def test_generator_feedback_policy_changes_next_candidate_stream(tmp_path):
                 "generation": 1,
                 "generator_improvement": {
                     "surface": "operator synthesis",
-                    "mechanism": "compositional synthesis",
-                    "evidence": "run_length_encode:stateful_scan_v1",
+                    "mechanism": "public-oracle primitive search",
+                    "evidence": "run_length_encode:primitive_search_adjacent_group_count",
                 },
-                "capability_delta": {"hidden_transfer": 1},
             }
         ],
         "rejected": [],

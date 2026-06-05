@@ -8,7 +8,7 @@ from typing import List, Mapping, Sequence, Tuple
 from shared.capability_benchmarks import (
     SelfProposedCapabilityDimension,
     propose_capability_dimensions_from_residue,
-    self_proposed_dynamic_hidden_cases,
+    self_proposed_dynamic_cases,
 )
 from scripts.closed_rsi.evaluators.capability import operator_specs_for
 from scripts.closed_rsi.generators.operator_synthesis import (
@@ -33,7 +33,7 @@ def add_capability_operator(
 
 
 def build_capability_operator_test(blueprint: CapabilityOperatorBlueprint) -> str:
-    """Build public and hidden transfer tests for a synthesized operator."""
+    """Build public and private counterexample tests for a synthesized operator."""
 
     return f'''from shared.capability_primitives import {blueprint.function_name}
 
@@ -42,7 +42,7 @@ def test_{blueprint.function_name}_public_counterexample():
     {blueprint.public_assertion}
 
 
-def test_{blueprint.function_name}_hidden_transfer_counterexample():
+def test_{blueprint.function_name}_private_counterexample():
     {blueprint.hidden_assertion}
 '''
 
@@ -78,7 +78,6 @@ def _self_proposed_operator_source(operator_name: str) -> str:
         "family": str(payload.get("family", "")),
         "dominant_signal": dominant,
         "pressure": int(payload.get("residue_count", 0) or 0) + int(payload.get("seed_pressure", 0) or 0),
-        "needs_hidden_transfer": bool(payload.get("hidden", False)),
         "difficulty": int(payload.get("difficulty", 1) or 1),
         "evidence_width": len(set(signals)),
     }}
@@ -102,7 +101,7 @@ def build_self_proposed_operator_test(
 ) -> str:
     cases = [
         case
-        for case in self_proposed_dynamic_hidden_cases(
+        for case in self_proposed_dynamic_cases(
             seed,
             residues,
             mastered_capability_count=mastered_capability_count,
@@ -110,7 +109,7 @@ def build_self_proposed_operator_test(
         if case.family == dimension.family
     ]
     assertions = "\n\n".join(
-        f'''def test_{dimension.operator}_hidden_transfer_{index}():
+        f'''def test_{dimension.operator}_private_case_{index}():
     payload = {case.inputs[0]!r}
 
     assert {dimension.operator}(payload) == {case.expected!r}
@@ -174,11 +173,11 @@ def self_proposed_capability_candidates(
                 operator_specs=operator_specs_for(dimension.family, dimension.operator),
                 generator_improvement=generator_feedback(
                     "self-proposed capability dimension",
-                    "derives a new family and hidden cases from accumulated FailureResidue state",
+                    "derives a new family and private cases from accumulated FailureResidue state",
                     (
                         f"{dimension.family}:{dimension.operator} from residue signature "
                         f"{dimension.source_signature} using seed {seed}; "
-                        f"difficulty={dimension.difficulty}; transfer_case_count={dimension.hidden_case_count}"
+                        f"difficulty={dimension.difficulty}"
                     ),
                 ),
             )
@@ -231,7 +230,7 @@ def capability_operator_candidates(
                             f"The capability benchmark fixture is missing the reusable "
                             f"{blueprint.function_name} primitive for {blueprint.family}; "
                             f"the implementation is synthesized with {synthesis.strategy} "
-                            "rather than copied from a stored reference body."
+                            "by public-oracle primitive search rather than copied from a stored body."
                         ),
                     ),
                     target_path=target,
@@ -248,12 +247,14 @@ def capability_operator_candidates(
                     generator_improvement=generator_feedback(
                         "operator synthesis",
                         (
-                            "assembles reusable solver primitives from compositional program atoms "
+                            "searches reusable solver primitives from public-oracle program atoms "
                             "and feeds the synthesis strategy into later search policy"
                         ),
                         (
                             f"{blueprint.function_name}:{synthesis.strategy}; "
-                            f"atoms={','.join(synthesis.atoms)}; source_sha256={synthesis.source_sha256[:16]}"
+                            f"atoms={','.join(synthesis.atoms)}; "
+                            f"trace={' > '.join(synthesis.trace)}; "
+                            f"source_sha256={synthesis.source_sha256[:16]}"
                         ),
                     ),
                 )

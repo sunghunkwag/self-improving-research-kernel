@@ -96,7 +96,6 @@ def classify_residue_feedback_policy_surface_generator_feedback_polic_runtimeerr
         "family": str(payload.get("family", "")),
         "dominant_signal": dominant,
         "pressure": int(payload.get("residue_count", 0) or 0) + int(payload.get("seed_pressure", 0) or 0),
-        "needs_hidden_transfer": bool(payload.get("hidden", False)),
         "difficulty": int(payload.get("difficulty", 1) or 1),
         "evidence_width": len(set(signals)),
     }

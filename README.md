@@ -98,13 +98,13 @@ that combines:
 
 - schema-driven candidate synthesis from LocalPythonFileRecord tuple fields
 - bounded emergent hypothesis search over canonical and alternate query strategies
-- compositional operator synthesis for executable capability fixtures, without storing answer bodies in task blueprints
+- public-oracle primitive search for executable capability fixtures, without storing answer bodies in task blueprints
 - feedback-driven generator policy that lets accepted `generator_improvement` records change the next candidate stream
 - closed-loop promotion candidates derived from open-ended archive entries, still behind the normal gates
-- self-generated curriculum growth from failure residue and mastered hidden-transfer signals
+- self-generated curriculum growth from failure residue and accepted generator-feedback events
 - CapabilityDelta scoring across solved tasks, hidden transfer, regression protection, operator reuse, and compute cost
 - failure-residue extraction for rejected candidates, including failed reason, missing operator, missing abstraction, failed evaluator, and overfit signal
-- degenerate self-authored task rejection when a generated task has no hidden transfer or is no-op solvable
+- degenerate self-authored task rejection when a generated task has no private counterexample or is no-op solvable
 - generated regression tests for inferred query APIs
 - history-aware candidate ranking from accepted/rejected provenance
 - full-suite validation, rollback, and kill-switch controls
@@ -125,10 +125,11 @@ schema-query repair:
 
 Each capability fixture removes one reusable primitive from
 `shared/capability_primitives.py` and adds public plus seed-derived hidden
-transfer counterexamples. The loop must synthesize the primitive from bounded
-program atoms, generate diagnostic counterexample tests where useful, avoid
-verbatim held-out reference bodies, and pass the full repository pytest suite
-before promotion.
+transfer counterexamples. The loop must synthesize the primitive with option
+(a), a bounded search over reusable AST primitives that executes only the public
+assertion as the synthesis oracle. Private cases, seeded evaluator cases,
+held-out reference hashes, anti-cheat checks, and the full repository pytest
+suite judge the candidate after synthesis.
 
 ## External Grounding
 

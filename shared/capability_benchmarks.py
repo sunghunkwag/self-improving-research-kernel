@@ -432,13 +432,12 @@ def _self_proposed_expected(payload: Mapping[str, object]) -> Dict[str, object]:
         "family": str(payload.get("family", "")),
         "dominant_signal": dominant,
         "pressure": int(payload.get("residue_count", 0) or 0) + int(payload.get("seed_pressure", 0) or 0),
-        "needs_hidden_transfer": bool(payload.get("hidden", False)),
         "difficulty": difficulty,
         "evidence_width": len(set(signals)),
     }
 
 
-def self_proposed_dynamic_hidden_cases(
+def self_proposed_dynamic_cases(
     seed: str,
     failure_residue_history: Sequence[object],
     *,
@@ -480,6 +479,9 @@ def self_proposed_dynamic_hidden_cases(
                 )
             )
     return tuple(cases)
+
+
+self_proposed_dynamic_hidden_cases = self_proposed_dynamic_cases
 
 
 def dynamic_hidden_cases(
@@ -620,7 +622,7 @@ def capability_cases_for_seed(
     """Return static benchmark cases plus deterministic dynamic hidden cases."""
 
     dynamic = dynamic_hidden_cases(seed)
-    self_proposed = self_proposed_dynamic_hidden_cases(
+    self_proposed = self_proposed_dynamic_cases(
         seed,
         failure_residue_history,
         mastered_capability_count=mastered_capability_count,

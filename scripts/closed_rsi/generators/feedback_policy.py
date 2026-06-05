@@ -29,7 +29,6 @@ class GeneratorFeedbackEvent:
     surface: str
     mechanism: str
     evidence: str
-    hidden_transfer: int = 0
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -62,10 +61,6 @@ def accepted_generator_feedback(state: object) -> Tuple[GeneratorFeedbackEvent, 
         feedback = record.get("generator_improvement", {})
         if not isinstance(feedback, Mapping) or not feedback:
             continue
-        delta = record.get("capability_delta", {})
-        hidden_transfer = 0
-        if isinstance(delta, Mapping):
-            hidden_transfer = int(delta.get("hidden_transfer", 0) or 0)
         events.append(
             GeneratorFeedbackEvent(
                 candidate_name=str(record.get("name", "")),
@@ -73,7 +68,6 @@ def accepted_generator_feedback(state: object) -> Tuple[GeneratorFeedbackEvent, 
                 surface=str(feedback.get("surface", "")),
                 mechanism=str(feedback.get("mechanism", "")),
                 evidence=str(feedback.get("evidence", "")),
-                hidden_transfer=hidden_transfer,
             )
         )
     return tuple(events)
@@ -90,7 +84,6 @@ def generator_policy_from_state(state: object) -> GeneratorPolicy:
         or "synthesis" in event.mechanism.lower()
         or "operator" in event.surface.lower()
     ]
-    hidden_mastery = sum(1 for event in events if event.hidden_transfer > 0)
     surfaces = tuple(sorted({event.surface for event in events if event.surface}))
     signature_payload = [
         (event.candidate_name, event.generation, event.surface, event.evidence)
@@ -100,7 +93,7 @@ def generator_policy_from_state(state: object) -> GeneratorPolicy:
     return GeneratorPolicy(
         accepted_feedback_count=len(events),
         synthesis_budget=min(4, 1 + len(synthesis_events)),
-        curriculum_difficulty=min(6, 1 + hidden_mastery),
+        curriculum_difficulty=min(6, 1 + len(events)),
         archive_promotion_enabled=bool(events),
         feedback_surfaces=surfaces,
         feedback_signature=signature,
@@ -187,10 +180,9 @@ def test_generator_feedback_policy_reads_accepted_feedback():
                     "generation": 1,
                     "generator_improvement": {
                         "surface": "operator synthesis",
-                        "mechanism": "compositional synthesis",
-                        "evidence": "strategy=stateful_scan",
+                        "mechanism": "public-oracle primitive search",
+                        "evidence": "strategy=primitive_search_adjacent_group_count",
                     },
-                    "capability_delta": {"hidden_transfer": 1},
                 }
             ]
         }
