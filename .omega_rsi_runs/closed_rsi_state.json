@@ -1395,8 +1395,30 @@
       "input_signature": "9d63db1ef0dc37a3",
       "output_signature": "3805a2d8ebeb445b960cd935",
       "task_id": "self_play_7_2_9d63db1e"
+    },
+    {
+      "candidate_name": "generator_feedback_policy_v1",
+      "generation": 8,
+      "input_signature": "db200c9e30632145",
+      "output_signature": "aa6c9927e45d29cdc017af60",
+      "task_id": "self_play_8_0_db200c9e"
+    },
+    {
+      "candidate_name": "generator_feedback_policy_v1",
+      "generation": 8,
+      "input_signature": "a9b453fd1280e6a0",
+      "output_signature": "5eb5ae8b17053e1cec548a85",
+      "task_id": "self_play_8_1_a9b453fd"
+    },
+    {
+      "candidate_name": "generator_feedback_policy_v1",
+      "generation": 8,
+      "input_signature": "6f8cafbdc7bd2533",
+      "output_signature": "94c5af69d27795a05c585493",
+      "task_id": "self_play_8_2_6f8cafbd"
     }
   ],
+  "generator_policy": {},
   "proxy_promotion_events": [],
   "quarantine_exploration": [],
   "rejected": [
@@ -1878,6 +1900,165 @@
       "started_at": "2026-05-26T07:22:19Z",
       "target_path": "scripts/closed_recursive_self_improvement_loop.py",
       "test_path": "tests/test_rsi_policy_registry_rewrite.py"
+    },
+    {
+      "accepted": false,
+      "capability_delta": {
+        "compute_cost": 0.0,
+        "hidden_transfer": 0,
+        "operator_reuse": 2,
+        "regression_protection": 1,
+        "score": 0.45,
+        "solved_new_tasks": 0
+      },
+      "chain_depth": 0,
+      "error": "RuntimeError: immutable boundary validation failed",
+      "extra_paths": [],
+      "failure_residue": {
+        "candidate_name": "generator_feedback_policy_v1",
+        "failed_candidate_reason": "RuntimeError: immutable boundary validation failed",
+        "failed_evaluator": "generator_feedback_policy_v1_immutable_boundary",
+        "failed_gate": "generator_feedback_policy_v1_immutable_boundary",
+        "missing_abstraction": "undifferentiated repair abstraction",
+        "missing_operator": "feedback_policy_surface",
+        "next_hypothesis": "implement or expose feedback_policy_surface before rerunning the failed evaluator",
+        "overfit_signal": ""
+      },
+      "finished_at": "2026-06-05T03:35:31Z",
+      "full_test_command": "python -m pytest -q",
+      "full_test_exit_code": null,
+      "full_test_required": true,
+      "gates": [
+        {
+          "args": [
+            "internal",
+            "immutable_boundary_guard"
+          ],
+          "cwd": "/home/runner/work/self-improving-research-kernel/self-improving-research-kernel",
+          "elapsed_s": 0.0,
+          "exit_code": 1,
+          "label": "generator_feedback_policy_v1_immutable_boundary",
+          "stderr_tail": "{\"findings\": [{\"pattern\": \"hidden_transfer_or_CapabilityDelta\", \"reason\": \"ground-truth metric access\", \"source\": \"generator_feedback_policy_v1.test_source\"}], \"overfit_signal\": \"immutable_boundary_reference\"}",
+          "stdout_tail": "",
+          "timed_out": false
+        }
+      ],
+      "generation": 8,
+      "generator_improvement": {
+        "evidence": "policy unlocked by 4 accepted feedback events; signature=ac1d3a3145227abc",
+        "mechanism": "makes accepted generator_improvement events change later synthesis budget and curriculum difficulty",
+        "surface": "generator search policy"
+      },
+      "goal": {
+        "metric": "accepted generator feedback changes the next candidate stream",
+        "name": "promote_generator_feedback_policy",
+        "rationale": "The generator policy module is a legitimate mutable target; after one accepted generator delta, the loop can promote a search-policy patch through the same gate chain.",
+        "target": "scripts.closed_rsi.generators.feedback_policy"
+      },
+      "name": "generator_feedback_policy_v1",
+      "operator_synthesis": [
+        {
+          "family": "generator_feedback_policy",
+          "kind": "solver_primitive",
+          "name": "feedback_policy_surface",
+          "rationale": "Reusable primitive for generator_feedback_policy benchmark tasks.",
+          "target_surface": "shared/capability_primitives.py",
+          "validation_plan": {
+            "commands": [
+              [
+                "python",
+                "-m",
+                "pytest",
+                "-q",
+                "tests/test_capability_generator_feedback_policy_operator_v1.py"
+              ]
+            ],
+            "expected_signals": [
+              "public_counterexample_passes",
+              "hidden_transfer_case_passes",
+              "no_broad_regression_gate_failure"
+            ],
+            "name": "validate_feedback_policy_surface"
+          }
+        },
+        {
+          "family": "generator_feedback_policy",
+          "kind": "search_heuristic",
+          "name": "prefer_feedback_policy_surface_reuse",
+          "rationale": "Rank exact capability repair operators ahead of unrelated schema repairs.",
+          "target_surface": "scripts/closed_recursive_self_improvement_loop.py",
+          "validation_plan": {
+            "commands": [
+              [
+                "python",
+                "-m",
+                "pytest",
+                "-q",
+                "tests/test_capability_generator_feedback_policy_operator_v1.py"
+              ]
+            ],
+            "expected_signals": [
+              "public_counterexample_passes",
+              "hidden_transfer_case_passes",
+              "no_broad_regression_gate_failure"
+            ],
+            "name": "validate_feedback_policy_surface"
+          }
+        },
+        {
+          "family": "generator_feedback_policy",
+          "kind": "evaluator_mutation",
+          "name": "feedback_policy_surface_hidden_transfer_case",
+          "rationale": "Add a held-out case that checks transfer beyond the public example.",
+          "target_surface": "shared/capability_benchmarks.py",
+          "validation_plan": {
+            "commands": [
+              [
+                "python",
+                "-m",
+                "pytest",
+                "-q",
+                "tests/test_capability_generator_feedback_policy_operator_v1.py"
+              ]
+            ],
+            "expected_signals": [
+              "public_counterexample_passes",
+              "hidden_transfer_case_passes",
+              "no_broad_regression_gate_failure"
+            ],
+            "name": "validate_feedback_policy_surface"
+          }
+        },
+        {
+          "family": "generator_feedback_policy",
+          "kind": "counterexample_test",
+          "name": "test_feedback_policy_surface_counterexample",
+          "rationale": "Lock the primitive with public and hidden transfer counterexamples.",
+          "target_surface": "tests/test_capability_generator_feedback_policy_operator_v1.py",
+          "validation_plan": {
+            "commands": [
+              [
+                "python",
+                "-m",
+                "pytest",
+                "-q",
+                "tests/test_capability_generator_feedback_policy_operator_v1.py"
+              ]
+            ],
+            "expected_signals": [
+              "public_counterexample_passes",
+              "hidden_transfer_case_passes",
+              "no_broad_regression_gate_failure"
+            ],
+            "name": "validate_feedback_policy_surface"
+          }
+        }
+      ],
+      "promoted": false,
+      "quarantine": false,
+      "started_at": "2026-06-05T03:35:31Z",
+      "target_path": "scripts/closed_rsi/generators/feedback_policy.py",
+      "test_path": "tests/test_generator_feedback_policy_v1.py"
     }
   ]
 }
