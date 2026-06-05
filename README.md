@@ -20,7 +20,7 @@ The **closed loop** is the *only* path that can modify the working tree, and onl
 ## Quick Start
 
 ```bash
-# 1. Smallest safe local smoke check (8GB-friendly)
+# 1. Fast local smoke check
 python scripts/memory_safe_validate.py --quick
 
 # 2. Run the closed self-improvement loop
@@ -30,7 +30,7 @@ python scripts/closed_recursive_self_improvement_loop.py --apply --broad-gate
 python -m pytest -q
 ```
 
-**Local safety:** the local machine is assumed low-memory (8GB). Run only the smoke check locally. Heavy `pytest` runs and full recursive experiments must be dispatched to GitHub Actions.
+The smoke check is lightweight and safe to run anywhere. Full `pytest` runs and recursive experiments are heavier and are intended to run in GitHub Actions.
 
 State is written under `.omega_rsi_runs/`: `closed_rsi_state.json` (accepted/rejected history), `closed_rsi_summary.json` (latest run), and an optional `STOP_CLOSED_RSI` kill-switch file.
 
@@ -83,8 +83,8 @@ Powered cells use at least 20 paired repeats per repository/task/variant, the sa
 
 Artifacts live under `reports/rsi_experiments/latest/` (`metrics.csv`, `aggregate_metrics.csv`, `baseline_comparison.md`, `evidence_scorecard.json`); see `reports/rsi_experiments/evidence_index.md` for the full index.
 
-## Local safety & architecture
+## Architecture
 
-Expensive validation runs in GitHub Actions, not on a low-memory local machine. Use `python scripts/memory_safe_validate.py --quick` for local smoke checks; the `--full` mode is for high-memory CI only.
+Expensive validation runs in GitHub Actions. Use `python scripts/memory_safe_validate.py --quick` for a fast local smoke check; the `--full` mode is intended for CI.
 
 OMEGA-THDSE base: `shared/` (arenas, deterministic RNG, semantic encoding, local corpus indexing, bridges), `thdse/` (topological hyperdimensional symbolic engine), `tests/` (root regression and integration gates), and `scripts/closed_recursive_self_improvement_loop.py` (bounded closed-loop patch generation, validation, rollback, state persistence).
