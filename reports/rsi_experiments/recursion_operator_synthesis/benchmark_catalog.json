@@ -1,0 +1,38 @@
+{
+  "repeats": 20,
+  "repositories": [
+    {
+      "description": "Executable algorithm-synthesis fixture requiring a reusable run-length encoder primitive.",
+      "name": "capability_algorithm_synthesis_repo",
+      "split": "capability_unseen",
+      "transfer_origin": "algorithm_synthesis"
+    }
+  ],
+  "tasks": [
+    {
+      "claim": "Capability transfer succeeds when the loop synthesizes the reusable run_length_encode primitive for algorithm_synthesis.",
+      "description": "Measure executable algorithm_synthesis repair with public and hidden counterexamples.",
+      "name": "capability_algorithm_synthesis",
+      "repositories": [
+        "capability_algorithm_synthesis_repo"
+      ]
+    }
+  ],
+  "variants": [
+    {
+      "broad_gate": true,
+      "description": "Full loop: candidate generation, patching, rollback, persistence, root broad gate, and THDSE core gate.",
+      "exploration_depth": 2,
+      "exploration_policy": "recursive_quarantine",
+      "family": "proposed",
+      "full_test_required": true,
+      "max_candidates_override": null,
+      "max_generations_override": null,
+      "name": "verified_closed_loop",
+      "persistence": true,
+      "rollback": true,
+      "run_loop": true,
+      "thdse_core_gate": true
+    }
+  ]
+}
