@@ -28,6 +28,9 @@ class BoundaryFinding:
 
 
 IMMUTABLE_PATH_PATTERNS: Tuple[Tuple[str, str], ...] = (
+    ("scripts/closed_rsi/loop.py", "immutable loop orchestrator path"),
+    ("scripts.closed_rsi.loop", "immutable loop orchestrator import"),
+    ("scripts/closed_rsi/__init__.py", "immutable package init path"),
     ("scripts.closed_rsi.evaluators", "immutable evaluator import"),
     ("scripts/closed_rsi/evaluators", "immutable evaluator path"),
     ("scripts.closed_rsi.gates", "immutable gate import"),
