@@ -19,6 +19,8 @@ This table is the most important thing to read. The honesty of these distinction
 
 The **closed loop** is the *only* path that can modify the working tree, and only behind the full-test gate. The **open-ended** layer is an archive of unvalidated proposals — proposal text alone is never promotion evidence.
 
+The **immutable boundary** keeps the kernel from editing its own judge. The evaluators, gates, anti-cheat checks, and reference metadata — and now the loop orchestrator (`scripts/closed_rsi/loop.py`), the package init, and the compatibility entrypoint — are protected by `immutable_guard`: any candidate whose write target falls inside that boundary is rejected before promotion. The loop can improve what it does, but not the code that decides whether its changes are safe.
+
 ## Quick Start
 
 ```bash
