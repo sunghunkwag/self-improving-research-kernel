@@ -28,10 +28,7 @@ class BoundaryFinding:
 
 
 IMMUTABLE_PATH_PATTERNS: Tuple[Tuple[str, str], ...] = (
-    ("scripts/closed_rsi/loop.py", "immutable loop orchestrator path"),
     ("scripts.closed_rsi.loop", "immutable loop orchestrator import"),
-    ("scripts/closed_rsi/__init__.py", "immutable package init path"),
-    ("scripts/closed_recursive_self_improvement_loop.py", "immutable compatibility entrypoint path"),
     ("scripts.closed_rsi.evaluators", "immutable evaluator import"),
     ("scripts/closed_rsi/evaluators", "immutable evaluator path"),
     ("scripts.closed_rsi.gates", "immutable gate import"),
@@ -47,6 +44,14 @@ IMMUTABLE_PATH_PATTERNS: Tuple[Tuple[str, str], ...] = (
     ("expected_outputs", "expected-output access"),
     ("hidden_cases", "hidden-case access"),
     ("evaluation_seed", "evaluation seed access"),
+)
+
+# Patterns below flag a candidate only when it tries to WRITE these files
+# (target/test/extra paths), not when generated content merely mentions them.
+IMMUTABLE_TARGET_ONLY_PATTERNS: Tuple[Tuple[str, str], ...] = (
+    ("scripts/closed_rsi/loop.py", "immutable loop orchestrator path"),
+    ("scripts/closed_rsi/__init__.py", "immutable package init path"),
+    ("scripts/closed_recursive_self_improvement_loop.py", "immutable compatibility entrypoint path"),
 )
 
 MUTABLE_GENERATOR_PATHS: Tuple[str, ...] = (
@@ -160,11 +165,17 @@ def candidate_immutable_boundary_findings(
         (f"{candidate.name}.test_source", candidate.test_source),
         (f"{candidate.name}.metadata", json.dumps(metadata, sort_keys=True, default=str)),
     ]
+    target_texts = [
+        (f"{candidate.name}.target_path", target_text),
+        (f"{candidate.name}.test_path", test_text),
+    ]
     for relative_path, source in candidate.extra_files.items():
         named_texts.append((f"{candidate.name}.extra_path", relative_path))
         named_texts.append((f"{candidate.name}.extra_source:{relative_path}", source))
+        target_texts.append((f"{candidate.name}.extra_path", relative_path))
 
     findings = list(_finding_source_texts(named_texts, IMMUTABLE_PATH_PATTERNS))
+    findings.extend(_finding_source_texts(target_texts, IMMUTABLE_TARGET_ONLY_PATTERNS))
     metric_regex = re.compile(r"(?<![A-Za-z0-9_])(?:hidden_transfer|CapabilityDelta)(?![A-Za-z0-9_])")
     for source, text in named_texts:
         if metric_regex.search(str(text or "")):
