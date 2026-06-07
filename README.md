@@ -1,14 +1,42 @@
 # Self-Improving Research Kernel
- [![RSI Omega Proof](https://github.com/sunghunkwag/self-improving-research-kernel/actions/workflows/rsi-omega-proof.yml/badge.svg?branch=main)](https://github.com/sunghunkwag/self-improving-research-kernel/actions/workflows/rsi-omega-proof.yml) [![RSI Bootstrap Proof](https://github.com/sunghunkwag/self-improving-research-kernel/actions/workflows/rsi-bootstrap-proof.yml/badge.svg?branch=main)](https://github.com/sunghunkwag/self-improving-research-kernel/actions/workflows/rsi-bootstrap-proof.yml)
+
+[![RSI Omega Proof](https://github.com/sunghunkwag/self-improving-research-kernel/actions/workflows/rsi-omega-proof.yml/badge.svg?branch=main)](https://github.com/sunghunkwag/self-improving-research-kernel/actions/workflows/rsi-omega-proof.yml) [![RSI Bootstrap Proof](https://github.com/sunghunkwag/self-improving-research-kernel/actions/workflows/rsi-bootstrap-proof.yml/badge.svg?branch=main)](https://github.com/sunghunkwag/self-improving-research-kernel/actions/workflows/rsi-bootstrap-proof.yml)
 [![Full Pytest](https://github.com/sunghunkwag/self-improving-research-kernel/actions/workflows/full-pytest.yml/badge.svg?branch=main)](https://github.com/sunghunkwag/self-improving-research-kernel/actions/workflows/full-pytest.yml)
 
-An experimental, **bounded** kernel for recursive self-improvement. It proposes patches to its own codebase, applies them, and keeps a patch **only if the full `pytest` suite passes** in CI. Everything else is rolled back and logged. Every change stays bounded, deterministic, reviewable, and gate-verified.
+> A program that rewrites its own code to get better at solving problems — but is only allowed to keep a change if every test still passes.
 
-**In one line:** the kernel inspects its own source, invents a measurable goal, synthesizes a patch plus a regression test, applies it, and promotes it **only** behind the full-test gate. State is persisted, so each run resumes from the last accepted commit.
+## What is this?
+
+Most software is improved by humans. This is an experiment in software that improves **itself**. Each run, the kernel:
+
+1. **Reads its own source code** and picks a small, measurable goal.
+2. **Writes a patch** to meet that goal, plus a new test to prove it works.
+3. **Applies the patch** and runs the *entire* test suite.
+4. **Keeps the change only if every test passes.** Otherwise it rolls back and logs why.
+
+Because the change is only kept when all tests pass, every accepted improvement is safe, reversible, and reviewable. The kernel saves its state, so the next run continues from the last accepted version — building on its own progress over time.
+
+This is called **recursive self-improvement (RSI)**: the system doesn't just solve tasks, it improves the part of itself that solves tasks.
+
+```
+   +-----------------------------------------------+
+   |  1. Inspect own code  ->  2. Invent a goal    |
+   |                                               |
+   |  4. Keep only if ALL  <-  3. Write patch +    |
+   |     tests pass            matching test       |
+   +-----------------------------------------------+
+        keep   ->  commit & resume next run
+        fail   ->  roll back & log the reason
+```
+## Why it's built this way
+
+The hard part of self-improving systems isn't making changes — it's trusting them. This project's main idea is **honesty about what's actually verified**. A change counts as "real" only if it survives the full test gate; everything speculative is clearly labeled as unverified.
+
+To keep the system from cheating, an **immutable boundary** stops the kernel from editing its own judge. The evaluators, gates, anti-cheat checks, the loop orchestrator (`scripts/closed_rsi/loop.py`), and the entrypoint are all protected by `immutable_guard`: any patch that tries to write inside that boundary is rejected. The loop can improve *what it does*, but not the code that decides whether its changes are safe.
 
 ## What is — and isn't — validated
 
-This table is the most important thing to read. The honesty of these distinctions is the point of the project.
+This table is the most important thing to read.
 
 | Layer | What it does | Touches source? | Status |
 |-------|--------------|-----------------|--------|
@@ -18,8 +46,6 @@ This table is the most important thing to read. The honesty of these distinction
 | **Open-ended exploration** | Proposes speculative self-modifications | **Never applied** | Proposal archive only |
 
 The **closed loop** is the *only* path that can modify the working tree, and only behind the full-test gate. The **open-ended** layer is an archive of unvalidated proposals — proposal text alone is never promotion evidence.
-
-The **immutable boundary** keeps the kernel from editing its own judge. The evaluators, gates, anti-cheat checks, and reference metadata — and now the loop orchestrator (`scripts/closed_rsi/loop.py`), the package init, and the compatibility entrypoint — are protected by `immutable_guard`: any candidate whose write target falls inside that boundary is rejected before promotion. The loop can improve what it does, but not the code that decides whether its changes are safe.
 
 ## Quick Start
 
@@ -33,18 +59,19 @@ python scripts/closed_recursive_self_improvement_loop.py --apply --broad-gate
 # 3. The promotion gate — the only thing that can accept a candidate
 python -m pytest -q
 ```
-
 The smoke check is lightweight and safe to run anywhere. Full `pytest` runs and recursive experiments are heavier and are intended to run in GitHub Actions.
 
 State is written under `.omega_rsi_runs/`: `closed_rsi_state.json` (accepted/rejected history), `closed_rsi_summary.json` (latest run), and an optional `STOP_CLOSED_RSI` kill-switch file.
+
+---
+
+*The sections below are reference detail for contributors.*
 
 ## How it works
 
 The loop runs one cycle per generation: inspect the source, invent a goal, synthesize a candidate patch and matching test, apply it, then validate. **Only the full `python -m pytest -q` suite can promote a candidate** — focused tests run earlier only as diagnostics and can never accept a patch. Rejected candidates are rolled back and record structured failure residue.
 
 The **generator** is a bounded planner, not an unbounded code-writing agent. For capability fixtures it uses a public-oracle primitive search: it builds candidate functions by searching over reusable AST primitives and executes **only the public assertion** as its oracle — no answer bodies are stored in task definitions, and private/hidden cases are never read during synthesis. Accepted `generator_improvement` records feed forward into the next generation's search budget and curriculum difficulty, so generation N can change what generation N+1 produces.
-
-The sections below are reference detail.
 
 ## Capability benchmarks
 
@@ -62,7 +89,6 @@ The repository grounds RSI experiments in external maintenance signals without e
 python scripts/external_world_grounding.py --repository psf/requests --limit-per-repo 3
 python scripts/external_code_sandbox_fixtures.py --repository psf/requests --repository pandas-dev/pandas
 ```
-
 It reads public GitHub issue metadata into bounded task seeds (`reports/external_grounding/latest/`) and can transfer bounded source/failure excerpts from allowlisted repos into text-only sandbox fixtures (`reports/external_code_fixtures/latest/`). Safety controls: metadata only, no external cloning, no external code execution, bounded issue count/body length, and source-URL provenance for every task.
 
 ## Open-ended exploration
@@ -70,7 +96,6 @@ It reads public GitHub issue metadata into bounded task seeds (`reports/external
 ```bash
 python scripts/open_ended_exploration.py --max-candidates 96 --meta-depth 3
 ```
-
 This layer expands candidate search across broad domains and records speculative self-modification proposals whose validation status is explicitly unknown. These proposals are **never applied** to the source tree and do **not** close the RSI loop. Every materialized proposal carries an executable validation plan; proposal text alone is not enough for promotion.
 
 ## GitHub Actions
